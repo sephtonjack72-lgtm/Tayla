@@ -954,7 +954,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
             <p>ATO 2024–25 income tax brackets · Australian residents · Excludes Medicare levy &amp; HECS</p>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <select class="cat-select" id="fy-select-tax" onchange="changeFY()" style="width:130px">
+            <select class="cat-select" id="fy-select-tax" onchange="changeFY('fy-select-tax')" style="width:130px">
               <option value="fy2024">FY2024-25</option>
               <option value="fy2025" selected>FY2025-26</option>
               <option value="fy2026">FY2026-27</option>
@@ -1099,7 +1099,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
             <p>Track your income and spending. All data stays on your device.</p>
           </div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <select class="cat-select" id="fy-select-budget" onchange="changeFY()" style="width:130px">
+            <select class="cat-select" id="fy-select-budget" onchange="changeFY('fy-select-budget')" style="width:130px">
               <option value="fy2024">FY2024-25</option>
               <option value="fy2025" selected>FY2025-26</option>
               <option value="fy2026">FY2026-27</option>
@@ -1316,7 +1316,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
           <div class="setting-row">
             <div class="setting-info">
               <h4>Financial Data (Tax, Budget, Health, Goals)</h4>
-              <p>All dollar amounts, income figures, and personal financial data are stored exclusively in your browser's localStorage. This data never leaves your device and is never transmitted to any server.</p>
+              <p>All dollar amounts, income figures, and personal financial data are stored securely on Tayla's servers. This data is encrypted and only accessible by you.</p>
               <span class="legal-ref">APP 11 — data minimisation · Privacy Act 1988 (Cth)</span>
             </div>
             <div class="toggle-wrap">
@@ -1383,7 +1383,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
         <div class="settings-section-title">Complaints &amp; Contact</div>
         <div class="settings-section-desc">If you have a privacy concern</div>
         <div class="card" style="margin-bottom:0;font-size:0.82rem;color:var(--ink-2);line-height:1.7">
-          <p>If you have a concern about how your information is handled, you may contact us at <strong>jack.sephton@outlook.com</strong>.</p>
+          <p>If you have a concern about how your information is handled, you may contact us at <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a9a2a0a8edb0a6b3abb7acad83acb6b7afacaca8eda0acae">[email&#160;protected]</a></strong>.</p>
           <p>You also have the right to lodge a complaint with the <strong>Office of the Australian Information Commissioner (OAIC)</strong> at <a href="https://www.oaic.gov.au" target="_blank" style="color:var(--gold)">oaic.gov.au</a> or on 1300 363 992.</p>
         </div>
       </div>
@@ -1554,7 +1554,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══════════════════════════════════════════════════
    SUPABASE SETUP
 ═══════════════════════════════════════════════════ */
@@ -1565,7 +1565,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let CURRENT_USER = null; // { email, name, id }
 
 /* ═══════════════════════════════════════════════════
-   STORAGE HELPERS (localStorage for app data, Supabase for auth)
+   STORAGE HELPERS (consents stored locally, all app data via Supabase)
 ═══════════════════════════════════════════════════ */
 const getConsents  = email => { try { return JSON.parse(localStorage.getItem('ft_consents_' + email)) || {}; } catch { return {}; } };
 const saveConsents = (email, c) => localStorage.setItem('ft_consents_' + email, JSON.stringify(c));
@@ -1732,12 +1732,8 @@ const FY_OPTIONS = [
 let CURRENT_FY = FY_OPTIONS[1]; // default FY2025-26
 let FY_START   = CURRENT_FY.start;
 
-function getFYDataKey() {
-  return 'ft_data_' + CURRENT_USER.email + '_' + CURRENT_FY.key;
-}
 
 async function loadAllUserData() {
-  // Try Supabase first, fall back to localStorage for offline/migration
   let saved = {};
   if (CURRENT_USER && CURRENT_USER.id) {
     const { data, error } = await sb
@@ -1747,11 +1743,6 @@ async function loadAllUserData() {
       .eq('fy_key', CURRENT_FY.key)
       .maybeSingle();
     if (!error && data) saved = data.data || {};
-  }
-  // Fall back to localStorage if nothing in Supabase yet
-  if (!Object.keys(saved).length) {
-    const raw = localStorage.getItem(getFYDataKey());
-    if (raw) saved = JSON.parse(raw);
   }
   APP_DATA = {
     weeks:        saved.weeks        || new Array(52).fill(null),
@@ -1769,18 +1760,13 @@ async function loadAllUserData() {
 }
 
 async function persist() {
-  if (!CURRENT_USER) return;
-  // Save to localStorage immediately (fast)
-  localStorage.setItem(getFYDataKey(), JSON.stringify(APP_DATA));
-  // Also save to Supabase (cloud backup)
-  if (CURRENT_USER.id) {
-    await sb.from('user_data').upsert({
-      user_id: CURRENT_USER.id,
-      fy_key:  CURRENT_FY.key,
-      data:    APP_DATA,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,fy_key' });
-  }
+  if (!CURRENT_USER || !CURRENT_USER.id) return;
+  await sb.from('user_data').upsert({
+    user_id: CURRENT_USER.id,
+    fy_key:  CURRENT_FY.key,
+    data:    APP_DATA,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id,fy_key' });
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2247,10 +2233,10 @@ function jumpToPeriod(val) {
 // Keep old name for enterApp compatibility
 function buildWeekRows() { setMode(TAX_MODE); }
 
-function changeFY() {
-  const key = document.getElementById('fy-select-tax') 
-    ? document.getElementById('fy-select-tax').value 
-    : document.getElementById('fy-select-budget').value;
+function changeFY(sourceId) {
+  const id = sourceId || 'fy-select-tax';
+  const el = document.getElementById(id);
+  const key = el ? el.value : FY_OPTIONS[1].key;
   CURRENT_FY = FY_OPTIONS.find(f => f.key === key) || FY_OPTIONS[1];
   FY_START   = CURRENT_FY.start;
   // Sync both dropdowns
@@ -2485,28 +2471,10 @@ function ensureSystemGoals() {
 }
 
 async function syncSystemGoalsFromBudget() {
-  // Remove any existing system goals and re-add fresh to avoid stale data
   APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
 
   let totalEmergency = 0, totalSavings = 0;
 
-  // Sum across ALL financial years — localStorage first, then Supabase
-  FY_OPTIONS.forEach(fy => {
-    const key  = 'ft_data_' + CURRENT_USER.email + '_' + fy.key;
-    const raw  = localStorage.getItem(key);
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    Object.values(data.budget || {}).forEach(monthEntries => {
-      (monthEntries || []).forEach(e => {
-        if (e.type === 'savings rate') {
-          if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
-          if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
-        }
-      });
-    });
-  });
-
-  // Also check Supabase for any FY data not in localStorage
   if (CURRENT_USER.id) {
     const { data: rows } = await sb
       .from('user_data')
@@ -2522,23 +2490,8 @@ async function syncSystemGoalsFromBudget() {
         });
       });
     });
-    // Deduplicate by only using Supabase if localStorage is empty
-    if (!FY_OPTIONS.some(fy => localStorage.getItem('ft_data_' + CURRENT_USER.email + '_' + fy.key))) {
-      totalEmergency = 0; totalSavings = 0;
-      (rows || []).forEach(row => {
-        Object.values((row.data || {}).budget || {}).forEach(monthEntries => {
-          (monthEntries || []).forEach(e => {
-            if (e.type === 'savings rate') {
-              if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
-              if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
-            }
-          });
-        });
-      });
-    }
   }
 
-  // Always insert system goals at the front in correct order
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
   persist();
@@ -2626,8 +2579,7 @@ async function confirmDeleteAccount() {
     await sb.from('user_data').delete().eq('user_id', CURRENT_USER.id);
     await sb.auth.admin?.deleteUser(CURRENT_USER.id).catch(() => {});
   }
-  // Clear localStorage
-  FY_OPTIONS.forEach(fy => localStorage.removeItem('ft_data_' + CURRENT_USER.email + '_' + fy.key));
+  // Clear consents from localStorage
   localStorage.removeItem('ft_consents_' + CURRENT_USER.email);
   await sb.auth.signOut();
   alert('Your account and all data have been deleted.');
