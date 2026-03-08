@@ -1383,7 +1383,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
         <div class="settings-section-title">Complaints &amp; Contact</div>
         <div class="settings-section-desc">If you have a privacy concern</div>
         <div class="card" style="margin-bottom:0;font-size:0.82rem;color:var(--ink-2);line-height:1.7">
-          <p>If you have a concern about how your information is handled, you may contact us at <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c8c3c1c98cd1c7d2cad6cdcce2cdd7d6cecdcdc98cc1cdcf">[email&#160;protected]</a></strong>.</p>
+          <p>If you have a concern about how your information is handled, you may contact us at <strong>jack.sephton@outlook.com</strong>.</p>
           <p>You also have the right to lodge a complaint with the <strong>Office of the Australian Information Commissioner (OAIC)</strong> at <a href="https://www.oaic.gov.au" target="_blank" style="color:var(--gold)">oaic.gov.au</a> or on 1300 363 992.</p>
         </div>
       </div>
@@ -1554,7 +1554,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ═══════════════════════════════════════════════════
    SUPABASE SETUP
 ═══════════════════════════════════════════════════ */
@@ -2484,11 +2484,7 @@ function ensureSystemGoals() {
   if (!hasSavings)   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: 0, monthly: 0 });
 }
 
-let _syncingGoals = false;
 async function syncSystemGoalsFromBudget() {
-  if (_syncingGoals) return;
-  _syncingGoals = true;
-  try {
   // Remove any existing system goals and re-add fresh to avoid stale data
   APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
 
@@ -2546,9 +2542,6 @@ async function syncSystemGoalsFromBudget() {
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
   persist();
-  } finally {
-    _syncingGoals = false;
-  }
 }
 
 function addGoal() {
@@ -2652,3 +2645,13 @@ const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 (async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
+    const email = session.user.email;
+    const name  = session.user.user_metadata?.name || email.split('@')[0];
+    enterApp(email, name, session.user.id);
+  } else {
+    showScreen('auth-screen');
+  }
+})();
+</script>
+</body>
+</html>
