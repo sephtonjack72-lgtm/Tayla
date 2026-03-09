@@ -278,6 +278,61 @@ function calcTaxForPeriod(periodGross, mode) {
   return parseFloat((dailyTax * days).toFixed(2));
 }
 
+// Reverse: given a net period amount, find the gross via binary search
+function netToGrossPeriod(netAmount, mode) {
+  if (!netAmount || netAmount <= 0) return 0;
+  let lo = netAmount, hi = netAmount * 2.5, mid, tax;
+  for (let i = 0; i < 60; i++) {
+    mid = (lo + hi) / 2;
+    tax = calcTaxForPeriod(mid, mode);
+    const calcNet = mid - tax;
+    if (Math.abs(calcNet - netAmount) < 0.001) break;
+    if (calcNet < netAmount) lo = mid;
+    else hi = mid;
+  }
+  return parseFloat(mid.toFixed(2));
+}
+
+// Reverse: given annual net, find gross via binary search
+function netToGrossAnnual(netAnnual) {
+  if (!netAnnual || netAnnual <= 0) return 0;
+  let lo = netAnnual, hi = netAnnual * 2.5, mid, tax;
+  for (let i = 0; i < 60; i++) {
+    mid = (lo + hi) / 2;
+    tax = calcTaxAnnual(mid);
+    const calcNet = mid - tax;
+    if (Math.abs(calcNet - netAnnual) < 0.001) break;
+    if (calcNet < netAnnual) lo = mid;
+    else hi = mid;
+  }
+  return parseFloat(mid.toFixed(2));
+}
+
+// ── INPUT MODE (gross vs net) ──
+let INPUT_MODE = 'gross'; // 'gross' | 'net'
+
+function setInputMode(mode) {
+  INPUT_MODE = mode;
+  // Update toggle buttons
+  document.getElementById('input-btn-gross').classList.toggle('active', mode === 'gross');
+  document.getElementById('input-btn-net').classList.toggle('active', mode === 'net');
+  // Update hint text
+  const hint = document.getElementById('input-mode-hint');
+  const col  = document.getElementById('head-input-col');
+  const annLabel = document.getElementById('annual-input-label');
+  if (mode === 'net') {
+    hint.innerHTML = 'Enter your <strong>take-home pay</strong> — Tayla reverse-calculates your gross and tax.';
+    if (col) col.textContent = 'Net Pay ($)';
+    if (annLabel) annLabel.textContent = 'Enter your annual net (take-home) income';
+  } else {
+    hint.innerHTML = 'Enter your pay <strong>before tax</strong> — Tayla calculates your take-home.';
+    if (col) col.textContent = 'Gross Pay ($)';
+    if (annLabel) annLabel.textContent = 'Enter your annual gross income';
+  }
+  // Rebuild rows with new mode labels
+  if (TAX_MODE !== 'annual') buildPeriodRows();
+}
+
 function getBracketAnnual(annual) {
   if (annual <= 18200)  return 0;
   if (annual <= 45000)  return 1;
@@ -508,18 +563,20 @@ function syncMonthsToWeeks(monthIndex) {
 }
 
 function onPeriodInput(i) {
-  const val = parseFloat(document.getElementById('wi'+i).value) || 0;
+  let val = parseFloat(document.getElementById('wi'+i).value) || 0;
+  // If user entered net, reverse-calculate gross before storing
+  const grossVal = INPUT_MODE === 'net' ? netToGrossPeriod(val, TAX_MODE) : val;
   if (TAX_MODE === 'weekly') {
-    APP_DATA.weeks[i] = val || null;
+    APP_DATA.weeks[i] = grossVal || null;
     syncWeeksToMonths();
   }
   if (TAX_MODE === 'monthly') {
-    APP_DATA.months[i] = val || null;
+    APP_DATA.months[i] = grossVal || null;
     syncMonthsToWeeks(i);
   }
   refreshPeriodRow(i);
   refreshPeriodSummary();
-  autoAddToBudget(i, val);
+  autoAddToBudget(i, grossVal);
   persist();
 }
 
@@ -581,7 +638,7 @@ function autoAddToBudget(periodIndex, grossVal) {
 
 function refreshPeriodRow(i) {
   const data = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
-  const g = data[i] || 0;
+  const g = data[i] || 0; // always stored as gross
   const t = calcTaxForPeriod(g, TAX_MODE);
   const n = g - t;
   const taxEl = document.getElementById('wt'+i);
@@ -595,6 +652,10 @@ function refreshPeriodRow(i) {
     taxEl.textContent = fmt(t); taxEl.className = 'wc wc-tax';
     netEl.textContent = fmt(n); netEl.className = 'wc wc-net';
     row.classList.add('has-value');
+    // If in net input mode, show gross in the result alongside net entry
+    if (INPUT_MODE === 'net') {
+      taxEl.title = 'Gross: ' + fmt(g);
+    }
   }
 }
 
@@ -639,11 +700,13 @@ function refreshPeriodSummary() {
 }
 
 function onAnnualInput() {
-  const annual = parseFloat(document.getElementById('annual-input').value) || 0;
+  let entered = parseFloat(document.getElementById('annual-input').value) || 0;
+  // If net mode, reverse-calculate gross first
+  const annual = INPUT_MODE === 'net' ? netToGrossAnnual(entered) : entered;
   APP_DATA.annualIncome = annual;
   persist();
 
-  if (!annual) {
+  if (!entered) {
     setSummary(0, 0);
     document.getElementById('annual-results').style.display = 'none';
     document.getElementById('annual-breakdowns').style.display = 'none';
@@ -659,6 +722,10 @@ function onAnnualInput() {
   document.getElementById('ar-tax').textContent  = fmtInt(tax);
   document.getElementById('ar-net').textContent  = fmtInt(net);
   document.getElementById('ar-rate').textContent = ((tax/annual)*100).toFixed(1) + '%';
+  // If net mode, also show the calculated gross
+  if (INPUT_MODE === 'net') {
+    document.getElementById('ar-tax').title = 'Gross: ' + fmtInt(annual);
+  }
   document.getElementById('annual-results').style.display = 'flex';
 
   // Breakdowns
@@ -1031,7 +1098,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: "(encrypted and stored securely on Tayla's servers)",
+    financialData: '(encrypted and stored securely on Tayla's servers)',
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
