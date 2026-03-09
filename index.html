@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tayla — Australian Personal Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="nav" id="main-nav" style="display:none">
+  <div class="nav-inner">
+    <a class="logo" href="#"><div class="logo-dot"></div>Tayla</a>
+    <div class="nav-right">
+      <span class="nav-user-name" id="nav-username"></span>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('settings-modal')">⚙ Settings</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ PRIVACY BANNER ═══════════════ -->
+<div class="privacy-banner" id="privacy-banner" style="display:none">
+  🔒 <strong>Your financial data is encrypted and stored securely.</strong> We never share your personal financial details with third parties. <a onclick="openModal('privacy-modal')">View our Privacy Policy</a> · <a onclick="openTab('settings')">Manage your data preferences</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════ -->
+<div class="screen" id="auth-screen">
+  <div class="auth-hero">
+    <div class="hero-label">Australian Personal Finance</div>
+    <h1>Know what you<br><em>actually keep.</em></h1>
+    <p>Tayla helps Australians understand their weekly take-home pay, manage budgets, and build toward financial goals — securely stored and accessible from any device.</p>
+    <div class="auth-features">
+      <div class="auth-feature">
+        <div class="feature-icon">🧮</div>
+        <div class="auth-feature-text">
+          <h4>Weekly Tax Calculator</h4>
+          <p>Accurate ATO 2024–25 brackets across all 52 weeks</p>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="feature-icon">💳</div>
+        <div class="auth-feature-text">
+          <h4>Budget Tracker</h4>
+          <p>Log income and expenses by category. See where it goes.</p>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="feature-icon">📊</div>
+        <div class="auth-feature-text">
+          <h4>Financial Health Score</h4>
+          <p>Savings rate, emergency fund coverage, and more</p>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="feature-icon">🔒</div>
+        <div class="auth-feature-text">
+          <h4>Privacy First</h4>
+          <p>Your data is encrypted and stored securely. You control what's shared.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-panel-inner">
+      <div style="margin-bottom:28px">
+        <div class="logo" style="margin-bottom:8px; font-size:1.2rem"><div class="logo-dot"></div>Tayla</div>
+        <p style="font-size:0.82rem;color:var(--ink-3)">Your personal finance companion</p>
+      </div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" id="tab-reg-btn" onclick="switchAuthTab('register')">Create Account</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <div class="alert alert-error" id="login-error"></div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-group" style="margin-bottom:22px">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+        <div class="divider-text" style="margin:20px 0"><span>or</span></div>
+        <p style="font-size:0.75rem;color:var(--ink-3);text-align:center">Don't have an account? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="switchAuthTab('register')">Create one free</a></p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-form" style="display:none">
+        <div class="alert alert-error"   id="reg-error"></div>
+        <div class="alert alert-success" id="reg-success"></div>
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input class="form-input" type="text" id="reg-name" placeholder="Jane Smith" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span style="font-size:0.68rem;color:var(--ink-3)">(min. 8 characters)</span></label>
+          <input class="form-input" type="password" id="reg-pw" placeholder="Create a strong password" autocomplete="new-password">
+        </div>
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label">Confirm password</label>
+          <input class="form-input" type="password" id="reg-pw2" placeholder="Repeat password" autocomplete="new-password">
+        </div>
+
+        <!-- CONSENT BOXES -->
+        <div class="consent-box">
+          <div class="consent-box-title">🔐 Required Consents</div>
+          <div class="consent-row">
+            <input type="checkbox" id="c-tos">
+            <label for="c-tos">
+              I have read and agree to the <a onclick="openModal('tos-modal')">Terms of Service</a> and <a onclick="openModal('privacy-modal')">Privacy Policy</a>. <span class="consent-required">*Required</span>
+            </label>
+          </div>
+          <div class="consent-row">
+            <input type="checkbox" id="c-disclaimer">
+            <label for="c-disclaimer">
+              I understand Tayla provides <strong>general estimates only</strong> and is not financial or tax advice. I will consult a registered professional for my specific situation. <span class="consent-required">*Required</span>
+            </label>
+          </div>
+          <div class="consent-row">
+            <input type="checkbox" id="c-age">
+            <label for="c-age">
+              I confirm I am <strong>18 years of age or older</strong>. <span class="consent-required">*Required</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="consent-box">
+          <div class="consent-box-title" style="color:var(--blue)">📊 Optional Data Sharing <span class="badge badge-soon" style="margin-left:6px">Your choice</span></div>
+          <div class="consent-row">
+            <input type="checkbox" id="c-cat-data" onchange="updateConsentStatus('cat')">
+            <label for="c-cat-data">
+              <strong>Spending category sharing for relevant advertising.</strong> I allow Tayla to collect and share <em>anonymised spending category labels only</em> (e.g. "Groceries", "Transport") — never dollar amounts, never personal details — to show me relevant ads and support free access. I can withdraw this consent at any time in Settings. <span class="consent-optional">(Optional — APP 3 compliant)</span>
+            </label>
+          </div>
+          <p style="font-size:0.7rem;color:var(--ink-3);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--rule)">
+            Under the <em>Privacy Act 1988 (Cth)</em> and the <em>Privacy and Other Legislation Amendment Act 2024</em>, this consent is separate, specific, and freely given. You can withdraw it at any time without affecting your access to Tayla.
+          </p>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="doRegister()" style="margin-top:6px">Create Free Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     APP SCREEN
+════════════════════════════════════════ -->
+<div class="screen" id="app-screen">
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav" id="mobile-nav" style="display:none">
+    <div class="mobile-nav-inner">
+      <button class="mobile-nav-item active" id="mnav-tax" onclick="openTab('tax');setMobileNav(this)">
+        <span class="mn-icon">🧮</span>Tax
+      </button>
+      <button class="mobile-nav-item" id="mnav-budget" onclick="openTab('budget');setMobileNav(this)">
+        <span class="mn-icon">💳</span>Budget
+      </button>
+      <button class="mobile-nav-item" id="mnav-health" onclick="openTab('health');setMobileNav(this)">
+        <span class="mn-icon">📊</span>Health
+      </button>
+      <button class="mobile-nav-item" id="mnav-goals" onclick="openTab('goals');setMobileNav(this)">
+        <span class="mn-icon">🎯</span>Goals
+      </button>
+      <button class="mobile-nav-item" id="mnav-settings" onclick="openTab('settings');setMobileNav(this)">
+        <span class="mn-icon">⚙️</span>Settings
+      </button>
+    </div>
+  </nav>
+
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <span class="sidebar-label">Tools</span>
+        <div class="sidebar-item active" id="nav-tax"    onclick="openTab('tax')">    <span class="icon">🧮</span> Tax Calculator</div>
+        <div class="sidebar-item"        id="nav-budget" onclick="openTab('budget')"> <span class="icon">💳</span> Budget Tracker</div>
+        <div class="sidebar-item"        id="nav-health" onclick="openTab('health')"> <span class="icon">📊</span> Financial Health</div>
+        <div class="sidebar-item"        id="nav-goals"  onclick="openTab('goals')">  <span class="icon">🎯</span> Goals</div>
+      </div>
+      <div class="sidebar-section">
+        <span class="sidebar-label">Account</span>
+        <div class="sidebar-item" id="nav-settings" onclick="openModal('settings-modal')"><span class="icon">⚙️</span> Settings & Privacy</div>
+      </div>
+      <div style="padding:0 16px;margin-top:16px">
+        <div class="privacy-indicator">
+          🔒 <span>Your data is encrypted and stored securely. Category data sharing is <strong id="sidebar-consent-status">off</strong>.</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <!-- ═══ TAX CALCULATOR ═══ -->
+      <div class="tab-panel active" id="panel-tax">
+        <div class="page-header-row">
+          <div class="page-header">
+            <h2>Tax Calculator</h2>
+            <p>ATO 2024–25 income tax brackets · Australian residents · Excludes Medicare levy &amp; HECS</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <select class="cat-select" id="fy-select-tax" onchange="changeFY('fy-select-tax')" style="width:130px">
+              <option value="fy2024">FY2024-25</option>
+              <option value="fy2025" selected>FY2025-26</option>
+              <option value="fy2026">FY2026-27</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV()">↓ Export CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearTaxData()">Clear All</button>
+          </div>
+        </div>
+
+        <!-- MODE SWITCHER -->
+        <div class="mode-switcher">
+          <button class="mode-btn active" id="mode-btn-weekly"  onclick="setMode('weekly')">📅 Weekly</button>
+          <button class="mode-btn"        id="mode-btn-monthly" onclick="setMode('monthly')">🗓 Monthly</button>
+          <button class="mode-btn"        id="mode-btn-annual"  onclick="setMode('annual')">📆 Annual</button>
+        </div>
+        <div class="mode-desc" id="mode-desc">Enter your weekly pay for each of the 52 weeks in the financial year.</div>
+
+        <div class="calc-grid">
+          <!-- INPUT AREA -->
+          <div>
+            <!-- WEEKLY / MONTHLY TABLE -->
+            <div id="period-table-wrap">
+              <div class="week-controls">
+                <span style="font-size:0.82rem;color:var(--ink-3)"><span id="periods-filled">0</span> <span id="periods-of-label">of 52 weeks</span> entered</span>
+                <input class="week-search" type="number" min="1" id="jump-input" placeholder="Jump to period…" oninput="jumpToPeriod(this.value)">
+              </div>
+              <div class="weeks-container">
+                <div class="week-row week-head" id="table-head">
+                  <div class="wc" id="head-period">Week</div>
+                  <div class="wc">Gross Pay ($)</div>
+                  <div class="wc">Tax</div>
+                  <div class="wc">Net Pay</div>
+                </div>
+                <div id="period-rows"></div>
+              </div>
+            </div>
+
+            <!-- ANNUAL SINGLE INPUT -->
+            <div class="annual-input-wrap" id="annual-input-wrap">
+              <span class="annual-input-label">Enter your annual gross income</span>
+              <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
+                placeholder="e.g. 85,000" oninput="onAnnualInput()">
+              <p style="font-size:0.75rem;color:var(--ink-3);margin-top:10px">Type your total yearly income before tax</p>
+              <div class="annual-result-row" id="annual-results" style="display:none">
+                <div class="annual-result-item">
+                  <div class="annual-result-label">Tax Payable</div>
+                  <div class="annual-result-value" id="ar-tax" style="color:var(--red)">—</div>
+                </div>
+                <div class="annual-result-item">
+                  <div class="annual-result-label">Net Income</div>
+                  <div class="annual-result-value" id="ar-net" style="color:var(--green)">—</div>
+                </div>
+                <div class="annual-result-item">
+                  <div class="annual-result-label">Effective Rate</div>
+                  <div class="annual-result-value" id="ar-rate" style="color:var(--gold)">—</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px;text-align:center" id="annual-breakdowns" style="display:none">
+                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
+                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
+                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-monthly-tax">tax: —</div>
+                </div>
+                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
+                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
+                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-fortnight-tax">tax: —</div>
+                </div>
+                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
+                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
+                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-weekly-tax">tax: —</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="summary-card">
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title" id="summary-title">Annual Summary</div>
+              <div class="card-sub" id="summary-sub">Based on entered weeks</div>
+              <div class="stat-block">
+                <div class="stat-label" id="sum-gross-label">Total Gross Income</div>
+                <div class="stat-value s-gross" id="s-gross">$0.00</div>
+              </div>
+              <hr class="divider" style="margin:14px 0">
+              <div class="stat-block">
+                <div class="stat-label">Total Tax Payable</div>
+                <div class="stat-value s-tax" id="s-tax">$0.00</div>
+              </div>
+              <hr class="divider" style="margin:14px 0">
+              <div class="stat-block">
+                <div class="stat-label" id="sum-net-label">Total Net Income</div>
+                <div class="stat-value s-net" id="s-net">$0.00</div>
+              </div>
+              <hr class="divider" style="margin:16px 0">
+              <div class="rate-bar-wrap">
+                <div class="rate-bar-labels">
+                  <span>Effective Tax Rate</span>
+                  <span id="eff-rate-pct">0.0%</span>
+                </div>
+                <div class="rate-bar-track">
+                  <div class="rate-bar-fill" id="rate-fill" style="width:0%;background:linear-gradient(90deg,var(--green),var(--gold),var(--red))"></div>
+                </div>
+              </div>
+              <!-- Annualised projection row (shown in weekly/monthly mode) -->
+              <div id="annualised-row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);display:none">
+                <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">Projected Full Year</div>
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem">
+                  <span style="color:var(--ink-3)">Gross</span>
+                  <span id="proj-gross" style="font-family:'IBM Plex Mono',monospace">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-top:4px">
+                  <span style="color:var(--ink-3)">Net</span>
+                  <span id="proj-net" style="font-family:'IBM Plex Mono',monospace;color:var(--green)">—</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">ATO Tax Brackets</div>
+              <div class="card-sub" id="bracket-sub">Weekly equivalent · 2024–25</div>
+              <table class="bracket-table" id="bracket-table">
+                <tr id="br0"><td class="b-range"></td><td class="b-rate"></td></tr>
+                <tr id="br1"><td class="b-range"></td><td class="b-rate"></td></tr>
+                <tr id="br2"><td class="b-range"></td><td class="b-rate"></td></tr>
+                <tr id="br3"><td class="b-range"></td><td class="b-rate"></td></tr>
+                <tr id="br4"><td class="b-range"></td><td class="b-rate"></td></tr>
+              </table>
+              <p class="bracket-note">Estimates only. Does not include Medicare levy (2%), HECS/HELP repayments, tax offsets, or deductions. Not financial advice. Consult a registered tax agent for your situation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BUDGET TRACKER ═══ -->
+      <div class="tab-panel" id="panel-budget">
+        <div class="page-header-row">
+          <div class="page-header">
+            <h2>Budget Tracker</h2>
+            <p>Track your income and spending. Your data is encrypted and stored securely.</p>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <select class="cat-select" id="fy-select-budget" onchange="changeFY('fy-select-budget')" style="width:130px">
+              <option value="fy2024">FY2024-25</option>
+              <option value="fy2025" selected>FY2025-26</option>
+              <option value="fy2026">FY2026-27</option>
+            </select>
+            <select class="cat-select" id="budget-month-select" onchange="changeBudgetMonth()" style="width:150px">
+              <option value="0">July</option><option value="1">August</option>
+              <option value="2">September</option><option value="3">October</option>
+              <option value="4">November</option><option value="5">December</option>
+              <option value="6">January</option><option value="7">February</option>
+              <option value="8">March</option><option value="9">April</option>
+              <option value="10">May</option><option value="11">June</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearBudgetData()">Clear Month</button>
+          </div>
+        </div>
+
+        <div class="budget-summary-cards">
+          <div class="metric-card">
+            <div class="metric-label">Income This Month</div>
+            <div class="metric-value" id="bm-income" style="color:var(--green)">$0</div>
+            <div class="metric-sub" id="bm-income-count">0 entries</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Expenses This Month</div>
+            <div class="metric-value" id="bm-expenses" style="color:var(--red)">$0</div>
+            <div class="metric-sub" id="bm-exp-count">0 entries</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Net Balance</div>
+            <div class="metric-value" id="bm-balance">$0</div>
+            <div class="metric-sub" id="bm-savings-rate">Savings rate: —</div>
+          </div>
+        </div>
+
+        <!-- ADD ENTRY -->
+        <div class="add-entry-form">
+          <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px">Add Entry</div>
+          <div class="add-entry-grid">
+            <div>
+              <div class="form-label">Description</div>
+              <input class="form-input" type="text" id="be-desc" placeholder="e.g. Woolworths groceries">
+            </div>
+            <div>
+              <div class="form-label">Amount ($)</div>
+              <input class="form-input" type="number" id="be-amount" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+              <div class="form-label">Category</div>
+              <select class="cat-select" id="be-cat">
+                <optgroup label="Income">
+                  <option value="income|Salary/Wages">Salary / Wages</option>
+                  <option value="income|Freelance">Freelance</option>
+                  <option value="income|Other Income">Other Income</option>
+                </optgroup>
+                <optgroup label="Expenses">
+                  <option value="expense|Groceries">Groceries</option>
+                  <option value="expense|Rent/Mortgage">Rent / Mortgage</option>
+                  <option value="expense|Transport">Transport</option>
+                  <option value="expense|Utilities">Utilities</option>
+                  <option value="expense|Dining Out">Dining Out</option>
+                  <option value="expense|Entertainment">Entertainment</option>
+                  <option value="expense|Healthcare">Healthcare</option>
+                  <option value="expense|Clothing">Clothing</option>
+                  <option value="expense|Education">Education</option>
+                  <option value="expense|Insurance">Insurance</option>
+                  <option value="expense|Subscriptions">Subscriptions</option>
+                  <option value="expense|Other Expense">Other Expense</option>
+                </optgroup>
+                 <optgroup label="Savings">
+                 <option value="savings rate|Savings/Investment">Savings / Investment</option> 
+                 <option value="savings rate|Emergency Fund">Emergency Fund</option>  
+                </optgroup>    
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="addBudgetEntry()">+ Add</button>
+          </div>
+          <div id="cat-consent-notice" style="display:none;margin-top:12px;font-size:0.72rem;color:var(--ink-3);background:var(--gold-dim);border-radius:var(--r-sm);padding:8px 12px;border:1px solid rgba(200,146,42,0.2)">
+            📊 Category data sharing is <strong>enabled</strong>. The category label (not the amount) may be included in anonymised advertising data. <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="openModal('settings-modal')">Manage in Settings</a>
+          </div>
+        </div>
+
+        <div class="budget-grid">
+          <div class="card">
+            <div class="card-title">Recent Entries</div>
+            <div class="card-sub">Your logged income and expenses</div>
+            <div class="entry-list" id="entry-list">
+              <div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">No entries yet. Add your first above.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Spending by Category</div>
+            <div class="card-sub">Expenses only</div>
+            <div class="spending-bars" id="spending-bars">
+              <div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">Add expenses to see your breakdown.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ FINANCIAL HEALTH ═══ -->
+      <div class="tab-panel" id="panel-health">
+        <div class="page-header">
+          <h2>Financial Health</h2>
+          <p>A snapshot of where you stand. Update your details to see your score.</p>
+        </div>
+        <div class="health-grid">
+          <div>
+            <div class="health-score-card" style="margin-bottom:20px">
+              <div class="score-circle">
+                <div class="score-num" id="health-score">—</div>
+              </div>
+              <div class="score-label">Financial Health Score</div>
+              <div class="score-title" id="health-grade">Enter your details</div>
+              <div class="score-desc" id="health-desc">Fill in the fields on the right to generate your personal financial health snapshot.</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Key Metrics</div>
+              <div class="card-sub">Based on your inputs</div>
+              <div class="health-metric-row">
+                <span class="hm-label">Savings Rate</span>
+                <span class="hm-value" id="hm-savings-rate">—</span>
+              </div>
+              <div class="health-metric-row">
+                <span class="hm-label">Emergency Fund Coverage</span>
+                <span class="hm-value" id="hm-emergency">—</span>
+              </div>
+              <div class="health-metric-row">
+                <span class="hm-label">Debt-to-Income Ratio</span>
+                <span class="hm-value" id="hm-dti">—</span>
+              </div>
+              <div class="health-metric-row">
+                <span class="hm-label">Housing Cost Ratio</span>
+                <span class="hm-value" id="hm-housing">—</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Your Details</div>
+              <div class="card-sub">Your data is encrypted and stored securely</div>
+              <div class="health-inputs">
+                <div class="form-group">
+                  <label class="form-label">Monthly Net Income ($)</label>
+                  <input class="form-input" type="number" id="h-income" placeholder="e.g. 5000" oninput="calcHealth()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Monthly Expenses ($)</label>
+                  <input class="form-input" type="number" id="h-expenses" placeholder="e.g. 3500" oninput="calcHealth()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Emergency Savings ($)</label>
+                  <input class="form-input" type="number" id="h-emergency" placeholder="e.g. 10000" oninput="calcHealth()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Total Debt ($)</label>
+                  <input class="form-input" type="number" id="h-debt" placeholder="e.g. 15000" oninput="calcHealth()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Monthly Rent / Mortgage ($)</label>
+                  <input class="form-input" type="number" id="h-housing" placeholder="e.g. 1800" oninput="calcHealth()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Monthly Savings ($)</label>
+                  <input class="form-input" type="number" id="h-savings" placeholder="e.g. 500" oninput="calcHealth()">
+                </div>
+              </div>
+              <p style="font-size:0.72rem;color:var(--ink-3);margin-top:8px;line-height:1.6">These values are stored securely on Tayla's servers. Not financial advice.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ GOALS ═══ -->
+      <div class="tab-panel" id="panel-goals">
+        <div class="page-header-row">
+          <div class="page-header">
+            <h2>Financial Goals</h2>
+            <p>Set targets, track progress, and see how long until you get there.</p>
+          </div>
+        </div>
+        <div class="goals-grid" id="goals-grid">
+          <button class="add-goal-btn" onclick="openModal('add-goal-modal')">
+            <span>＋</span>
+            Add a Goal
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODALS
+════════════════════════════════════════ -->
+
+<!-- SETTINGS / PRIVACY MODAL -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div>
+        <h3>Settings &amp; Privacy</h3>
+        <p style="font-size:0.78rem;color:var(--ink-3);margin-top:3px">Manage your data, consents, and account</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('settings-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- DATA STORAGE -->
+      <div class="settings-section">
+        <div class="settings-section-title">Data Storage</div>
+        <div class="settings-section-desc">How Tayla stores and handles your information</div>
+        <div class="card" style="margin-bottom:0">
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Financial Data (Tax, Budget, Health, Goals)</h4>
+              <p>All dollar amounts, income figures, and personal financial data are stored securely on Tayla's servers. This data is encrypted and only accessible by you.</p>
+              <span class="legal-ref">APP 11 — data minimisation · Privacy Act 1988 (Cth)</span>
+            </div>
+            <div class="toggle-wrap">
+              <span style="font-size:0.72rem;background:var(--green-dim);color:var(--green);padding:4px 10px;border-radius:10px;font-weight:600">Always Local</span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Category Data Sharing for Advertising <span class="badge badge-req">Optional</span></h4>
+              <p>When enabled, anonymised spending category labels (e.g. "Groceries", "Transport") — <strong>never amounts, never personal details</strong> — may be shared with advertising partners to show you relevant ads and support free access to Tayla.</p>
+              <p style="margin-top:6px">You can withdraw this consent at any time. Withdrawing will not affect your access to Tayla.</p>
+              <span class="legal-ref">APP 3 &amp; APP 6 — collection &amp; use with consent · Privacy and Other Legislation Amendment Act 2024</span>
+            </div>
+            <div class="toggle-wrap">
+              <label class="toggle">
+                <input type="checkbox" id="settings-cat-toggle" onchange="updateCatConsent()">
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-status" id="cat-toggle-status">Off</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YOUR RIGHTS -->
+      <div class="settings-section">
+        <div class="settings-section-title">Your Privacy Rights</div>
+        <div class="settings-section-desc">Under the Privacy Act 1988 (Cth) and 2024 amendments</div>
+        <div class="card" style="margin-bottom:0">
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Access Your Data</h4>
+              <p>View all data Tayla holds about you, including your consent history.</p>
+              <span class="legal-ref">APP 12 — access to personal information</span>
+            </div>
+            <div class="toggle-wrap">
+              <button class="btn btn-ghost btn-sm" onclick="viewMyData()">View Data</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Export Your Data</h4>
+              <p>Download a full copy of all your Tayla data as a JSON file.</p>
+            </div>
+            <div class="toggle-wrap">
+              <button class="btn btn-ghost btn-sm" onclick="exportMyData()">Export JSON</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Withdraw Category Data Consent</h4>
+              <p>Toggle the switch above to immediately withdraw your consent for category data sharing. Once withdrawn, no future category data will be collected or shared.</p>
+              <span class="legal-ref">APP 3.5 — consent withdrawal · OAIC guidelines</span>
+            </div>
+            <div class="toggle-wrap">
+              <span style="font-size:0.72rem;color:var(--ink-3)">Use toggle above</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT / COMPLAINTS -->
+      <div class="settings-section">
+        <div class="settings-section-title">Complaints &amp; Contact</div>
+        <div class="settings-section-desc">If you have a privacy concern</div>
+        <div class="card" style="margin-bottom:0;font-size:0.82rem;color:var(--ink-2);line-height:1.7">
+          <p>If you have a concern about how your information is handled, you may contact us at <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a9a2a0a8edb0a6b3abb7acad83acb6b7afacaca8eda0acae">[email&#160;protected]</a></strong>.</p>
+          <p>You also have the right to lodge a complaint with the <strong>Office of the Australian Information Commissioner (OAIC)</strong> at <a href="https://www.oaic.gov.au" target="_blank" style="color:var(--gold)">oaic.gov.au</a> or on 1300 363 992.</p>
+        </div>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="danger-zone">
+        <h3>⚠ Danger Zone</h3>
+        <p>Deleting your account will permanently remove all data stored in your browser for this account including tax data, budget entries, health inputs, and goals. This action cannot be undone.</p>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteAccount()">Delete My Account &amp; All Data</button>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('settings-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS OF SERVICE MODAL -->
+<div class="modal-overlay" id="tos-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Terms of Service</h3>
+      <button class="modal-close" onclick="closeModal('tos-modal')">&times;</button>
+    </div>
+    <div class="modal-body legal-section">
+      <div class="legal-review-note">⚠️ <strong>Owner note:</strong> This is a legally compliant placeholder. Replace all bracketed sections with your own reviewed terms before public launch. Engage a privacy lawyer to finalise.</div>
+
+      <h4>1. Acceptance of Terms</h4>
+      <p>By creating an account and using Tayla ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service. These Terms are governed by the laws of Australia.</p>
+
+      <h4>2. Service Description</h4>
+      <p>Tayla is a personal finance tool providing weekly income tax estimates, budget tracking, financial health scoring, and goal tracking. Financial data is encrypted and stored securely on Tayla's servers, accessible only by you.</p>
+
+      <h4>3. Not Financial or Tax Advice</h4>
+      <div class="legal-highlight">Tayla is not a registered tax agent, financial planner, or credit licensee. All calculations are estimates based on publicly available ATO tax brackets and general financial principles. Nothing in the Service constitutes financial, tax, or investment advice. Always consult a qualified professional for your specific circumstances.</div>
+
+      <h4>4. User Accounts</h4>
+      <p>You are responsible for maintaining the security of your account credentials. You must be 18 years or older to create an account. We reserve the right to suspend or terminate accounts that breach these Terms.</p>
+
+      <h4>5. Data and Privacy</h4>
+      <p>Your use of Tayla is also governed by our Privacy Policy, which is incorporated into these Terms. Financial data (income, expenses, goals) is stored securely on Tayla's servers and is only accessible by you. Anonymised spending category data may be collected and shared with advertising partners only where you have given explicit, separate consent.</p>
+
+      <h4>6. Advertising</h4>
+      <p>Tayla may display advertisements to support free access. Where you have opted in, anonymised category data may be used for ad targeting. Dollar amounts and personal financial details are never used for advertising purposes.</p>
+
+      <h4>7. Intellectual Property</h4>
+      <p>All content, design, and software in Tayla is owned by Jack Sephton. You may not reproduce or distribute any part of the Service without written permission.</p>
+
+      <h4>8. Limitation of Liability</h4>
+      <p>To the maximum extent permitted by law, Tayla and its operators are not liable for any loss or damage — including financial loss — arising from reliance on information provided by the Service.</p>
+
+      <h4>9. Changes to Terms</h4>
+      <p>We may update these Terms from time to time. Continued use of the Service after notification of changes constitutes acceptance.</p>
+
+      <h4>10. Governing Law</h4>
+      <p>These Terms are governed by the laws of [Your State], Australia. Disputes will be subject to the exclusive jurisdiction of the courts of that State.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('tos-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-overlay" id="privacy-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Privacy Policy</h3>
+      <button class="modal-close" onclick="closeModal('privacy-modal')">&times;</button>
+    </div>
+    <div class="modal-body legal-section">
+      <div class="legal-review-note">⚠️ <strong>Owner note:</strong> Have this reviewed by a privacy lawyer before launch. Replace all bracketed sections with your details.</div>
+
+      <p style="font-size:0.78rem;color:var(--ink-3)">Last updated: [Date] · Effective: [Date]</p>
+      <p>This Privacy Policy explains how Jack Sephton (ABN: 34 626 845 424) ("we", "us", "Tayla") handles personal information in accordance with the <em>Privacy Act 1988 (Cth)</em>, the Australian Privacy Principles (APPs), and the <em>Privacy and Other Legislation Amendment Act 2024</em>.</p>
+
+      <h4>1. What Information We Collect</h4>
+      <p><strong>Account data (stored on our servers):</strong> Name, email address, hashed password, consent records, and consent timestamps.</p>
+      <p><strong>Financial data (stored securely on our servers):</strong> Weekly income figures, budget entries, health inputs, goal amounts. This data is encrypted and only accessible by you.</p>
+      <p><strong>Category data (only if you consent — APP 3 compliant):</strong> Anonymised spending category labels (e.g. "Groceries", "Transport"). Never includes dollar amounts, descriptions, or any personally identifiable financial information.</p>
+
+      <h4>2. How We Use Your Information</h4>
+      <p>Account data is used to authenticate you and maintain your account. Category data (if consented) is used to display relevant advertising and to support free access to the Service. We never sell or share your financial amounts, personal financial situation, or any data that could identify your financial health to third parties.</p>
+      <div class="legal-highlight">We apply the "fair and reasonable" test required under the 2024 amendments before any data use. Using anonymised spending categories for relevant advertising — with your explicit consent — meets this standard. Sharing financial amounts or personal financial situations would not, and we do not do this.</div>
+
+      <h4>3. Consent (APP 3 &amp; 2024 Amendments)</h4>
+      <p>Consent to category data sharing is separate, specific, voluntary, and freely given. You are not required to provide this consent to use Tayla. You can withdraw consent at any time via Settings. Once withdrawn, we will cease relying on that consent for future use or disclosure immediately, in accordance with OAIC guidelines and the amended Privacy Act.</p>
+
+      <h4>4. Overseas Disclosure (APP 8)</h4>
+      <p>Where advertising partners are located overseas, we take reasonable steps to ensure they are subject to a privacy framework substantially similar to the APPs, or we obtain your specific consent for that disclosure. We will not disclose personal information to overseas recipients who do not meet these requirements.</p>
+
+      <h4>5. Security (APP 11)</h4>
+      <p>We take reasonable steps to protect personal information from misuse, loss, and unauthorised access. Passwords are hashed before storage. Financial data is encrypted and stored securely on Tayla's servers. In the event of an eligible data breach, we will notify affected individuals and the OAIC as required under the Notifiable Data Breaches scheme.</p>
+
+      <h4>6. Your Rights</h4>
+      <p><strong>Access (APP 12):</strong> You can view all data we hold about you via Settings → View Data.</p>
+      <p><strong>Correction (APP 13):</strong> You can update your account details or request correction of inaccurate information.</p>
+      <p><strong>Deletion:</strong> You can delete your account and all associated data via Settings → Danger Zone.</p>
+      <p><strong>Withdraw consent:</strong> At any time, via Settings → Category Data Sharing toggle.</p>
+      <p><strong>Complaints:</strong> Contact us at [your email]. If unresolved, you may complain to the OAIC at oaic.gov.au.</p>
+
+      <h4>7. Automated Decision-Making (2024 Amendments)</h4>
+      <p>The Financial Health Score is calculated automatically from inputs you provide. No automated decisions are made about you by third parties based on your Tayla data. We disclose this in compliance with the new transparency obligations under the 2024 amendments (effective December 2026).</p>
+
+      <h4>8. Contact</h4>
+      <p>Privacy enquiries: [your email address]<br>
+      Postal: [Your address, State, Postcode, Australia]</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('privacy-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GOAL MODAL -->
+<div class="modal-overlay" id="add-goal-modal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>Add a Goal</h3>
+      <button class="modal-close" onclick="closeModal('add-goal-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Goal Name</label>
+        <input class="form-input" type="text" id="goal-name" placeholder="e.g. Emergency Fund, Holiday, House Deposit">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Amount ($)</label>
+        <input class="form-input" type="number" id="goal-target" min="1" placeholder="e.g. 10000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current Saved ($)</label>
+        <input class="form-input" type="number" id="goal-saved" min="0" placeholder="e.g. 2500">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Monthly Contribution ($)</label>
+        <input class="form-input" type="number" id="goal-monthly" min="0" placeholder="e.g. 400">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Goal Icon (emoji)</label>
+        <input class="form-input" type="text" id="goal-icon" placeholder="🏠 🚗 ✈️ 🎓 💍" maxlength="2">
+      </div>
+      <div class="alert alert-error" id="goal-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-goal-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addGoal()">Add Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA VIEW MODAL -->
+<div class="modal-overlay" id="data-view-modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3>Your Data (APP 12)</h3>
+      <button class="modal-close" onclick="closeModal('data-view-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--ink-3);margin-bottom:16px">All data Tayla holds about you, in compliance with APP 12 access rights.</p>
+      <pre id="data-view-content" style="background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r-sm);padding:16px;font-size:0.72rem;overflow:auto;max-height:400px;line-height:1.6;color:var(--ink-2)"></pre>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="exportMyData()">↓ Export JSON</button>
+      <button class="btn btn-ghost" onclick="closeModal('data-view-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
