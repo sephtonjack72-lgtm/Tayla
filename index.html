@@ -2470,31 +2470,38 @@ function ensureSystemGoals() {
   if (!hasSavings)   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: 0, monthly: 0 });
 }
 
+let _goalSyncLock = false;
+
 async function syncSystemGoalsFromBudget() {
-  APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
+  if (_goalSyncLock) return;
+  _goalSyncLock = true;
 
-  let totalEmergency = 0, totalSavings = 0;
+  try {
+    APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
+    let totalEmergency = 0, totalSavings = 0;
 
-  if (CURRENT_USER.id) {
-    const { data: rows } = await sb
-      .from('user_data')
-      .select('data')
-      .eq('user_id', CURRENT_USER.id);
-    (rows || []).forEach(row => {
-      Object.values((row.data || {}).budget || {}).forEach(monthEntries => {
-        (monthEntries || []).forEach(e => {
-          if (e.type === 'savings rate') {
-            if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
-            if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
-          }
+    if (CURRENT_USER && CURRENT_USER.id) {
+      const { data: rows } = await sb
+        .from('user_data')
+        .select('data')
+        .eq('user_id', CURRENT_USER.id);
+      (rows || []).forEach(row => {
+        Object.values((row.data || {}).budget || {}).forEach(monthEntries => {
+          (monthEntries || []).forEach(e => {
+            if (e.type === 'savings rate') {
+              if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
+              if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
+            }
+          });
         });
       });
-    });
-  }
+    }
 
-  APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
-  APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
-  persist();
+    APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
+    APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
+  } finally {
+    _goalSyncLock = false;
+  }
 }
 
 function addGoal() {
@@ -2519,6 +2526,7 @@ function deleteGoal(id) {
 
 async function renderGoals() {
   await syncSystemGoalsFromBudget();
+  persist();
   const grid  = document.getElementById('goals-grid');
   const goals = APP_DATA.goals;
   grid.innerHTML = goals.map(g => {
