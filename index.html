@@ -1643,12 +1643,15 @@ async function doLogout() {
   showScreen('auth-screen');
 }
 
-// Auto-restore session on page load
+// Auto-restore session on page load only - login/register call enterApp directly
 sb.auth.onAuthStateChange((event, session) => {
-  if (session && event === 'SIGNED_IN') {
+  if (event === 'SIGNED_IN' && session && !CURRENT_USER) {
     const email = session.user.email;
     const name  = session.user.user_metadata?.name || email.split('@')[0];
-    if (!CURRENT_USER) enterApp(email, name, session.user.id);
+    enterApp(email, name, session.user.id);
+  }
+  if (event === 'SIGNED_OUT') {
+    CURRENT_USER = null;
   }
 });
 
@@ -1670,7 +1673,6 @@ async function enterApp(email, name, id) {
   syncConsentUI();
   buildWeekRows();
   renderBudget();
-  renderGoals();
   document.getElementById('budget-month-select').value = BUDGET_MONTH;
 }
 
@@ -1679,6 +1681,7 @@ function openTab(t) {
   document.querySelectorAll('.sidebar-item[id^=nav-]').forEach(i => i.classList.remove('active'));
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
+  if (t === 'goals') renderGoals();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2472,9 +2475,6 @@ function ensureSystemGoals() {
 let _goalSyncLock = false;
 
 async function syncSystemGoalsFromBudget() {
-  // Strip old system goals
-  APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
-
   let totalEmergency = 0, totalSavings = 0;
 
   if (CURRENT_USER && CURRENT_USER.id) {
@@ -2494,7 +2494,8 @@ async function syncSystemGoalsFromBudget() {
     });
   }
 
-  // Always add system goals - stripped above so no duplicates possible
+  // Remove ALL system goals first, then add exactly two fresh ones
+  APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
   APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
 }
