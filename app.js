@@ -30,7 +30,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let CURRENT_USER = null; // { email, name, id }
 
 /* ═══════════════════════════════════════════════════
-   STORAGE HELPERS (consents stored locally, all app data via Supabase)
+   STORAGE HELPERS (consents stored in browser, all app data via Supabase)
 ═══════════════════════════════════════════════════ */
 const getConsents  = email => { try { return JSON.parse(localStorage.getItem('ft_consents_' + email)) || {}; } catch { return {}; } };
 const saveConsents = (email, c) => localStorage.setItem('ft_consents_' + email, JSON.stringify(c));
@@ -701,7 +701,7 @@ function jumpToPeriod(val) {
 // Keep old name for enterApp compatibility
 function buildWeekRows() { setMode(TAX_MODE); }
 
-async function changeFY(sourceId) {
+function changeFY(sourceId) {
   const id = sourceId || 'fy-select-tax';
   const el = document.getElementById(id);
   const key = el ? el.value : FY_OPTIONS[1].key;
@@ -712,10 +712,11 @@ async function changeFY(sourceId) {
     const el = document.getElementById(id);
     if (el) el.value = CURRENT_FY.key;
   });
-  await loadAllUserData();
+  loadAllUserData();
   buildPeriodRows();
   refreshPeriodSummary();
   renderBudget();
+  renderGoals();
   document.getElementById('annual-input').value = APP_DATA.annualIncome || '';
   document.getElementById('budget-month-select').value = BUDGET_MONTH;
 }
@@ -1023,7 +1024,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: '(stored locally in your browser and backed up to Tayla servers)',
+    financialData: '(encrypted and stored securely on Tayla's servers)',
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
