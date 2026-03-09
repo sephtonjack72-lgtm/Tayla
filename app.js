@@ -1024,7 +1024,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: '(encrypted and stored securely on Tayla's servers)',
+    financialData: "(encrypted and stored securely on Tayla's servers)",
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
