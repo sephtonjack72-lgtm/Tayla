@@ -178,7 +178,7 @@
       <button class="mobile-nav-item" id="mnav-goals" onclick="openTab('goals');setMobileNav(this)">
         <span class="mn-icon">🎯</span>Goals
       </button>
-      <button class="mobile-nav-item" id="mnav-settings" onclick="openTab('settings');setMobileNav(this)">
+      <button class="mobile-nav-item" id="mnav-settings" onclick="openModal('settings-modal')">
         <span class="mn-icon">⚙️</span>Settings
       </button>
     </div>
@@ -233,6 +233,18 @@
           <button class="mode-btn"        id="mode-btn-monthly" onclick="setMode('monthly')">🗓 Monthly</button>
           <button class="mode-btn"        id="mode-btn-annual"  onclick="setMode('annual')">📆 Annual</button>
         </div>
+
+        <!-- GROSS / NET TOGGLE -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+          <div class="mode-switcher" style="margin-bottom:0">
+            <button class="mode-btn active" id="input-btn-gross" onclick="setInputMode('gross')">💰 I know my gross</button>
+            <button class="mode-btn"        id="input-btn-net"   onclick="setInputMode('net')">🏦 I know my net</button>
+          </div>
+          <span style="font-size:0.75rem;color:var(--ink-3);max-width:260px;line-height:1.4" id="input-mode-hint">
+            Enter your pay <strong>before tax</strong> — Tayla calculates your take-home.
+          </span>
+        </div>
+
         <div class="mode-desc" id="mode-desc">Enter your weekly pay for each of the 52 weeks in the financial year.</div>
 
         <div class="calc-grid">
@@ -247,7 +259,7 @@
               <div class="weeks-container">
                 <div class="week-row week-head" id="table-head">
                   <div class="wc" id="head-period">Week</div>
-                  <div class="wc">Gross Pay ($)</div>
+                  <div class="wc" id="head-input-col">Gross Pay ($)</div>
                   <div class="wc">Tax</div>
                   <div class="wc">Net Pay</div>
                 </div>
@@ -257,7 +269,7 @@
 
             <!-- ANNUAL SINGLE INPUT -->
             <div class="annual-input-wrap" id="annual-input-wrap">
-              <span class="annual-input-label">Enter your annual gross income</span>
+              <span class="annual-input-label" id="annual-input-label">Enter your annual gross income</span>
               <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
                 placeholder="e.g. 85,000" oninput="onAnnualInput()">
               <p style="font-size:0.75rem;color:var(--ink-3);margin-top:10px">Type your total yearly income before tax</p>
