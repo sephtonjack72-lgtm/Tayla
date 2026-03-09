@@ -782,3 +782,67 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   .week-row { grid-template-columns: 130px 1fr 1fr; }
   .wc-net { display: none; }
 }
+/* ════════════════════════════════════
+PERFORMANCE PATCH — SMOOTHER SCROLL
+Paste at the VERY END of the CSS file
+════════════════════════════════════ */
+
+/* Improve text rendering while scrolling */
+body {
+-webkit-font-smoothing: antialiased;
+text-rendering: optimizeLegibility;
+}
+
+/* Force GPU acceleration on sticky elements */
+.nav,
+.sidebar,
+.summary-card,
+.modal,
+.card {
+transform: translateZ(0);
+will-change: transform;
+}
+
+/* Reduce repaint cost from background layer */
+body::before {
+transform: translateZ(0);
+will-change: transform;
+}
+
+/* Improve nested scroll containers */
+.weeks-container {
+-webkit-overflow-scrolling: touch;
+scroll-behavior: smooth;
+}
+
+/* Avoid layout jank from universal transitions */
+.btn,
+.sidebar-item,
+.entry-item,
+.mode-btn,
+.goal-progress-fill,
+.spend-bar-fill,
+.rate-bar-fill {
+transition: background 0.18s ease,
+color 0.18s ease,
+transform 0.18s ease,
+box-shadow 0.18s ease;
+}
+
+/* Prevent expensive repaints during hover */
+.week-row:hover,
+.entry-item:hover,
+.sidebar-item:hover {
+transform: translateZ(0);
+}
+
+/* Improve modal animation performance */
+.modal {
+animation: slideUp 0.25s ease;
+will-change: transform, opacity;
+}
+
+/* Optional: smoother scrolling everywhere */
+html {
+scroll-behavior: smooth;
+}
