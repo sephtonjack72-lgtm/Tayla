@@ -2399,8 +2399,7 @@ function renderBudget() {
         </div>
       </div>`).join('');
   }
-  // Sync system goals whenever budget is rendered
-  if (typeof syncSystemGoalsFromBudget === 'function') syncSystemGoalsFromBudget();
+  // Goals sync happens when Goals tab is viewed via renderGoals()
 }
 
 function clearBudgetData() {
@@ -2473,32 +2472,58 @@ function ensureSystemGoals() {
 let _goalSyncLock = false;
 
 async function syncSystemGoalsFromBudget() {
-  if (_goalSyncLock) return;
-  _goalSyncLock = true;
+  // Strip old system goals
+  APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
 
-  try {
-    APP_DATA.goals = APP_DATA.goals.filter(g => !g.system);
-    let totalEmergency = 0, totalSavings = 0;
+  let totalEmergency = 0, totalSavings = 0;
 
-    if (CURRENT_USER && CURRENT_USER.id) {
-      const { data: rows } = await sb
-        .from('user_data')
-        .select('data')
-        .eq('user_id', CURRENT_USER.id);
-      (rows || []).forEach(row => {
-        Object.values((row.data || {}).budget || {}).forEach(monthEntries => {
-          (monthEntries || []).forEach(e => {
-            if (e.type === 'savings rate') {
-              if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
-              if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
-            }
-          });
+  if (CURRENT_USER && CURRENT_USER.id) {
+    const { data: rows } = await sb
+      .from('user_data')
+      .select('data')
+      .eq('user_id', CURRENT_USER.id);
+    (rows || []).forEach(row => {
+      Object.values((row.data || {}).budget || {}).forEach(monthEntries => {
+        (monthEntries || []).forEach(e => {
+          if (e.type === 'savings rate') {
+            if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
+            if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
+          }
         });
       });
-    }
+    });
+  }
 
-    APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
-    APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
+  // Always add system goals - stripped above so no duplicates possible
+  APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.savings,   name: 'Savings & Investments', icon: '📈', system: true, target: null, saved: totalSavings,   monthly: 0 });
+  APP_DATA.goals.unshift({ id: SYSTEM_GOAL_IDS.emergency, name: 'Emergency Fund',        icon: '🛡️', system: true, target: null, saved: totalEmergency, monthly: 0 });
+}
+
+async function renderGoals() {
+  if (_goalSyncLock) return;
+  _goalSyncLock = true;
+  try {
+    await syncSystemGoalsFromBudget();
+    persist();
+    const grid  = document.getElementById('goals-grid');
+  const goals = APP_DATA.goals;
+  grid.innerHTML = goals.map(g => {
+    const isSystem  = g.system === true;
+    const hasTarget = g.target && g.target > 0;
+    const pct    = hasTarget ? Math.min(g.saved / g.target * 100, 100) : null;
+    const rem    = hasTarget ? Math.max(g.target - g.saved, 0) : null;
+    const months = (hasTarget && g.monthly > 0) ? Math.ceil(rem / g.monthly) : null;
+    const eta    = months ? (months >= 12 ? (months/12).toFixed(1)+' years' : months+' months') : null;
+    const deleteBtn = isSystem
+      ? '<span style="font-size:0.65rem;color:var(--gold);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:3px 8px;background:var(--gold-dim);border-radius:10px">Auto-tracked</span>'
+      : '<button class="btn btn-ghost btn-sm" onclick="deleteGoal(' + g.id + ')" title="Delete" style="padding:5px 8px">×</button>';
+    const cardStyle = isSystem ? 'style="border:1.5px solid var(--gold);background:linear-gradient(135deg,var(--paper) 80%,rgba(212,118,90,0.06))"' : '';
+    const savedLine = (hasTarget ? 'Target: ' + fmt(g.target) + ' · ' : '') + 'Total saved: <strong style="color:var(--green)">' + fmt(g.saved) + '</strong>' + (isSystem ? ' <span style="font-size:0.7rem;color:var(--ink-3)">· synced from budget</span>' : '');
+    const progressHtml = hasTarget
+      ? '<div class="goal-progress-bar"><div class="goal-progress-fill" style="width:' + pct.toFixed(1) + '%"></div></div><div class="goal-progress-labels"><span>' + pct.toFixed(0) + '% complete</span><span>' + fmt(rem) + ' to go</span></div>' + (eta ? '<div class="goal-eta">📅 At ' + fmt(g.monthly) + '/month — est. <strong>' + eta + '</strong></div>' : '')
+      : '<div style="font-size:0.75rem;color:var(--ink-3);padding-top:6px;border-top:1px solid var(--rule)">' + (isSystem ? '💡 Add entries in Budget Tracker to update this automatically' : '') + '</div>';
+    return '<div class="goal-card" ' + cardStyle + '><div class="goal-header"><div class="goal-icon">' + g.icon + '</div><div class="goal-actions">' + deleteBtn + '</div></div><div class="goal-name">' + escHtml(g.name) + '</div><div class="goal-target" style="margin-bottom:' + (hasTarget ? '14px' : '8px') + '">' + savedLine + '</div>' + progressHtml + '</div>';
+  }).join('') + '<button class="add-goal-btn" onclick="openModal(&apos;add-goal-modal&apos;)"><span>＋</span>Add a Goal</button>';
   } finally {
     _goalSyncLock = false;
   }
@@ -2522,30 +2547,6 @@ function deleteGoal(id) {
   if (id === SYSTEM_GOAL_IDS.emergency || id === SYSTEM_GOAL_IDS.savings) return;
   APP_DATA.goals = APP_DATA.goals.filter(g => g.id !== id);
   persist(); renderGoals();
-}
-
-async function renderGoals() {
-  await syncSystemGoalsFromBudget();
-  persist();
-  const grid  = document.getElementById('goals-grid');
-  const goals = APP_DATA.goals;
-  grid.innerHTML = goals.map(g => {
-    const isSystem  = g.system === true;
-    const hasTarget = g.target && g.target > 0;
-    const pct    = hasTarget ? Math.min(g.saved / g.target * 100, 100) : null;
-    const rem    = hasTarget ? Math.max(g.target - g.saved, 0) : null;
-    const months = (hasTarget && g.monthly > 0) ? Math.ceil(rem / g.monthly) : null;
-    const eta    = months ? (months >= 12 ? (months/12).toFixed(1)+' years' : months+' months') : null;
-    const deleteBtn = isSystem
-      ? '<span style="font-size:0.65rem;color:var(--gold);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:3px 8px;background:var(--gold-dim);border-radius:10px">Auto-tracked</span>'
-      : '<button class="btn btn-ghost btn-sm" onclick="deleteGoal(' + g.id + ')" title="Delete" style="padding:5px 8px">×</button>';
-    const cardStyle = isSystem ? 'style="border:1.5px solid var(--gold);background:linear-gradient(135deg,var(--paper) 80%,rgba(212,118,90,0.06))"' : '';
-    const savedLine = (hasTarget ? 'Target: ' + fmt(g.target) + ' · ' : '') + 'Total saved: <strong style="color:var(--green)">' + fmt(g.saved) + '</strong>' + (isSystem ? ' <span style="font-size:0.7rem;color:var(--ink-3)">· synced from budget</span>' : '');
-    const progressHtml = hasTarget
-      ? '<div class="goal-progress-bar"><div class="goal-progress-fill" style="width:' + pct.toFixed(1) + '%"></div></div><div class="goal-progress-labels"><span>' + pct.toFixed(0) + '% complete</span><span>' + fmt(rem) + ' to go</span></div>' + (eta ? '<div class="goal-eta">📅 At ' + fmt(g.monthly) + '/month — est. <strong>' + eta + '</strong></div>' : '')
-      : '<div style="font-size:0.75rem;color:var(--ink-3);padding-top:6px;border-top:1px solid var(--rule)">' + (isSystem ? '💡 Add entries in Budget Tracker to update this automatically' : '') + '</div>';
-    return '<div class="goal-card" ' + cardStyle + '><div class="goal-header"><div class="goal-icon">' + g.icon + '</div><div class="goal-actions">' + deleteBtn + '</div></div><div class="goal-name">' + escHtml(g.name) + '</div><div class="goal-target" style="margin-bottom:' + (hasTarget ? '14px' : '8px') + '">' + savedLine + '</div>' + progressHtml + '</div>';
-  }).join('') + '<button class="add-goal-btn" onclick="openModal(&apos;add-goal-modal&apos;)"><span>＋</span>Add a Goal</button>';
 }
 
 /* ═══════════════════════════════════════════════════
