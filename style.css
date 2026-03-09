@@ -211,9 +211,14 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 
 /* ══ MODAL ══ */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(26,22,18,0.55);
-  backdrop-filter: blur(4px); z-index: 500;
-  display: none; align-items: center; justify-content: center; padding: 20px;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,22,18,0.65);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 .modal-overlay.open { display: flex; }
 .modal {
