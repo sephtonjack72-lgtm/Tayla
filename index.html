@@ -6,7 +6,7 @@
 <title>Tayla — Australian Personal Finance</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="style.css">
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -454,7 +454,11 @@
                  <optgroup label="Savings">
                  <option value="savings rate|Savings/Investment">Savings / Investment</option> 
                  <option value="savings rate|Emergency Fund">Emergency Fund</option>  
-                </optgroup>    
+                </optgroup>
+                <optgroup label="Savings Draw">
+                  <option value="savings draw|Emergency Fund">Draw from Emergency Fund</option>
+                  <option value="savings draw|Savings/Investment">Draw from Savings</option>
+                </optgroup>
               </select>
             </div>
             <button class="btn btn-primary" onclick="addBudgetEntry()">+ Add</button>
