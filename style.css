@@ -521,6 +521,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 .wc-input:focus { border-bottom: 1.5px solid var(--gold); }
 .wc-tax  { color: var(--red);   font-family: 'IBM Plex Mono', monospace; }
 .wc-net  { color: var(--green); font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+.wc-gross { color: var(--ink-2); font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
 .wc-empty { color: var(--ink-3); opacity: 0.5; }
 
 /* Summary */
@@ -816,48 +817,29 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   .sidebar { display: none; }
   .mobile-nav { display: block; }
   .main-content {
-    padding: 16px 12px;
+    padding: 20px 16px;
     padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px);
   }
 
   /* Nav bar */
-  .nav { padding: 0 12px; }
+  .nav { padding: 0 16px; }
   .nav-inner { height: 54px; }
   .nav-user-name { display: none; }
 
   /* Privacy banner */
-  .privacy-banner { padding: 8px 12px; font-size: 0.70rem; flex-wrap: wrap; gap: 4px; }
+  .privacy-banner { padding: 8px 16px; font-size: 0.72rem; flex-wrap: wrap; gap: 4px; }
 
-  /* Page headers */
-  .page-header { margin-bottom: 18px; }
-  .page-header h2 { font-size: 1.3rem; }
-  .page-header-row { flex-direction: column; gap: 10px; }
-  .page-header-row .btn { width: 100%; justify-content: center; }
-
-  /* Tax calculator — week table */
+  /* Tax calculator */
   .calc-grid { grid-template-columns: 1fr; }
   .summary-card { position: static; }
-  .week-controls { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .week-controls { flex-direction: column; align-items: flex-start; }
   .week-search { width: 100%; }
-  .weeks-container { max-height: 420px; }
-  .week-row { grid-template-columns: 72px 1fr 80px 80px; }
-  .wc { padding: 8px 8px; font-size: 0.78rem; }
-  .week-head .wc { padding: 8px 8px; font-size: 0.65rem; }
-  .wc-input { font-size: 0.82rem; }
-  .mode-switcher { flex-wrap: wrap; }
-  .mode-btn { font-size: 0.75rem; padding: 7px 12px; }
-
-  /* Tax summary stats */
-  .stat-value { font-size: 1.2rem; }
-  .annual-big-input { font-size: 1.8rem; }
-  .annual-result-row { gap: 20px; }
 
   /* Budget */
   .budget-summary-cards { grid-template-columns: 1fr 1fr; }
   .budget-grid { grid-template-columns: 1fr; }
   .add-entry-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .add-entry-grid .btn { grid-column: span 2; width: 100%; justify-content: center; }
-  .metric-value { font-size: 1.3rem; }
 
   /* Health */
   .health-grid { grid-template-columns: 1fr; }
@@ -866,24 +848,19 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   /* Goals */
   .goals-grid { grid-template-columns: 1fr; }
 
-  /* Cards */
-  .card { padding: 18px; }
+  /* Page headers */
+  .page-header-row { flex-direction: column; gap: 12px; }
+  .page-header-row .btn { width: 100%; justify-content: center; }
 
   /* Modals — slide up from bottom on mobile */
   .modal-overlay { padding: 0; align-items: flex-end; }
   .modal { max-width: 100%; border-radius: var(--r) var(--r) 0 0; max-height: 92vh; }
-  .modal-header { padding: 16px 20px 14px; }
-  .modal-body { padding: 16px 20px; }
-  .modal-footer { padding: 14px 20px; }
 }
 
 @media (max-width: 600px) {
   .budget-summary-cards { grid-template-columns: 1fr; }
-  .week-row { grid-template-columns: 60px 1fr 75px; }
-  .wc { padding: 7px 6px; font-size: 0.74rem; }
-  .week-head .wc { font-size: 0.60rem; padding: 7px 6px; }
+  .week-row { grid-template-columns: 110px 1fr 1fr; }
   .wc-net { display: none; }
   .add-entry-grid { grid-template-columns: 1fr; }
   .add-entry-grid .btn { grid-column: span 1; }
-  .main-content { padding: 12px 10px; padding-bottom: calc(56px + env(safe-area-inset-bottom) + 12px); }
 }
