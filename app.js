@@ -949,7 +949,7 @@ function renderBudget() {
       </div>`).join('');
   }
 
-  // Spending bars
+  // Spending pie chart
   const catTotals = {};
   expenses.forEach(e => { catTotals[e.cat] = (catTotals[e.cat]||0) + e.amount; });
   const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
@@ -957,19 +957,92 @@ function renderBudget() {
   if (sorted.length === 0) {
     barsEl.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">Add expenses to see your breakdown.</div>';
   } else {
-    const max = sorted[0][1];
-    barsEl.innerHTML = sorted.map(([cat, amt]) => `
-      <div class="spend-bar-row">
-        <div class="spend-bar-label">
-          <span class="spend-bar-name">${cat}</span>
-          <span class="spend-bar-amt">${fmt(amt)}</span>
-        </div>
-        <div class="spend-bar-track">
-          <div class="spend-bar-fill" style="width:${(amt/max*100).toFixed(1)}%;background:${CAT_COLORS[cat]||'#999'}"></div>
-        </div>
+    const total = sorted.reduce((s,[,v])=>s+v, 0);
+    // Build pie slices
+    const cx = 110, cy = 110, r = 90, inner = 52;
+    let angle = -Math.PI / 2;
+    const slices = sorted.map(([cat, amt], idx) => {
+      const slice = (amt / total) * 2 * Math.PI;
+      const x1 = cx + r * Math.cos(angle);
+      const y1 = cy + r * Math.sin(angle);
+      const x2 = cx + r * Math.cos(angle + slice);
+      const y2 = cy + r * Math.sin(angle + slice);
+      const ix1 = cx + inner * Math.cos(angle);
+      const iy1 = cy + inner * Math.sin(angle);
+      const ix2 = cx + inner * Math.cos(angle + slice);
+      const iy2 = cy + inner * Math.sin(angle + slice);
+      const large = slice > Math.PI ? 1 : 0;
+      const color = CAT_COLORS[cat] || '#5a7070';
+      const midAngle = angle + slice / 2;
+      const path = `M${ix1},${iy1} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large},0 ${ix1},${iy1} Z`;
+      angle += slice;
+      return { cat, amt, color, path, pct: (amt/total*100).toFixed(1), midAngle, idx };
+    });
+
+    const svgSlices = slices.map(s => `
+      <path d="${s.path}" fill="${s.color}" stroke="var(--paper)" stroke-width="2"
+        class="pie-slice" data-idx="${s.idx}"
+        onclick="selectPieSlice(${s.idx})"
+        style="cursor:pointer;transition:opacity 0.15s,transform 0.15s;transform-origin:${cx}px ${cy}px">
+      </path>`).join('');
+
+    const legend = slices.map(s => `
+      <div class="pie-legend-row" id="pie-leg-${s.idx}" onclick="selectPieSlice(${s.idx})" style="cursor:pointer">
+        <span class="pie-leg-dot" style="background:${s.color}"></span>
+        <span class="pie-leg-name">${s.cat}</span>
+        <span class="pie-leg-pct">${s.pct}%</span>
+        <span class="pie-leg-amt">${fmt(s.amt)}</span>
       </div>`).join('');
+
+    barsEl.innerHTML = `
+      <div class="pie-wrap">
+        <div class="pie-svg-wrap">
+          <svg viewBox="0 0 220 220" width="220" height="220" id="pie-svg">
+            ${svgSlices}
+            <circle cx="${cx}" cy="${cy}" r="${inner}" fill="var(--paper)" />
+            <text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif" id="pie-center-label">Total</text>
+            <text x="${cx}" y="${cy + 10}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)" font-family="IBM Plex Mono,monospace" id="pie-center-amt">${fmt(total)}</text>
+          </svg>
+        </div>
+        <div class="pie-legend" id="pie-legend">${legend}</div>
+      </div>`;
+
+    // Store slices for interaction
+    window._pieSlices = slices;
+    window._pieSelected = null;
   }
   // Goals sync happens when Goals tab is viewed via renderGoals()
+}
+
+function selectPieSlice(idx) {
+  const slices = window._pieSlices;
+  if (!slices) return;
+  const isSame = window._pieSelected === idx;
+  window._pieSelected = isSame ? null : idx;
+
+  // Update slice opacities
+  slices.forEach(s => {
+    const el = document.querySelector(`.pie-slice[data-idx="${s.idx}"]`);
+    const leg = document.getElementById('pie-leg-' + s.idx);
+    if (!el) return;
+    const active = window._pieSelected === null || window._pieSelected === s.idx;
+    el.style.opacity = active ? '1' : '0.3';
+    el.style.transform = (window._pieSelected === s.idx) ? 'scale(1.04)' : 'scale(1)';
+    if (leg) leg.style.opacity = active ? '1' : '0.4';
+  });
+
+  // Update centre text
+  const labelEl = document.getElementById('pie-center-label');
+  const amtEl   = document.getElementById('pie-center-amt');
+  if (window._pieSelected === null) {
+    const total = slices.reduce((s,x)=>s+x.amt, 0);
+    labelEl.textContent = 'Total';
+    amtEl.textContent   = fmt(total);
+  } else {
+    const s = slices[idx];
+    labelEl.textContent = s.pct + '%';
+    amtEl.textContent   = fmt(s.amt);
+  }
 }
 
 function clearBudgetData() {
@@ -1126,7 +1199,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: "(encrypted and stored securely on Tayla's servers)",
+    financialData: '(encrypted and stored securely on Tayla's servers)',
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
