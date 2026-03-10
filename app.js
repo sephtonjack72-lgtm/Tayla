@@ -316,20 +316,28 @@ function setInputMode(mode) {
   // Update toggle buttons
   document.getElementById('input-btn-gross').classList.toggle('active', mode === 'gross');
   document.getElementById('input-btn-net').classList.toggle('active', mode === 'net');
-  // Update hint text
-  const hint = document.getElementById('input-mode-hint');
-  const col  = document.getElementById('head-input-col');
-  const annLabel = document.getElementById('annual-input-label');
+
+  const hint      = document.getElementById('input-mode-hint');
+  const inputCol  = document.getElementById('head-input-col');
+  const rightCol  = document.getElementById('head-right-col');
+  const modeDesc  = document.getElementById('mode-desc');
+  const annLabel  = document.getElementById('annual-input-label');
+  const cfg       = MODE_CONFIG[TAX_MODE];
+
   if (mode === 'net') {
     hint.innerHTML = 'Enter your <strong>take-home pay</strong> — Tayla reverse-calculates your gross and tax.';
-    if (col) col.textContent = 'Net Pay ($)';
+    if (inputCol) inputCol.textContent = 'Net Pay ($)';
+    if (rightCol) rightCol.textContent = 'Gross Pay';
     if (annLabel) annLabel.textContent = 'Enter your annual net (take-home) income';
+    if (modeDesc && cfg) modeDesc.textContent = cfg.desc.replace('gross', 'net (take-home)');
   } else {
     hint.innerHTML = 'Enter your pay <strong>before tax</strong> — Tayla calculates your take-home.';
-    if (col) col.textContent = 'Gross Pay ($)';
+    if (inputCol) inputCol.textContent = 'Gross Pay ($)';
+    if (rightCol) rightCol.textContent = 'Net Pay';
     if (annLabel) annLabel.textContent = 'Enter your annual gross income';
+    if (modeDesc && cfg) modeDesc.textContent = cfg.desc;
   }
-  // Rebuild rows with new mode labels
+  // Rebuild rows with updated input values and column order
   if (TAX_MODE !== 'annual') buildPeriodRows();
 }
 
@@ -414,7 +422,9 @@ function setMode(mode) {
   });
 
   // Desc
-  document.getElementById('mode-desc').textContent = cfg.desc;
+  document.getElementById('mode-desc').textContent = INPUT_MODE === 'net'
+    ? cfg.desc.replace('gross', 'net (take-home)')
+    : cfg.desc;
 
   // Show/hide table vs annual input
   const isAnnual = mode === 'annual';
@@ -474,18 +484,34 @@ function buildPeriodRows() {
 
   for (let i = 0; i < cfg.count; i++) {
     const label = TAX_MODE === 'monthly' ? MONTH_NAMES[i] : getWeekLabel(i);
-    const val = data[i] || 0;
+    const grossStored = data[i] || 0;
+    // In net mode, show the net value in the input field
+    const displayVal = INPUT_MODE === 'net' && grossStored
+      ? parseFloat((grossStored - calcTaxForPeriod(grossStored, TAX_MODE)).toFixed(2))
+      : grossStored;
     const row = document.createElement('div');
-    row.className = 'week-row' + (val ? ' has-value' : '');
+    row.className = 'week-row' + (grossStored ? ' has-value' : '');
     row.id = 'wr' + i;
-    row.innerHTML = `
-      <div class="wc wc-label">${label}</div>
-      <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-        id="wi${i}" value="${val ? val : ''}" oninput="onPeriodInput(${i})"></div>
-      <div class="wc wc-tax wc-empty" id="wt${i}">—</div>
-      <div class="wc wc-net wc-empty" id="wn${i}">—</div>`;
+
+    if (INPUT_MODE === 'net') {
+      // Net mode: input(net) | tax | gross
+      row.innerHTML = `
+        <div class="wc wc-label">${label}</div>
+        <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
+          id="wi${i}" value="${displayVal ? displayVal : ''}" oninput="onPeriodInput(${i})"></div>
+        <div class="wc wc-tax wc-empty" id="wt${i}">—</div>
+        <div class="wc wc-gross wc-empty" id="wn${i}">—</div>`;
+    } else {
+      // Gross mode: input(gross) | tax | net
+      row.innerHTML = `
+        <div class="wc wc-label">${label}</div>
+        <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
+          id="wi${i}" value="${grossStored ? grossStored : ''}" oninput="onPeriodInput(${i})"></div>
+        <div class="wc wc-tax wc-empty" id="wt${i}">—</div>
+        <div class="wc wc-net wc-empty" id="wn${i}">—</div>`;
+    }
     container.appendChild(row);
-    if (val) refreshPeriodRow(i);
+    if (grossStored) refreshPeriodRow(i);
   }
   refreshPeriodSummary();
 }
@@ -641,21 +667,23 @@ function refreshPeriodRow(i) {
   const g = data[i] || 0; // always stored as gross
   const t = calcTaxForPeriod(g, TAX_MODE);
   const n = g - t;
-  const taxEl = document.getElementById('wt'+i);
-  const netEl = document.getElementById('wn'+i);
-  const row   = document.getElementById('wr'+i);
+  const taxEl   = document.getElementById('wt'+i);
+  const rightEl = document.getElementById('wn'+i);
+  const row     = document.getElementById('wr'+i);
   if (g === 0) {
-    taxEl.textContent = '—'; taxEl.className = 'wc wc-tax wc-empty';
-    netEl.textContent = '—'; netEl.className = 'wc wc-net wc-empty';
+    taxEl.textContent   = '—'; taxEl.className   = 'wc wc-tax wc-empty';
+    rightEl.textContent = '—'; rightEl.className = INPUT_MODE === 'net' ? 'wc wc-gross wc-empty' : 'wc wc-net wc-empty';
     row.classList.remove('has-value');
   } else {
     taxEl.textContent = fmt(t); taxEl.className = 'wc wc-tax';
-    netEl.textContent = fmt(n); netEl.className = 'wc wc-net';
-    row.classList.add('has-value');
-    // If in net input mode, show gross in the result alongside net entry
     if (INPUT_MODE === 'net') {
-      taxEl.title = 'Gross: ' + fmt(g);
+      // Right col shows gross
+      rightEl.textContent = fmt(g); rightEl.className = 'wc wc-gross';
+    } else {
+      // Right col shows net
+      rightEl.textContent = fmt(n); rightEl.className = 'wc wc-net';
     }
+    row.classList.add('has-value');
   }
 }
 
@@ -775,7 +803,7 @@ function jumpToPeriod(val) {
 // Keep old name for enterApp compatibility
 function buildWeekRows() { setMode(TAX_MODE); }
 
-function changeFY(sourceId) {
+async function changeFY(sourceId) {
   const id = sourceId || 'fy-select-tax';
   const el = document.getElementById(id);
   const key = el ? el.value : FY_OPTIONS[1].key;
@@ -786,7 +814,7 @@ function changeFY(sourceId) {
     const el = document.getElementById(id);
     if (el) el.value = CURRENT_FY.key;
   });
-  loadAllUserData();
+  await loadAllUserData();
   buildPeriodRows();
   refreshPeriodSummary();
   renderBudget();
@@ -1098,7 +1126,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: "(encrypted and stored securely on Tayla's servers)",
+    financialData: '(encrypted and stored securely on Tayla's servers)',
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
