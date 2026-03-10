@@ -559,46 +559,17 @@ function syncWeeksToMonths() {
   }
 }
 
-function syncMonthsToWeeks(monthIndex) {
-  // For each week, calculate how many of its days fall in this month,
-  // then assign earnings proportionally based on daily rate from the month input
-  const monthVal = APP_DATA.months[monthIndex] || 0;
-  // Count total days in this FY month across all 52 weeks
-  let totalDaysInMonth = 0;
-  for (let w = 0; w < 52; w++) {
-    for (let d = 0; d < 7; d++) {
-      const day = new Date(FY_START);
-      day.setDate(FY_START.getDate() + w * 7 + d);
-      if (calMonthIndex(day) === monthIndex) totalDaysInMonth++;
-    }
-  }
-  const dailyRate = totalDaysInMonth > 0 ? monthVal / totalDaysInMonth : 0;
-  // Assign each week its proportional share
-  for (let w = 0; w < 52; w++) {
-    let daysInMonth = 0;
-    for (let d = 0; d < 7; d++) {
-      const day = new Date(FY_START);
-      day.setDate(FY_START.getDate() + w * 7 + d);
-      if (calMonthIndex(day) === monthIndex) daysInMonth++;
-    }
-    if (daysInMonth > 0) {
-      const weekShare = parseFloat((dailyRate * daysInMonth).toFixed(2));
-      APP_DATA.weeks[w] = weekShare || null;
-    }
-  }
-}
-
 function onPeriodInput(i) {
   let val = parseFloat(document.getElementById('wi'+i).value) || 0;
   // If user entered net, reverse-calculate gross before storing
   const grossVal = INPUT_MODE === 'net' ? netToGrossPeriod(val, TAX_MODE) : val;
   if (TAX_MODE === 'weekly') {
     APP_DATA.weeks[i] = grossVal || null;
-    syncWeeksToMonths();
+    syncWeeksToMonths(); // weekly → monthly only, never reverse
   }
   if (TAX_MODE === 'monthly') {
     APP_DATA.months[i] = grossVal || null;
-    syncMonthsToWeeks(i);
+    // monthly does NOT backfill weekly — independent
   }
   refreshPeriodRow(i);
   refreshPeriodSummary();
