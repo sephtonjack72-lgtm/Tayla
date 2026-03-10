@@ -902,7 +902,9 @@ function addBudgetEntry() {
   if (!desc)          return alert('Please enter a description.');
   if (!amount || amount <= 0) return alert('Please enter a valid amount.');
   const [type, cat] = catVal.split('|');
-  const entry = { id: Date.now(), desc, amount, type, cat, date: new Date().toLocaleDateString('en-AU') };
+  // Savings draw shows as income in budget (money coming back in)
+  const entryDesc = type === 'savings draw' ? (desc || 'Savings Draw — ' + cat) : desc;
+  const entry = { id: Date.now(), desc: entryDesc, amount, type, cat, date: new Date().toLocaleDateString('en-AU') };
   getCurrentBudget().unshift(entry);
   persist();
   document.getElementById('be-desc').value = '';
@@ -917,7 +919,7 @@ function deleteBudgetEntry(id) {
 
 function renderBudget() {
   const entries  = getCurrentBudget();
-  const incomes  = entries.filter(e => e.type === 'income');
+  const incomes  = entries.filter(e => e.type === 'income' || e.type === 'savings draw');
   const expenses = entries.filter(e => e.type === 'expense');
   const totalInc = incomes.reduce((s,e) => s+e.amount, 0);
   const totalExp = expenses.reduce((s,e) => s+e.amount, 0);
@@ -937,16 +939,24 @@ function renderBudget() {
   if (entries.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">No entries yet.</div>';
   } else {
-    list.innerHTML = entries.slice(0, 40).map(e => `
+    list.innerHTML = entries.slice(0, 40).map(e => {
+      const isIncome = e.type === 'income';
+      const isSavings = e.type === 'savings rate';
+      const isDraw = e.type === 'savings draw';
+      const amtClass = isIncome || isDraw ? 'income' : isSavings ? 'savings' : '';
+      const prefix = isIncome || isDraw ? '+' : isSavings ? '' : '-';
+      const drawBadge = isDraw ? `<span style="font-size:0.68rem;background:var(--gold-dim);color:var(--gold);border-radius:4px;padding:1px 5px;margin-left:4px">draw</span>` : '';
+      return `
       <div class="entry-item">
         <div class="entry-cat-dot" style="background:${CAT_COLORS[e.cat]||'#999'}"></div>
         <div>
-          <div class="entry-desc">${escHtml(e.desc)}</div>
+          <div class="entry-desc">${escHtml(e.desc)}${drawBadge}</div>
           <span class="entry-cat-label">${e.cat} · ${e.date}</span>
         </div>
-        <div class="entry-amount ${e.type==='income'?'income':e.type==='savings rate'?'savings':''}">${e.type==='income'?'+':e.type==='savings rate'?'':'-'}${fmt(e.amount)}</div>
+        <div class="entry-amount ${amtClass}">${prefix}${fmt(e.amount)}</div>
         <button class="entry-del" onclick="deleteBudgetEntry(${e.id})" title="Delete">×</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   // Spending pie chart
@@ -1129,6 +1139,10 @@ async function syncSystemGoalsFromBudget() {
             if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
             if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
           }
+          if (e.type === 'savings draw') {
+            if (e.cat === 'Emergency Fund')     totalEmergency -= e.amount;
+            if (e.cat === 'Savings/Investment') totalSavings   -= e.amount;
+          }
         });
       });
     });
@@ -1199,7 +1213,7 @@ function viewMyData() {
   const summary = {
     account: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     consents: consents,
-    financialData: "(encrypted and stored securely on Tayla's servers)",
+    financialData: '(encrypted and stored securely on Tayla's servers)',
     note: 'Exported under your APP 12 access rights. Tayla Privacy Policy applies.'
   };
   document.getElementById('data-view-content').textContent = JSON.stringify(summary, null, 2);
