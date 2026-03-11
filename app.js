@@ -153,7 +153,8 @@ function openTab(t) {
   document.querySelectorAll('.sidebar-item[id^=nav-]').forEach(i => i.classList.remove('active'));
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
-  if (t === 'goals') renderGoals();
+  if (t === 'goals')  renderGoals();
+  if (t === 'health') { renderDebts(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -223,15 +224,18 @@ async function loadAllUserData() {
     weeks:        saved.weeks        || new Array(52).fill(null),
     months:       saved.months       || new Array(12).fill(null),
     annualIncome: saved.annualIncome || 0,
-    budget: saved.budget || {},
-    health: saved.health || {},
-    goals:  saved.goals  || [],
+    budget:       saved.budget       || {},
+    health:       saved.health       || {},
+    goals:        saved.goals        || [],
+    debts:        saved.debts        || [],
   };
   const h = APP_DATA.health;
   ['income','expenses','emergency','debt','housing','savings'].forEach(k => {
     const el = document.getElementById('h-' + k);
     if (el && h[k]) { el.value = h[k]; }
   });
+  // Restore health mode UI
+  setHealthMode(HEALTH_MODE);
 }
 
 async function persist() {
@@ -1035,10 +1039,87 @@ function clearBudgetData() {
 /* ═══════════════════════════════════════════════════
    FINANCIAL HEALTH
 ═══════════════════════════════════════════════════ */
+// ── HEALTH MODE ──
+let HEALTH_MODE = 'auto'; // 'auto' | 'manual'
+
+function setHealthMode(mode) {
+  HEALTH_MODE = mode;
+  document.getElementById('health-btn-auto').classList.toggle('active', mode === 'auto');
+  document.getElementById('health-btn-manual').classList.toggle('active', mode === 'manual');
+  document.getElementById('health-manual-card').style.display = mode === 'manual' ? 'block' : 'none';
+  document.getElementById('health-auto-card').style.display   = mode === 'auto'   ? 'block' : 'none';
+  const hint = document.getElementById('health-mode-hint');
+  hint.textContent = mode === 'auto'
+    ? 'Automatically calculated from your budget entries.'
+    : 'Enter your own figures manually.';
+  if (mode === 'auto') autoFillHealth();
+  else calcHealth();
+}
+
+function autoFillHealth() {
+  // Pull averages from all budget months that have data
+  const allMonths = APP_DATA.budget || {};
+  const monthsWithData = Object.values(allMonths).filter(m => m && m.length > 0);
+  const count = monthsWithData.length || 1;
+
+  let totalIncome = 0, totalExpenses = 0, totalSavings = 0, totalHousing = 0;
+  monthsWithData.forEach(month => {
+    month.forEach(e => {
+      if (e.type === 'income' || e.type === 'savings draw') totalIncome   += e.amount;
+      if (e.type === 'expense')                              totalExpenses += e.amount;
+      if (e.type === 'savings rate')                         totalSavings  += e.amount;
+      if (e.type === 'expense' && e.cat === 'Rent/Mortgage') totalHousing  += e.amount;
+    });
+  });
+
+  const avgIncome   = totalIncome   / count;
+  const avgExpenses = totalExpenses / count;
+  const avgSavings  = totalSavings  / count;
+  const avgHousing  = totalHousing  / count;
+
+  // Emergency fund from goals
+  const emergencyGoal = APP_DATA.goals.find(g => g.id === SYSTEM_GOAL_IDS.emergency);
+  const emergencyAmt  = emergencyGoal ? (emergencyGoal.saved || 0) : 0;
+
+  // Debt from debt register
+  const totalDebt = (APP_DATA.debts || []).reduce((s, d) => s + (d.balance || 0), 0);
+
+  // Show auto summary card
+  const summaryEl = document.getElementById('health-auto-summary');
+  if (summaryEl) {
+    const rows = [
+      ['Monthly Net Income',    fmt(avgIncome),   'avg across ' + count + ' month' + (count===1?'':'s')],
+      ['Monthly Expenses',      fmt(avgExpenses), 'avg across ' + count + ' month' + (count===1?'':'s')],
+      ['Monthly Savings',       fmt(avgSavings),  'avg across ' + count + ' month' + (count===1?'':'s')],
+      ['Monthly Housing Cost',  fmt(avgHousing),  'from Rent/Mortgage entries'],
+      ['Emergency Fund',        fmt(emergencyAmt),'from Goals'],
+      ['Total Debt',            fmt(totalDebt),   'from Debt Register'],
+    ];
+    summaryEl.innerHTML = rows.map(([label, val, sub]) => `
+      <div class="health-metric-row" style="flex-direction:column;align-items:flex-start;gap:2px;padding:8px 0">
+        <div style="display:flex;justify-content:space-between;width:100%">
+          <span class="hm-label">${label}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:0.88rem;font-weight:600;color:var(--ink)">${val}</span>
+        </div>
+        <span style="font-size:0.72rem;color:var(--ink-3)">${sub}</span>
+      </div>`).join('');
+  }
+
+  if (count === 0 || avgIncome === 0) {
+    document.getElementById('health-grade').textContent = 'Add budget entries';
+    document.getElementById('health-desc').textContent  = 'Log at least one month of income and expenses in the Budget tab to auto-calculate your health score.';
+    document.getElementById('health-score').textContent = '—';
+    return;
+  }
+
+  // Feed into score calculation directly
+  calcHealthFromValues(avgIncome, avgExpenses, emergencyAmt, totalDebt, avgHousing, avgSavings);
+}
+
 function calcHealth() {
   const get = id => parseFloat(document.getElementById(id).value) || 0;
-  const income   = get('h-income');
-  const expenses = get('h-expenses');
+  const income    = get('h-income');
+  const expenses  = get('h-expenses');
   const emergency = get('h-emergency');
   const debt      = get('h-debt');
   const housing   = get('h-housing');
@@ -1048,13 +1129,15 @@ function calcHealth() {
   persist();
 
   if (!income) return;
+  calcHealthFromValues(income, expenses, emergency, debt, housing, savings);
+}
 
-  const savingsRate   = income > 0 ? (savings / income * 100) : 0;
-  const emerMonths    = expenses > 0 ? (emergency / expenses) : 0;
-  const dti           = income > 0 ? (debt / (income * 12) * 100) : 0;
-  const housingRatio  = income > 0 ? (housing / income * 100) : 0;
+function calcHealthFromValues(income, expenses, emergency, debt, housing, savings) {
+  const savingsRate  = income > 0 ? (savings / income * 100) : 0;
+  const emerMonths   = expenses > 0 ? (emergency / expenses) : 0;
+  const dti          = income > 0 ? (debt / (income * 12) * 100) : 0;
+  const housingRatio = income > 0 ? (housing / income * 100) : 0;
 
-  // Score
   let score = 0;
   if (savingsRate >= 20) score += 25; else if (savingsRate >= 10) score += 15; else if (savingsRate > 0) score += 8;
   if (emerMonths >= 6)   score += 25; else if (emerMonths >= 3)   score += 15; else if (emerMonths >= 1) score += 8;
@@ -1075,10 +1158,69 @@ function calcHealth() {
     el.textContent = val;
     el.className   = 'hm-value ' + (good ? 'hm-good' : warn ? 'hm-warn' : 'hm-bad');
   };
-  setMetric('hm-savings-rate', savingsRate.toFixed(1)+'%',  savingsRate>=20, savingsRate>=10);
-  setMetric('hm-emergency',    emerMonths.toFixed(1)+' mths', emerMonths>=6,  emerMonths>=3);
-  setMetric('hm-dti',          dti.toFixed(1)+'%',          dti<=20,         dti<=40);
-  setMetric('hm-housing',      housingRatio.toFixed(1)+'%', housingRatio<=28,housingRatio<=35);
+  setMetric('hm-savings-rate', savingsRate.toFixed(1)+'%',   savingsRate>=20, savingsRate>=10);
+  setMetric('hm-emergency',    emerMonths.toFixed(1)+' mths', emerMonths>=6,   emerMonths>=3);
+  setMetric('hm-dti',          dti.toFixed(1)+'%',           dti<=20,          dti<=40);
+  setMetric('hm-housing',      housingRatio.toFixed(1)+'%',  housingRatio<=28, housingRatio<=35);
+}
+
+/* ── DEBT REGISTER ── */
+function addDebt() {
+  const name    = document.getElementById('debt-name').value.trim();
+  const balance = parseFloat(document.getElementById('debt-balance').value) || 0;
+  const rate    = parseFloat(document.getElementById('debt-rate').value) || 0;
+  if (!name)         return alert('Please enter a debt name.');
+  if (balance <= 0)  return alert('Please enter a valid balance.');
+  if (!APP_DATA.debts) APP_DATA.debts = [];
+  APP_DATA.debts.push({ id: Date.now(), name, balance, rate });
+  document.getElementById('debt-name').value    = '';
+  document.getElementById('debt-balance').value = '';
+  document.getElementById('debt-rate').value    = '';
+  persist();
+  renderDebts();
+  if (HEALTH_MODE === 'auto') autoFillHealth();
+}
+
+function deleteDebt(id) {
+  APP_DATA.debts = (APP_DATA.debts || []).filter(d => d.id !== id);
+  persist();
+  renderDebts();
+  if (HEALTH_MODE === 'auto') autoFillHealth();
+}
+
+function renderDebts() {
+  const debts = APP_DATA.debts || [];
+  const list  = document.getElementById('debt-list');
+  const totalRow = document.getElementById('debt-total-row');
+  const totalAmt = document.getElementById('debt-total-amt');
+
+  if (debts.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-3);font-size:0.82rem">No debts added yet.</div>';
+    if (totalRow) totalRow.style.display = 'none';
+    // Clear debt field in manual mode
+    const debtEl = document.getElementById('h-debt');
+    if (debtEl) { debtEl.value = ''; }
+    return;
+  }
+
+  const total = debts.reduce((s, d) => s + d.balance, 0);
+  list.innerHTML = debts.map(d => `
+    <div class="entry-item">
+      <div class="entry-cat-dot" style="background:var(--red)"></div>
+      <div>
+        <div class="entry-desc">${escHtml(d.name)}</div>
+        <span class="entry-cat-label">${d.rate > 0 ? d.rate + '% p.a.' : 'No interest'}</span>
+      </div>
+      <div class="entry-amount" style="color:var(--red)">-${fmt(d.balance)}</div>
+      <button class="entry-del" onclick="deleteDebt(${d.id})" title="Delete">×</button>
+    </div>`).join('');
+
+  if (totalRow) totalRow.style.display = 'flex';
+  if (totalAmt) totalAmt.textContent = fmt(total);
+
+  // Auto-populate debt field in manual mode
+  const debtEl = document.getElementById('h-debt');
+  if (debtEl) { debtEl.value = total > 0 ? total : ''; calcHealth(); }
 }
 
 /* ═══════════════════════════════════════════════════
