@@ -857,7 +857,7 @@ const CAT_COLORS = {
   'Utilities':'#4a6868','Dining Out':'#7a5a1a','Entertainment':'#4a3a8a',
   'Healthcare':'#1a7a8c','Clothing':'#7a3a3a','Education':'#2a6e5e',
   'Insurance':'#4a6868','Subscriptions':'#1e3535','Savings/Investment':'#1a7a8c','Emergency Fund':'#1a6080',
-  'Other Expense':'#5a7070',
+  'Other Expense':'#5a7070','Debt Repayments':'#c0392b',
 };
 
 function getCurrentBudget() {
@@ -965,7 +965,10 @@ function renderBudget() {
 
   // Spending pie chart
   const catTotals = {};
-  expenses.forEach(e => { catTotals[e.cat] = (catTotals[e.cat]||0) + e.amount; });
+  expenses.forEach(e => {
+    const cat = e.type === 'debt repayment' ? 'Debt Repayments' : e.cat;
+    catTotals[cat] = (catTotals[cat]||0) + e.amount;
+  });
   const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
   const barsEl = document.getElementById('spending-bars');
   if (sorted.length === 0) {
