@@ -1,12 +1,12 @@
-const CACHE_NAME = 'tayla-v1';
+const CACHE_NAME = 'tayla-v2';
 const ASSETS = [
-  '/Tayla/',
-  '/Tayla/index.html',
-  '/Tayla/style.css',
-  '/Tayla/app.js',
-  '/Tayla/manifest.json',
-  '/Tayla/icon-192.png',
-  '/Tayla/icon-512.png',
+  '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
 ];
 
 // Install — cache all core assets
@@ -32,7 +32,6 @@ self.addEventListener('activate', event => {
 
 // Fetch — serve from cache, fall back to network
 self.addEventListener('fetch', event => {
-  // Skip non-GET and Supabase API requests — always go to network for those
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('supabase.co')) return;
   if (event.request.url.includes('fonts.googleapis.com')) return;
@@ -42,7 +41,6 @@ self.addEventListener('fetch', event => {
     caches.match(event.request)
       .then(cached => cached || fetch(event.request)
         .then(response => {
-          // Cache new successful responses
           if (response && response.status === 200) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
@@ -50,6 +48,6 @@ self.addEventListener('fetch', event => {
           return response;
         })
       )
-      .catch(() => caches.match('/Tayla/index.html'))
+      .catch(() => caches.match('/index.html'))
   );
 });
