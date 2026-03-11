@@ -47,10 +47,10 @@
     <p>Tayla helps Australians understand their weekly take-home pay, manage budgets, and build toward financial goals — securely stored and accessible from any device.</p>
     <div class="auth-features">
       <div class="auth-feature">
-        <div class="feature-icon">🧮</div>
+        <div class="feature-icon">💵</div>
         <div class="auth-feature-text">
-          <h4>Weekly Tax Calculator</h4>
-          <p>Accurate ATO 2024–25 brackets across all 52 weeks</p>
+          <h4>Income Tracker</h4>
+          <p>Track your net income across all sources. Annual tax calculator included.</p>
         </div>
       </div>
       <div class="auth-feature">
@@ -176,7 +176,7 @@
   <nav class="mobile-nav" id="mobile-nav" style="display:none">
     <div class="mobile-nav-inner">
       <button class="mobile-nav-item active" id="mnav-tax" onclick="openTab('tax');setMobileNav(this)">
-        <span class="mn-icon">🧮</span>Tax
+        <span class="mn-icon">💵</span>Income
       </button>
       <button class="mobile-nav-item" id="mnav-budget" onclick="openTab('budget');setMobileNav(this)">
         <span class="mn-icon">💳</span>Budget
@@ -185,7 +185,7 @@
         <span class="mn-icon">📊</span>Health
       </button>
       <button class="mobile-nav-item" id="mnav-goals" onclick="openTab('goals');setMobileNav(this)">
-        <span class="mn-icon">🎯</span>Goals
+        <span class="mn-icon">📈</span>Portfolio
       </button>
       <button class="mobile-nav-item" id="mnav-settings" onclick="openModal('settings-modal')">
         <span class="mn-icon">⚙️</span>Settings
@@ -199,10 +199,10 @@
     <aside class="sidebar">
       <div class="sidebar-section">
         <span class="sidebar-label">Tools</span>
-        <div class="sidebar-item active" id="nav-tax"    onclick="openTab('tax')">    <span class="icon">🧮</span> Tax Calculator</div>
+        <div class="sidebar-item active" id="nav-tax"    onclick="openTab('tax')">    <span class="icon">💵</span> Income</div>
         <div class="sidebar-item"        id="nav-budget" onclick="openTab('budget')"> <span class="icon">💳</span> Budget Tracker</div>
         <div class="sidebar-item"        id="nav-health" onclick="openTab('health')"> <span class="icon">📊</span> Financial Health</div>
-        <div class="sidebar-item"        id="nav-goals"  onclick="openTab('goals')">  <span class="icon">🎯</span> Goals</div>
+        <div class="sidebar-item"        id="nav-goals"  onclick="openTab('goals')">  <span class="icon">📊</span> Portfolio</div>
       </div>
       <div class="sidebar-section">
         <span class="sidebar-label">Account</span>
@@ -218,12 +218,12 @@
     <!-- MAIN -->
     <main class="main-content">
 
-      <!-- ═══ TAX CALCULATOR ═══ -->
+      <!-- ═══ INCOME ═══ -->
       <div class="tab-panel active" id="panel-tax">
         <div class="page-header-row">
           <div class="page-header">
-            <h2>Tax Calculator</h2>
-            <p>ATO 2024–25 income tax brackets · Australian residents · Excludes Medicare levy &amp; HECS</p>
+            <h2>Income</h2>
+            <p>Track what actually hits your account. Add all your income sources below.</p>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
             <select class="cat-select" id="fy-select-tax" onchange="changeFY('fy-select-tax')" style="width:130px">
@@ -236,30 +236,17 @@
           </div>
         </div>
 
-        <!-- MODE SWITCHER -->
+        <!-- PERIOD SWITCHER -->
         <div class="mode-switcher">
           <button class="mode-btn active" id="mode-btn-weekly"  onclick="setMode('weekly')">📅 Weekly</button>
           <button class="mode-btn"        id="mode-btn-monthly" onclick="setMode('monthly')">🗓 Monthly</button>
           <button class="mode-btn"        id="mode-btn-annual"  onclick="setMode('annual')">📆 Annual</button>
         </div>
 
-        <!-- GROSS / NET TOGGLE -->
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-          <div class="mode-switcher" style="margin-bottom:0">
-            <button class="mode-btn active" id="input-btn-gross" onclick="setInputMode('gross')">💰 I know my gross</button>
-            <button class="mode-btn"        id="input-btn-net"   onclick="setInputMode('net')">🏦 I know my net</button>
-          </div>
-          <span style="font-size:0.75rem;color:var(--ink-3);max-width:260px;line-height:1.4" id="input-mode-hint">
-            Enter your pay <strong>before tax</strong> — Tayla calculates your take-home.
-          </span>
-        </div>
-
-        <div class="mode-desc" id="mode-desc">Enter your weekly pay for each of the 52 weeks in the financial year.</div>
-
         <div class="calc-grid">
           <!-- INPUT AREA -->
           <div>
-            <!-- WEEKLY / MONTHLY TABLE -->
+            <!-- WEEKLY / MONTHLY NET TABLE -->
             <div id="period-table-wrap">
               <div class="week-controls">
                 <span style="font-size:0.82rem;color:var(--ink-3)"><span id="periods-filled">0</span> <span id="periods-of-label">of 52 weeks</span> entered</span>
@@ -268,50 +255,90 @@
               <div class="weeks-container">
                 <div class="week-row week-head" id="table-head">
                   <div class="wc" id="head-period">Week</div>
-                  <div class="wc" id="head-input-col">Gross Pay ($)</div>
-                  <div class="wc">Tax</div>
-                  <div class="wc" id="head-right-col">Net Pay</div>
+                  <div class="wc" id="head-input-col">Net Pay ($)</div>
+                  <div class="wc" id="head-right-col">Source</div>
                 </div>
                 <div id="period-rows"></div>
               </div>
             </div>
 
-            <!-- ANNUAL SINGLE INPUT -->
+            <!-- ANNUAL VIEW -->
             <div class="annual-input-wrap" id="annual-input-wrap">
-              <span class="annual-input-label" id="annual-input-label">Enter your annual gross income</span>
-              <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
-                placeholder="e.g. 85,000" oninput="onAnnualInput()">
-              <p style="font-size:0.75rem;color:var(--ink-3);margin-top:10px">Type your total yearly income before tax</p>
-              <div class="annual-result-row" id="annual-results" style="display:none">
-                <div class="annual-result-item">
-                  <div class="annual-result-label">Tax Payable</div>
-                  <div class="annual-result-value" id="ar-tax" style="color:var(--red)">—</div>
-                </div>
-                <div class="annual-result-item">
-                  <div class="annual-result-label">Net Income</div>
-                  <div class="annual-result-value" id="ar-net" style="color:var(--green)">—</div>
-                </div>
-                <div class="annual-result-item">
-                  <div class="annual-result-label">Effective Rate</div>
-                  <div class="annual-result-value" id="ar-rate" style="color:var(--gold)">—</div>
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px;text-align:center" id="annual-breakdowns" style="display:none">
+              <span class="annual-input-label" id="annual-input-label">Total net income this year</span>
+              <div id="ar-net-display" style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--green);text-align:center;margin:12px 0">$0</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px;text-align:center">
                 <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
                   <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
-                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
-                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-monthly-tax">tax: —</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
                 </div>
                 <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
                   <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
-                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
-                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-fortnight-tax">tax: —</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
                 </div>
                 <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
                   <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
-                  <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
-                  <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-weekly-tax">tax: —</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
                 </div>
+              </div>
+            </div>
+
+            <!-- COLLAPSIBLE TAX CALCULATOR -->
+            <div style="margin-top:24px;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden">
+              <button onclick="toggleTaxCalc()" style="width:100%;background:var(--paper-2);border:none;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:inherit">
+                <span style="font-weight:600;font-size:0.9rem;color:var(--ink)">🧮 Annual Tax Calculator</span>
+                <span style="color:var(--ink-3);font-size:0.82rem" id="tax-calc-toggle-label">Show</span>
+              </button>
+              <div id="tax-calc-body" style="display:none;padding:20px">
+                <p style="font-size:0.8rem;color:var(--ink-3);margin-bottom:16px">Enter your gross annual income to see your estimated tax breakdown.</p>
+
+                <!-- GROSS / NET TOGGLE -->
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+                  <div class="mode-switcher" style="margin-bottom:0">
+                    <button class="mode-btn active" id="input-btn-gross" onclick="setInputMode('gross')">💰 I know my gross</button>
+                    <button class="mode-btn"        id="input-btn-net"   onclick="setInputMode('net')">🏦 I know my net</button>
+                  </div>
+                  <span style="font-size:0.75rem;color:var(--ink-3);max-width:260px;line-height:1.4" id="input-mode-hint">
+                    Enter your pay <strong>before tax</strong> — Tayla calculates your take-home.
+                  </span>
+                </div>
+
+                <div class="annual-input-wrap" style="margin-top:0;border:none;padding:0;background:none">
+                  <span class="annual-input-label" id="annual-input-label-calc">Enter your annual gross income</span>
+                  <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
+                    placeholder="e.g. 85,000" oninput="onAnnualInput()">
+                  <div class="annual-result-row" id="annual-results" style="display:none">
+                    <div class="annual-result-item">
+                      <div class="annual-result-label">Tax Payable</div>
+                      <div class="annual-result-value" id="ar-tax" style="color:var(--red)">—</div>
+                    </div>
+                    <div class="annual-result-item">
+                      <div class="annual-result-label">Net Income</div>
+                      <div class="annual-result-value" id="ar-net" style="color:var(--green)">—</div>
+                    </div>
+                    <div class="annual-result-item">
+                      <div class="annual-result-label">Effective Rate</div>
+                      <div class="annual-result-value" id="ar-rate" style="color:var(--gold)">—</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px;text-align:center" id="annual-breakdowns">
+                    <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net-calc">—</div>
+                      <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-monthly-tax">tax: —</div>
+                    </div>
+                    <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net-calc">—</div>
+                      <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-fortnight-tax">tax: —</div>
+                    </div>
+                    <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net-calc">—</div>
+                      <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px" id="ar-weekly-tax">tax: —</div>
+                    </div>
+                  </div>
+                </div>
+                <p style="font-size:0.72rem;color:var(--ink-3);margin-top:16px;line-height:1.6">Estimates only. Does not include Medicare levy (2%), HECS/HELP, offsets or deductions. Not financial advice.</p>
               </div>
             </div>
           </div>
@@ -322,8 +349,8 @@
               <div class="card-title" id="summary-title">Annual Summary</div>
               <div class="card-sub" id="summary-sub">Based on entered weeks</div>
               <div class="stat-block">
-                <div class="stat-label" id="sum-gross-label">Total Gross Income</div>
-                <div class="stat-value s-gross" id="s-gross">$0.00</div>
+                <div class="stat-label" id="sum-gross-label">Total Net Income</div>
+                <div class="stat-value s-net" id="s-gross">$0.00</div>
               </div>
               <hr class="divider" style="margin:14px 0">
               <div class="stat-block">
@@ -332,8 +359,8 @@
               </div>
               <hr class="divider" style="margin:14px 0">
               <div class="stat-block">
-                <div class="stat-label" id="sum-net-label">Total Net Income</div>
-                <div class="stat-value s-net" id="s-net">$0.00</div>
+                <div class="stat-label" id="sum-net-label">Gross Income</div>
+                <div class="stat-value s-gross" id="s-net">$0.00</div>
               </div>
               <hr class="divider" style="margin:16px 0">
               <div class="rate-bar-wrap">
@@ -345,7 +372,6 @@
                   <div class="rate-bar-fill" id="rate-fill" style="width:0%;background:linear-gradient(90deg,var(--green),var(--gold),var(--red))"></div>
                 </div>
               </div>
-              <!-- Annualised projection row (shown in weekly/monthly mode) -->
               <div id="annualised-row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);display:none">
                 <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">Projected Full Year</div>
                 <div style="display:flex;justify-content:space-between;font-size:0.8rem">
@@ -369,7 +395,7 @@
                 <tr id="br3"><td class="b-range"></td><td class="b-rate"></td></tr>
                 <tr id="br4"><td class="b-range"></td><td class="b-rate"></td></tr>
               </table>
-              <p class="bracket-note">Estimates only. Does not include Medicare levy (2%), HECS/HELP repayments, tax offsets, or deductions. Not financial advice. Consult a registered tax agent for your situation.</p>
+              <p class="bracket-note">Estimates only. Does not include Medicare levy (2%), HECS/HELP repayments, tax offsets, or deductions. Not financial advice.</p>
             </div>
           </div>
         </div>
@@ -607,11 +633,11 @@
         </div>
       </div>
 
-      <!-- ═══ GOALS ═══ -->
+      <!-- ═══ PORTFOLIO ═══ -->
       <div class="tab-panel" id="panel-goals">
         <div class="page-header-row">
           <div class="page-header">
-            <h2>Financial Goals</h2>
+            <h2>Portfolio</h2>
             <p>Set targets, track progress, and see how long until you get there.</p>
           </div>
         </div>
