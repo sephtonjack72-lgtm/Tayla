@@ -877,25 +877,50 @@ function addBudgetEntry() {
   if (!desc)          return alert('Please enter a description.');
   if (!amount || amount <= 0) return alert('Please enter a valid amount.');
   const [type, cat] = catVal.split('|');
-  // Savings draw shows as income in budget (money coming back in)
   const entryDesc = type === 'savings draw' ? (desc || 'Savings Draw — ' + cat) : desc;
   const entry = { id: Date.now(), desc: entryDesc, amount, type, cat, date: new Date().toLocaleDateString('en-AU') };
   getCurrentBudget().unshift(entry);
+
+  // Debt repayment — reduce the debt balance
+  if (type === 'debt repayment') {
+    const debtId = parseInt(cat);
+    const debt = (APP_DATA.debts || []).find(d => d.id === debtId);
+    if (debt) {
+      debt.balance = Math.max(0, parseFloat((debt.balance - amount).toFixed(2)));
+      if (debt.balance === 0) {
+        setTimeout(() => alert(debt.name + ' is fully paid off! 🎉 You can remove it from the debt register.'), 100);
+      }
+    }
+  }
+
   persist();
   document.getElementById('be-desc').value = '';
   document.getElementById('be-amount').value = '';
   renderBudget();
+  renderDebts();
+  if (HEALTH_MODE === 'auto') autoFillHealth();
 }
 
 function deleteBudgetEntry(id) {
+  const entry = getCurrentBudget().find(e => e.id === id);
+  // Restore debt balance if deleting a repayment
+  if (entry && entry.type === 'debt repayment') {
+    const debtId = parseInt(entry.cat);
+    const debt = (APP_DATA.debts || []).find(d => d.id === debtId);
+    if (debt) debt.balance = parseFloat((debt.balance + entry.amount).toFixed(2));
+  }
   APP_DATA.budget[BUDGET_MONTH] = getCurrentBudget().filter(e => e.id !== id);
-  persist(); renderBudget();
+  persist();
+  renderBudget();
+  renderDebts();
+  if (HEALTH_MODE === 'auto') autoFillHealth();
 }
 
 function renderBudget() {
+  refreshDebtDropdown();
   const entries  = getCurrentBudget();
   const incomes  = entries.filter(e => e.type === 'income' || e.type === 'savings draw');
-  const expenses = entries.filter(e => e.type === 'expense');
+  const expenses = entries.filter(e => e.type === 'expense' || e.type === 'debt repayment');
   const totalInc = incomes.reduce((s,e) => s+e.amount, 0);
   const totalExp = expenses.reduce((s,e) => s+e.amount, 0);
   const balance  = totalInc - totalExp;
@@ -915,18 +940,22 @@ function renderBudget() {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">No entries yet.</div>';
   } else {
     list.innerHTML = entries.slice(0, 40).map(e => {
-      const isIncome = e.type === 'income';
+      const isIncome  = e.type === 'income';
       const isSavings = e.type === 'savings rate';
-      const isDraw = e.type === 'savings draw';
-      const amtClass = isIncome || isDraw ? 'income' : isSavings ? 'savings' : '';
-      const prefix = isIncome || isDraw ? '+' : isSavings ? '' : '-';
+      const isDraw    = e.type === 'savings draw';
+      const isDebt    = e.type === 'debt repayment';
+      const amtClass  = isIncome || isDraw ? 'income' : isSavings ? 'savings' : '';
+      const prefix    = isIncome || isDraw ? '+' : isSavings ? '' : '-';
       const drawBadge = isDraw ? `<span style="font-size:0.68rem;background:var(--gold-dim);color:var(--gold);border-radius:4px;padding:1px 5px;margin-left:4px">draw</span>` : '';
+      const debtName  = isDebt ? (APP_DATA.debts||[]).find(d => d.id === parseInt(e.cat))?.name || e.cat : null;
+      const debtBadge = isDebt ? `<span style="font-size:0.68rem;background:#fdecea;color:var(--red);border-radius:4px;padding:1px 5px;margin-left:4px">debt</span>` : '';
+      const catLabel  = isDebt ? (debtName || 'Debt Repayment') : e.cat;
       return `
       <div class="entry-item">
-        <div class="entry-cat-dot" style="background:${CAT_COLORS[e.cat]||'#999'}"></div>
+        <div class="entry-cat-dot" style="background:${isDebt ? 'var(--red)' : (CAT_COLORS[e.cat]||'#999')}"></div>
         <div>
-          <div class="entry-desc">${escHtml(e.desc)}${drawBadge}</div>
-          <span class="entry-cat-label">${e.cat} · ${e.date}</span>
+          <div class="entry-desc">${escHtml(e.desc)}${drawBadge}${debtBadge}</div>
+          <span class="entry-cat-label">${catLabel} · ${e.date}</span>
         </div>
         <div class="entry-amount ${amtClass}">${prefix}${fmt(e.amount)}</div>
         <button class="entry-del" onclick="deleteBudgetEntry(${e.id})" title="Delete">×</button>
@@ -1165,6 +1194,15 @@ function calcHealthFromValues(income, expenses, emergency, debt, housing, saving
 }
 
 /* ── DEBT REGISTER ── */
+function refreshDebtDropdown() {
+  const optgroup = document.getElementById('debt-repayment-options');
+  if (!optgroup) return;
+  const debts = APP_DATA.debts || [];
+  optgroup.innerHTML = debts.filter(d => d.balance > 0).map(d =>
+    `<option value="debt repayment|${d.id}">Repay — ${escHtml(d.name)} (${fmt(d.balance)} remaining)</option>`
+  ).join('');
+}
+
 function addDebt() {
   const name    = document.getElementById('debt-name').value.trim();
   const balance = parseFloat(document.getElementById('debt-balance').value) || 0;
@@ -1178,6 +1216,7 @@ function addDebt() {
   document.getElementById('debt-rate').value    = '';
   persist();
   renderDebts();
+  refreshDebtDropdown();
   if (HEALTH_MODE === 'auto') autoFillHealth();
 }
 
@@ -1185,6 +1224,7 @@ function deleteDebt(id) {
   APP_DATA.debts = (APP_DATA.debts || []).filter(d => d.id !== id);
   persist();
   renderDebts();
+  refreshDebtDropdown();
   if (HEALTH_MODE === 'auto') autoFillHealth();
 }
 
