@@ -493,6 +493,16 @@
           <h2>Financial Health</h2>
           <p>A snapshot of where you stand. Update your details to see your score.</p>
         </div>
+
+        <!-- AUTO / MANUAL TOGGLE -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+          <div class="mode-switcher" style="margin-bottom:0">
+            <button class="mode-btn active" id="health-btn-auto"   onclick="setHealthMode('auto')">⚡ Auto — from my budget</button>
+            <button class="mode-btn"        id="health-btn-manual" onclick="setHealthMode('manual')">✏️ Manual entry</button>
+          </div>
+          <span style="font-size:0.75rem;color:var(--ink-3);line-height:1.4" id="health-mode-hint">Automatically calculated from your budget entries.</span>
+        </div>
+
         <div class="health-grid">
           <div>
             <div class="health-score-card" style="margin-bottom:20px">
@@ -525,7 +535,8 @@
             </div>
           </div>
           <div>
-            <div class="card">
+            <!-- MANUAL INPUTS -->
+            <div class="card" id="health-manual-card">
               <div class="card-title">Your Details</div>
               <div class="card-sub">Your data is encrypted and stored securely</div>
               <div class="health-inputs">
@@ -542,8 +553,8 @@
                   <input class="form-input" type="number" id="h-emergency" placeholder="e.g. 10000" oninput="calcHealth()">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Total Debt ($)</label>
-                  <input class="form-input" type="number" id="h-debt" placeholder="e.g. 15000" oninput="calcHealth()">
+                  <label class="form-label">Total Debt ($) <span style="font-size:0.72rem;color:var(--ink-3)">(from debt register below)</span></label>
+                  <input class="form-input" type="number" id="h-debt" placeholder="e.g. 15000" oninput="calcHealth()" readonly style="background:var(--paper-2);cursor:default">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Monthly Rent / Mortgage ($)</label>
@@ -555,6 +566,40 @@
                 </div>
               </div>
               <p style="font-size:0.72rem;color:var(--ink-3);margin-top:8px;line-height:1.6">These values are stored securely on Tayla's servers. Not financial advice.</p>
+            </div>
+
+            <!-- AUTO SUMMARY (shown in auto mode) -->
+            <div class="card" id="health-auto-card" style="display:none">
+              <div class="card-title">Auto-Calculated from Budget</div>
+              <div class="card-sub">Based on your logged entries this financial year</div>
+              <div id="health-auto-summary" style="margin-top:8px"></div>
+              <p style="font-size:0.72rem;color:var(--ink-3);margin-top:12px;line-height:1.6">Add more budget entries to improve accuracy. Not financial advice.</p>
+            </div>
+
+            <!-- DEBT REGISTER -->
+            <div class="card" style="margin-top:20px">
+              <div class="card-title">Debt Register</div>
+              <div class="card-sub">Track your loans and liabilities</div>
+              <div class="add-entry-grid" style="margin-top:12px">
+                <div>
+                  <div class="form-label">Debt Name</div>
+                  <input class="form-input" type="text" id="debt-name" placeholder="e.g. Car loan, HECS">
+                </div>
+                <div>
+                  <div class="form-label">Balance ($)</div>
+                  <input class="form-input" type="number" id="debt-balance" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <div>
+                  <div class="form-label">Interest Rate (%)</div>
+                  <input class="form-input" type="number" id="debt-rate" min="0" step="0.01" placeholder="e.g. 6.5">
+                </div>
+                <button class="btn btn-primary" onclick="addDebt()">+ Add Debt</button>
+              </div>
+              <div id="debt-list" style="margin-top:12px"></div>
+              <div id="debt-total-row" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:0.82rem;font-weight:600;color:var(--ink)">Total Debt</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--red)" id="debt-total-amt">$0.00</span>
+              </div>
             </div>
           </div>
         </div>
