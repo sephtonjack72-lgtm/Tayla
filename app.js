@@ -425,8 +425,9 @@ function setMode(mode) {
     document.getElementById('mode-btn-'+m).className = 'mode-btn' + (m === mode ? ' active' : '');
   });
 
-  // Desc
-  document.getElementById('mode-desc').textContent = INPUT_MODE === 'net'
+  // Desc (mode-desc element is optional now)
+  const modeDescEl = document.getElementById('mode-desc');
+  if (modeDescEl) modeDescEl.textContent = INPUT_MODE === 'net'
     ? cfg.desc.replace('gross', 'net (take-home)')
     : cfg.desc;
 
@@ -777,6 +778,14 @@ function jumpToPeriod(val) {
 
 // Keep old name for enterApp compatibility
 function buildWeekRows() { setMode(TAX_MODE); }
+
+function toggleTaxCalc() {
+  const body  = document.getElementById('tax-calc-body');
+  const label = document.getElementById('tax-calc-toggle-label');
+  const open  = body.style.display === 'none';
+  body.style.display  = open ? 'block' : 'none';
+  label.textContent   = open ? 'Hide' : 'Show';
+}
 
 async function changeFY(sourceId) {
   const id = sourceId || 'fy-select-tax';
