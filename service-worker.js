@@ -1,12 +1,12 @@
 const CACHE_NAME = 'tayla-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/Tayla/',
+  '/Tayla/index.html',
+  '/Tayla/style.css',
+  '/Tayla/app.js',
+  '/Tayla/manifest.json',
+  '/Tayla/icon-192.png',
+  '/Tayla/icon-512.png',
 ];
 
 // Install — cache all core assets
