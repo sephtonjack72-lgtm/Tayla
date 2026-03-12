@@ -460,15 +460,7 @@ function setMode(mode) {
 
   if (!isAnnual) buildPeriodRows();
   else {
-    const grossInput = document.getElementById('annual-input');
-    if (grossInput && grossInput.value) {
-      onAnnualInput();
-    } else {
-      setSummary(0, 0);
-      document.getElementById('annual-results').style.display    = 'none';
-      document.getElementById('annual-breakdowns').style.display = 'none';
-      highlightBracket(0, false);
-    }
+    renderAnnualSummary();
   }
 }
 
@@ -661,34 +653,34 @@ function refreshPeriodSummary() {
     annRow.style.display = 'none';
   }
 }
-function onAnnualNetInput() {
-  const net = parseFloat(document.getElementById('annual-net-input').value) || 0;
-  APP_DATA.annualIncome = net;
-  persist();
+// Sums all monthly entries and updates the annual view + right panel
+function renderAnnualSummary() {
+  const total = APP_DATA.months.reduce((sum, v) => sum + (v || 0), 0);
   const resultsEl = document.getElementById('annual-net-results');
-  if (!net) {
+  const displayEl = document.getElementById('annual-total-display');
+
+  if (!total) {
+    if (displayEl) { displayEl.textContent = '—'; displayEl.style.color = 'var(--ink-3)'; }
     if (resultsEl) resultsEl.style.display = 'none';
     setSummary(0, 0);
     return;
   }
-  // Per-period breakdown for the annual-net-input view
-  document.getElementById('ar-monthly-net').textContent   = fmt(net / 12);
-  document.getElementById('ar-fortnight-net').textContent = fmt(net / 26);
-  document.getElementById('ar-weekly-net').textContent    = fmt(net / 52);
+
+  if (displayEl) { displayEl.textContent = fmt(total); displayEl.style.color = 'var(--ink)'; }
+  document.getElementById('ar-monthly-net').textContent   = fmt(total / 12);
+  document.getElementById('ar-fortnight-net').textContent = fmt(total / 26);
+  document.getElementById('ar-weekly-net').textContent    = fmt(total / 52);
   if (resultsEl) resultsEl.style.display = 'block';
-  // Update right panel: net is entered directly, tax unknown so show net as gross
-  setSummary(net, 0);
+  // Update right panel with total (net entered directly, tax unknown)
+  setSummary(total, 0);
 }
-function onAnnualInput() {
+// Standalone tax calculator — never touches the right summary panel
+function onTaxCalcInput() {
   let entered = parseFloat(document.getElementById('annual-input').value) || 0;
-  // If net mode, reverse-calculate gross first
   const annual = INPUT_MODE === 'net' ? netToGrossAnnual(entered) : entered;
-  APP_DATA.annualIncome = annual;
-  persist();
 
   if (!entered) {
-    setSummary(0, 0);
-    document.getElementById('annual-results').style.display = 'none';
+    document.getElementById('annual-results').style.display    = 'none';
     document.getElementById('annual-breakdowns').style.display = 'none';
     highlightBracket(0, false);
     return;
@@ -696,23 +688,15 @@ function onAnnualInput() {
 
   const tax = calcTaxAnnual(annual);
   const net = annual - tax;
-  setSummary(annual, tax);
 
-  // Big result row — show gross (salary), estimated tax, and net take-home
-  const arGrossEl = document.getElementById('ar-gross');
-  if (arGrossEl) arGrossEl.textContent = fmtInt(annual);
   document.getElementById('ar-tax').textContent  = fmtInt(tax);
   document.getElementById('ar-net').textContent  = fmtInt(net);
-  document.getElementById('ar-rate').textContent = annual > 0 ? ((tax/annual)*100).toFixed(1) + '%' : '0%';
+  document.getElementById('ar-rate').textContent = annual > 0 ? ((tax / annual) * 100).toFixed(1) + '%' : '0%';
   document.getElementById('annual-results').style.display = 'flex';
 
-  // Breakdowns — show both net and estimated tax per period (-calc IDs match the Tax Calculator section in HTML)
-  const weeklyNet  = net / 52;
-  const weeklyTax  = tax / 52;
-  const fnNet      = net / 26;
-  const fnTax      = tax / 26;
-  const monthlyNet = net / 12;
-  const monthlyTax = tax / 12;
+  const monthlyNet = net / 12,  monthlyTax = tax / 12;
+  const fnNet      = net / 26,  fnTax      = tax / 26;
+  const weeklyNet  = net / 52,  weeklyTax  = tax / 52;
   document.getElementById('ar-monthly-net-calc').textContent   = fmtInt(monthlyNet);
   document.getElementById('ar-monthly-tax').textContent        = 'tax: ' + fmtInt(monthlyTax);
   document.getElementById('ar-fortnight-net-calc').textContent = fmtInt(fnNet);
@@ -777,7 +761,7 @@ async function changeFY(sourceId) {
   refreshPeriodSummary();
   renderBudget();
   renderGoals();
-  document.getElementById('annual-input').value = APP_DATA.annualIncome || '';
+  if (TAX_MODE === 'annual') renderAnnualSummary();
   document.getElementById('budget-month-select').value = BUDGET_MONTH;
 }
 
@@ -792,9 +776,7 @@ function clearTaxData() {
   });
   persist();
   document.getElementById('annual-input').value = '';
-  setSummary(0, 0);
-  document.getElementById('annual-results').style.display    = 'none';
-  document.getElementById('annual-breakdowns').style.display = 'none';
+  renderAnnualSummary();
   buildPeriodRows();
   refreshPeriodSummary();
   renderBudget();
@@ -803,10 +785,9 @@ function clearTaxData() {
 function exportCSV() {
   let csv, filename;
   if (TAX_MODE === 'annual') {
-    const g = APP_DATA.annualIncome || 0;
-    const t = calcTaxAnnual(g);
-    csv = 'Period,Gross Income,Tax,Net Income\n';
-    csv += `Annual,${g.toFixed(2)},${t.toFixed(2)},${(g-t).toFixed(2)}\n`;
+    const g = APP_DATA.months.reduce((s, v) => s + (v || 0), 0);
+    csv = 'Period,Total Net Income\n';
+    csv += `Annual,${g.toFixed(2)}\n`;
     filename = 'tayla-tax-annual';
   } else if (TAX_MODE === 'monthly') {
     csv = 'Month,Gross Pay,Tax,Net Pay\n';
