@@ -262,38 +262,37 @@
               </div>
             </div>
 
-            <!-- ANNUAL VIEW -->
+            <!-- ANNUAL VIEW — auto-summed from monthly entries -->
             <div class="annual-input-wrap" id="annual-input-wrap">
-              <span class="annual-input-label" id="annual-input-label">Enter your annual net (take-home) income</span>
-              <input class="annual-big-input" type="number" id="annual-net-input" min="0" step="100"
-                placeholder="e.g. 65,000" oninput="onAnnualNetInput()">
-              <p style="font-size:0.75rem;color:var(--ink-3);margin-top:8px;text-align:center">What actually hits your account across the full year</p>
+              <span class="annual-input-label" id="annual-input-label">Total income from your monthly entries</span>
+              <div class="annual-big-input" id="annual-total-display" style="display:flex;align-items:center;justify-content:center;cursor:default;color:var(--ink-3)">—</div>
+              <p style="font-size:0.75rem;color:var(--ink-3);margin-top:8px;text-align:center">Add your monthly income entries above to see your annual total</p>
               <div id="annual-net-results" style="display:none;margin-top:16px">
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
                   <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month (avg)</div>
                     <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
                   </div>
                   <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight (avg)</div>
                     <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
                   </div>
                   <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week (avg)</div>
                     <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- COLLAPSIBLE TAX CALCULATOR -->
+            <!-- STANDALONE TAX CALCULATOR -->
             <div style="margin-top:24px;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden">
               <button onclick="toggleTaxCalc()" style="width:100%;background:var(--paper-2);border:none;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:inherit">
-                <span style="font-weight:600;font-size:0.9rem;color:var(--ink)">🧮 Annual Tax Calculator</span>
+                <span style="font-weight:600;font-size:0.9rem;color:var(--ink)">🧮 Tax Calculator</span>
                 <span style="color:var(--ink-3);font-size:0.82rem" id="tax-calc-toggle-label">Show</span>
               </button>
               <div id="tax-calc-body" style="display:none;padding:20px">
-                <p style="font-size:0.8rem;color:var(--ink-3);margin-bottom:16px">Enter your gross annual income to see your estimated tax breakdown.</p>
+                <p style="font-size:0.8rem;color:var(--ink-3);margin-bottom:16px">Enter any salary to estimate your tax — completely separate from your income entries above.</p>
 
                 <!-- GROSS / NET TOGGLE -->
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
@@ -306,10 +305,10 @@
                   </span>
                 </div>
 
-                <div class="annual-input-wrap" style="margin-top:0;border:none;padding:0;background:none">
-                  <span class="annual-input-label" id="annual-input-label-calc">Enter your annual gross income</span>
+                <div style="margin-top:0">
+                  <span class="annual-input-label" id="annual-input-label-calc">Enter annual gross income</span>
                   <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
-                    placeholder="e.g. 85,000" oninput="onAnnualInput()">
+                    placeholder="e.g. 85,000" oninput="onTaxCalcInput()">
                   <div class="annual-result-row" id="annual-results" style="display:none">
                     <div class="annual-result-item">
                       <div class="annual-result-label">Tax Payable</div>
@@ -324,7 +323,7 @@
                       <div class="annual-result-value" id="ar-rate" style="color:var(--gold)">—</div>
                     </div>
                   </div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px;text-align:center" id="annual-breakdowns">
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px;text-align:center" id="annual-breakdowns" style="display:none">
                     <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
                       <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
                       <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net-calc">—</div>
