@@ -196,7 +196,7 @@ function updateConsentStatus(type) { /* real-time during reg, no-op here */ }
 /* ═══════════════════════════════════════════════════
    DATA LOAD / SAVE
 ═══════════════════════════════════════════════════ */
-let APP_DATA = { weeks: new Array(52).fill(null), months: new Array(12).fill(null), annualIncome: 0, budget: {}, health: {}, goals: [] };
+let APP_DATA = { weeks: new Array(52).fill(null), months: new Array(12).fill(null), weeks2: new Array(52).fill(null), months2: new Array(12).fill(null), annualIncome: 0, budget: {}, health: {}, goals: [] };
 let BUDGET_MONTH = new Date().getMonth() >= 6 ? new Date().getMonth() - 6 : new Date().getMonth() + 6;
 const SYSTEM_GOAL_IDS = { emergency: 'system_emergency', savings: 'system_savings' };
 
@@ -223,6 +223,8 @@ async function loadAllUserData() {
   APP_DATA = {
     weeks:        saved.weeks        || new Array(52).fill(null),
     months:       saved.months       || new Array(12).fill(null),
+    weeks2:       saved.weeks2       || new Array(52).fill(null),
+    months2:      saved.months2      || new Array(12).fill(null),
     annualIncome: saved.annualIncome || 0,
     budget:       saved.budget       || {},
     health:       saved.health       || {},
@@ -479,25 +481,31 @@ function buildPeriodRows() {
   const container = document.getElementById('period-rows');
   container.innerHTML = '';
 
-  // Update header — net only, no tax column
+  // Update header
   const headInput = document.getElementById('head-input-col');
   const headRight = document.getElementById('head-right-col');
-  if (headInput) headInput.textContent = 'Net Pay ($)';
-  if (headRight) headRight.textContent = '';
+  if (headInput) headInput.textContent = 'Income 1 ($)';
+  if (headRight) headRight.textContent = 'Income 2 ($)';
+  const headCombined = document.getElementById('head-combined-col');
+  if (headCombined) headCombined.textContent = 'Combined ($)';
 
+  const data2 = TAX_MODE === 'weekly' ? APP_DATA.weeks2 : APP_DATA.months2;
   for (let i = 0; i < cfg.count; i++) {
-    const label = TAX_MODE === 'monthly' ? MONTH_NAMES[i] : getWeekLabel(i);
-    const netStored = data[i] || 0;
+    const label    = TAX_MODE === 'monthly' ? MONTH_NAMES[i] : getWeekLabel(i);
+    const val1     = data[i]  || 0;
+    const val2     = data2[i] || 0;
     const row = document.createElement('div');
-    row.className = 'week-row' + (netStored ? ' has-value' : '');
+    row.className = 'week-row' + ((val1 || val2) ? ' has-value' : '');
     row.id = 'wr' + i;
+    const combined = val1 + val2;
     row.innerHTML = `
       <div class="wc wc-label">${label}</div>
       <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-        id="wi${i}" value="${netStored ? netStored : ''}" oninput="onPeriodInput(${i})"></div>
-      <div class="wc wc-net wc-empty" id="wn${i}">—</div>`;
+        id="wi${i}" value="${val1 ? val1 : ''}" oninput="onPeriodInput(${i})"></div>
+      <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
+        id="wi2${i}" value="${val2 ? val2 : ''}" oninput="onPeriodInput2(${i})"></div>
+      <div class="wc wc-net ${combined ? '' : 'wc-empty'}" id="wn${i}">${combined ? fmt(combined) : '—'}</div>`;
     container.appendChild(row);
-    if (netStored) refreshPeriodRow(i);
   }
   refreshPeriodSummary();
 }
@@ -546,17 +554,35 @@ function syncWeeksToMonths() {
 }
 
 function onPeriodInput(i) {
-  const netVal = parseFloat(document.getElementById('wi'+i).value) || 0;
+  const val1 = parseFloat(document.getElementById('wi'+i).value) || 0;
+  const val2 = parseFloat(document.getElementById('wi2'+i)?.value) || 0;
+  const combined = val1 + val2;
   if (TAX_MODE === 'weekly') {
-    APP_DATA.weeks[i] = netVal || null;
+    APP_DATA.weeks[i] = val1 || null;
     syncWeeksToMonths();
   }
   if (TAX_MODE === 'monthly') {
-    APP_DATA.months[i] = netVal || null;
+    APP_DATA.months[i] = val1 || null;
   }
   refreshPeriodRow(i);
   refreshPeriodSummary();
-  autoAddToBudget(i, netVal);
+  autoAddToBudget(i, combined);
+  persist();
+}
+
+function onPeriodInput2(i) {
+  const val1 = parseFloat(document.getElementById('wi'+i)?.value) || 0;
+  const val2 = parseFloat(document.getElementById('wi2'+i).value) || 0;
+  const combined = val1 + val2;
+  if (TAX_MODE === 'weekly') {
+    APP_DATA.weeks2[i] = val2 || null;
+  }
+  if (TAX_MODE === 'monthly') {
+    APP_DATA.months2[i] = val2 || null;
+  }
+  refreshPeriodRow(i);
+  refreshPeriodSummary();
+  autoAddToBudget(i, combined);
   persist();
 }
 
@@ -612,25 +638,27 @@ function autoAddToBudget(periodIndex, netVal) {
 }
 
 function refreshPeriodRow(i) {
-  const data    = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
-  const net     = data[i] || 0;
-  const rightEl = document.getElementById('wn'+i);
+  const data1 = TAX_MODE === 'weekly' ? APP_DATA.weeks  : APP_DATA.months;
+  const data2 = TAX_MODE === 'weekly' ? APP_DATA.weeks2 : APP_DATA.months2;
+  const combined = (data1[i] || 0) + (data2[i] || 0);
   const row     = document.getElementById('wr'+i);
-  if (net === 0) {
-    if (rightEl) { rightEl.textContent = '—'; rightEl.className = 'wc wc-net wc-empty'; }
-    row.classList.remove('has-value');
-  } else {
-    if (rightEl) { rightEl.textContent = fmt(net); rightEl.className = 'wc wc-net'; }
+  const combEl  = document.getElementById('wn'+i);
+  if (combined > 0) {
     row.classList.add('has-value');
+    if (combEl) { combEl.textContent = fmt(combined); combEl.className = 'wc wc-net'; }
+  } else {
+    row.classList.remove('has-value');
+    if (combEl) { combEl.textContent = '—'; combEl.className = 'wc wc-net wc-empty'; }
   }
 }
 
 function refreshPeriodSummary() {
-  const cfg  = MODE_CONFIG[TAX_MODE];
-  const data = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
+  const cfg   = MODE_CONFIG[TAX_MODE];
+  const data1 = TAX_MODE === 'weekly' ? APP_DATA.weeks  : APP_DATA.months;
+  const data2 = TAX_MODE === 'weekly' ? APP_DATA.weeks2 : APP_DATA.months2;
   let totalNet = 0, filled = 0;
   for (let i = 0; i < cfg.count; i++) {
-    const n = data[i] || 0;
+    const n = (data1[i] || 0) + (data2[i] || 0);
     if (n > 0) { totalNet += n; filled++; }
   }
   // Show net as the primary figure in summary — tax is unknown (net only mode)
@@ -655,7 +683,7 @@ function refreshPeriodSummary() {
 }
 // Sums all monthly entries and updates the annual view + right panel
 function renderAnnualSummary() {
-  const total = APP_DATA.months.reduce((sum, v) => sum + (v || 0), 0);
+  const total = APP_DATA.months.reduce((sum, v, i) => sum + (v || 0) + (APP_DATA.months2[i] || 0), 0);
   const resultsEl = document.getElementById('annual-net-results');
   const displayEl = document.getElementById('annual-total-display');
 
@@ -769,6 +797,8 @@ function clearTaxData() {
   if (!confirm('Clear all tax data including weeks, months and annual?')) return;
   APP_DATA.weeks        = new Array(52).fill(null);
   APP_DATA.months       = new Array(12).fill(null);
+  APP_DATA.weeks2       = new Array(52).fill(null);
+  APP_DATA.months2      = new Array(12).fill(null);
   APP_DATA.annualIncome = 0;
   // Clear all auto-populated salary entries from budget
   Object.keys(APP_DATA.budget).forEach(m => {
