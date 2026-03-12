@@ -461,6 +461,12 @@ function setMode(mode) {
   if (!isAnnual) buildPeriodRows();
   else {
     const saved = APP_DATA.annualIncome || '';
+    // Restore gross/salary input and recalculate
+    const grossInput = document.getElementById('annual-input');
+    if (grossInput) {
+      grossInput.value = saved || '';
+      if (saved) onAnnualInput();
+    }
     const netInput = document.getElementById('annual-net-input');
     if (netInput) {
       netInput.value = saved || '';
@@ -693,22 +699,20 @@ function onAnnualInput() {
   const net = annual - tax;
   setSummary(annual, tax);
 
-  // Big result row
+  // Big result row — show gross (salary), estimated tax, and net take-home
+  const arGrossEl = document.getElementById('ar-gross');
+  if (arGrossEl) arGrossEl.textContent = fmtInt(annual);
   document.getElementById('ar-tax').textContent  = fmtInt(tax);
   document.getElementById('ar-net').textContent  = fmtInt(net);
-  document.getElementById('ar-rate').textContent = ((tax/annual)*100).toFixed(1) + '%';
-  // If net mode, also show the calculated gross
-  if (INPUT_MODE === 'net') {
-    document.getElementById('ar-tax').title = 'Gross: ' + fmtInt(annual);
-  }
+  document.getElementById('ar-rate').textContent = annual > 0 ? ((tax/annual)*100).toFixed(1) + '%' : '0%';
   document.getElementById('annual-results').style.display = 'flex';
 
-  // Breakdowns
-  const weeklyNet  = (annual - tax) / 52;
+  // Breakdowns — show both net and estimated tax per period
+  const weeklyNet  = net / 52;
   const weeklyTax  = tax / 52;
-  const fnNet      = (annual - tax) / 26;
+  const fnNet      = net / 26;
   const fnTax      = tax / 26;
-  const monthlyNet = (annual - tax) / 12;
+  const monthlyNet = net / 12;
   const monthlyTax = tax / 12;
   document.getElementById('ar-monthly-net').textContent   = fmtInt(monthlyNet);
   document.getElementById('ar-monthly-tax').textContent   = 'tax: ' + fmtInt(monthlyTax);
