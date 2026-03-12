@@ -201,9 +201,9 @@ let BUDGET_MONTH = new Date().getMonth() >= 6 ? new Date().getMonth() - 6 : new 
 const SYSTEM_GOAL_IDS = { emergency: 'system_emergency', savings: 'system_savings' };
 
 const FY_OPTIONS = [
-  { label: 'FY2024-25', key: 'fy2024', start: new Date(2024, 5, 24) }, // 24 Jun 2024
-  { label: 'FY2025-26', key: 'fy2025', start: new Date(2025, 5, 30) }, // 30 Jun 2025
-  { label: 'FY2026-27', key: 'fy2026', start: new Date(2026, 5, 29) }, // 29 Jun 2026
+  { label: 'FY2024-25', key: 'fy2024', start: new Date(2024, 6, 1) }, // 1 Jul 2024
+  { label: 'FY2025-26', key: 'fy2025', start: new Date(2025, 6, 1) }, // 1 Jul 2025
+  { label: 'FY2026-27', key: 'fy2026', start: new Date(2026, 6, 1) }, // 1 Jul 2026
 ];
 let CURRENT_FY = FY_OPTIONS[1]; // default FY2025-26
 let FY_START   = CURRENT_FY.start;
