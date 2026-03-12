@@ -668,14 +668,16 @@ function onAnnualNetInput() {
   const resultsEl = document.getElementById('annual-net-results');
   if (!net) {
     if (resultsEl) resultsEl.style.display = 'none';
-    document.getElementById('s-gross').textContent = '$0.00';
+    setSummary(0, 0);
     return;
   }
+  // Per-period breakdown for the annual-net-input view
   document.getElementById('ar-monthly-net').textContent   = fmt(net / 12);
   document.getElementById('ar-fortnight-net').textContent = fmt(net / 26);
   document.getElementById('ar-weekly-net').textContent    = fmt(net / 52);
   if (resultsEl) resultsEl.style.display = 'block';
-  document.getElementById('s-gross').textContent = fmt(net);
+  // Update right panel: net is entered directly, tax unknown so show net as gross
+  setSummary(net, 0);
 }
 function onAnnualInput() {
   let entered = parseFloat(document.getElementById('annual-input').value) || 0;
@@ -704,19 +706,19 @@ function onAnnualInput() {
   document.getElementById('ar-rate').textContent = annual > 0 ? ((tax/annual)*100).toFixed(1) + '%' : '0%';
   document.getElementById('annual-results').style.display = 'flex';
 
-  // Breakdowns — show both net and estimated tax per period
+  // Breakdowns — show both net and estimated tax per period (-calc IDs match the Tax Calculator section in HTML)
   const weeklyNet  = net / 52;
   const weeklyTax  = tax / 52;
   const fnNet      = net / 26;
   const fnTax      = tax / 26;
   const monthlyNet = net / 12;
   const monthlyTax = tax / 12;
-  document.getElementById('ar-monthly-net').textContent   = fmtInt(monthlyNet);
-  document.getElementById('ar-monthly-tax').textContent   = 'tax: ' + fmtInt(monthlyTax);
-  document.getElementById('ar-fortnight-net').textContent = fmtInt(fnNet);
-  document.getElementById('ar-fortnight-tax').textContent = 'tax: ' + fmtInt(fnTax);
-  document.getElementById('ar-weekly-net').textContent    = fmtInt(weeklyNet);
-  document.getElementById('ar-weekly-tax').textContent    = 'tax: ' + fmtInt(weeklyTax);
+  document.getElementById('ar-monthly-net-calc').textContent   = fmtInt(monthlyNet);
+  document.getElementById('ar-monthly-tax').textContent        = 'tax: ' + fmtInt(monthlyTax);
+  document.getElementById('ar-fortnight-net-calc').textContent = fmtInt(fnNet);
+  document.getElementById('ar-fortnight-tax').textContent      = 'tax: ' + fmtInt(fnTax);
+  document.getElementById('ar-weekly-net-calc').textContent    = fmtInt(weeklyNet);
+  document.getElementById('ar-weekly-tax').textContent         = 'tax: ' + fmtInt(weeklyTax);
   document.getElementById('annual-breakdowns').style.display = 'grid';
 
   highlightBracket(annual, true);
