@@ -460,17 +460,14 @@ function setMode(mode) {
 
   if (!isAnnual) buildPeriodRows();
   else {
-    const saved = APP_DATA.annualIncome || '';
-    // Restore gross/salary input and recalculate
     const grossInput = document.getElementById('annual-input');
-    if (grossInput) {
-      grossInput.value = saved || '';
-      if (saved) onAnnualInput();
-    }
-    const netInput = document.getElementById('annual-net-input');
-    if (netInput) {
-      netInput.value = saved || '';
-      if (saved) onAnnualNetInput();
+    if (grossInput && grossInput.value) {
+      onAnnualInput();
+    } else {
+      setSummary(0, 0);
+      document.getElementById('annual-results').style.display    = 'none';
+      document.getElementById('annual-breakdowns').style.display = 'none';
+      highlightBracket(0, false);
     }
   }
 }
