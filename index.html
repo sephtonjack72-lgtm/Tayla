@@ -264,20 +264,24 @@
 
             <!-- ANNUAL VIEW -->
             <div class="annual-input-wrap" id="annual-input-wrap">
-              <span class="annual-input-label" id="annual-input-label">Total net income this year</span>
-              <div id="ar-net-display" style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--green);text-align:center;margin:12px 0">$0</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px;text-align:center">
-                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
-                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
-                </div>
-                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
-                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
-                </div>
-                <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
-                  <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
-                  <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
+              <span class="annual-input-label" id="annual-input-label">Enter your annual net (take-home) income</span>
+              <input class="annual-big-input" type="number" id="annual-net-input" min="0" step="100"
+                placeholder="e.g. 65,000" oninput="onAnnualNetInput()">
+              <p style="font-size:0.75rem;color:var(--ink-3);margin-top:8px;text-align:center">What actually hits your account across the full year</p>
+              <div id="annual-net-results" style="display:none;margin-top:16px">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+                  <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Month</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-monthly-net">—</div>
+                  </div>
+                  <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Fortnight</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-fortnight-net">—</div>
+                  </div>
+                  <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px">
+                    <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Per Week</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--green)" id="ar-weekly-net">—</div>
+                  </div>
                 </div>
               </div>
             </div>
