@@ -541,7 +541,6 @@ function syncWeeksToMonths() {
     const weekGross = APP_DATA.weeks[w] || 0;
     if (!weekGross) continue;
     const dailyRate = weekGross / 7;
-    // Count how many days of this week fall in each FY month
     for (let d = 0; d < 7; d++) {
       const day = new Date(FY_START);
       day.setDate(FY_START.getDate() + w * 7 + d);
@@ -553,17 +552,36 @@ function syncWeeksToMonths() {
   }
 }
 
+function syncWeeks2ToMonths2() {
+  const monthTotals = new Array(12).fill(0);
+  for (let w = 0; w < 52; w++) {
+    const weekGross = APP_DATA.weeks2[w] || 0;
+    if (!weekGross) continue;
+    const dailyRate = weekGross / 7;
+    for (let d = 0; d < 7; d++) {
+      const day = new Date(FY_START);
+      day.setDate(FY_START.getDate() + w * 7 + d);
+      monthTotals[calMonthIndex(day)] += dailyRate;
+    }
+  }
+  for (let m = 0; m < 12; m++) {
+    APP_DATA.months2[m] = monthTotals[m] > 0 ? parseFloat(monthTotals[m].toFixed(2)) : null;
+  }
+}
+
 function onPeriodInput(i) {
   const val1 = parseFloat(document.getElementById('wi'+i).value) || 0;
-  const val2 = parseFloat(document.getElementById('wi2'+i)?.value) || 0;
-  const combined = val1 + val2;
   if (TAX_MODE === 'weekly') {
     APP_DATA.weeks[i] = val1 || null;
     syncWeeksToMonths();
+    syncWeeks2ToMonths2();
   }
   if (TAX_MODE === 'monthly') {
     APP_DATA.months[i] = val1 || null;
   }
+  // Read val2 from stored data (not DOM) to avoid stale values
+  const val2 = TAX_MODE === 'weekly' ? (APP_DATA.weeks2[i] || 0) : (APP_DATA.months2[i] || 0);
+  const combined = val1 + val2;
   refreshPeriodRow(i);
   refreshPeriodSummary();
   autoAddToBudget(i, combined);
@@ -571,15 +589,17 @@ function onPeriodInput(i) {
 }
 
 function onPeriodInput2(i) {
-  const val1 = parseFloat(document.getElementById('wi'+i)?.value) || 0;
   const val2 = parseFloat(document.getElementById('wi2'+i).value) || 0;
-  const combined = val1 + val2;
   if (TAX_MODE === 'weekly') {
     APP_DATA.weeks2[i] = val2 || null;
+    syncWeeks2ToMonths2();
   }
   if (TAX_MODE === 'monthly') {
     APP_DATA.months2[i] = val2 || null;
   }
+  // Read val1 from stored data (not DOM) to avoid stale values
+  const val1 = TAX_MODE === 'weekly' ? (APP_DATA.weeks[i] || 0) : (APP_DATA.months[i] || 0);
+  const combined = val1 + val2;
   refreshPeriodRow(i);
   refreshPeriodSummary();
   autoAddToBudget(i, combined);
