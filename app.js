@@ -647,34 +647,10 @@ function refreshPeriodSummary() {
   document.getElementById('periods-filled').textContent = filled;
 
   // Annualised projection
-  const annRow = document.getElementById('annualised-row');
-  if (filled > 0 && filled < cfg.count) {
-    const avgNet   = totalNet / filled;
-    const projNet  = avgNet * cfg.count;
-    document.getElementById('proj-gross').textContent = '—';
-    document.getElementById('proj-net').textContent   = fmt(projNet);
-    annRow.style.display = 'block';
-  } else {
-    annRow.style.display = 'none';
-  }
-}
-function onAnnualNetInput() {
-  const net = parseFloat(document.getElementById('annual-net-input').value) || 0;
-  APP_DATA.annualIncome = net;
-  persist();
-  const resultsEl = document.getElementById('annual-net-results');
-  if (!net) {
-    if (resultsEl) resultsEl.style.display = 'none';
-    document.getElementById('s-gross').textContent = '$0.00';
-    return;
-  }
-  document.getElementById('ar-monthly-net').textContent   = fmt(net / 12);
-  document.getElementById('ar-fortnight-net').textContent = fmt(net / 26);
-  document.getElementById('ar-weekly-net').textContent    = fmt(net / 52);
-  if (resultsEl) resultsEl.style.display = 'block';
-  document.getElementById('s-gross').textContent = fmt(net);
-}
+function onAnnualInput() {
+
   let entered = parseFloat(document.getElementById('annual-input').value) || 0;
+
   // If net mode, reverse-calculate gross first
   const annual = INPUT_MODE === 'net' ? netToGrossAnnual(entered) : entered;
   APP_DATA.annualIncome = annual;
@@ -692,29 +668,30 @@ function onAnnualNetInput() {
   const net = annual - tax;
   setSummary(annual, tax);
 
-  // Big result row
   document.getElementById('ar-tax').textContent  = fmtInt(tax);
   document.getElementById('ar-net').textContent  = fmtInt(net);
   document.getElementById('ar-rate').textContent = ((tax/annual)*100).toFixed(1) + '%';
-  // If net mode, also show the calculated gross
+
   if (INPUT_MODE === 'net') {
     document.getElementById('ar-tax').title = 'Gross: ' + fmtInt(annual);
   }
+
   document.getElementById('annual-results').style.display = 'flex';
 
-  // Breakdowns
-  const weeklyNet  = (annual - tax) / 52;
+  const weeklyNet  = net / 52;
   const weeklyTax  = tax / 52;
-  const fnNet      = (annual - tax) / 26;
+  const fnNet      = net / 26;
   const fnTax      = tax / 26;
-  const monthlyNet = (annual - tax) / 12;
+  const monthlyNet = net / 12;
   const monthlyTax = tax / 12;
+
   document.getElementById('ar-monthly-net').textContent   = fmtInt(monthlyNet);
   document.getElementById('ar-monthly-tax').textContent   = 'tax: ' + fmtInt(monthlyTax);
   document.getElementById('ar-fortnight-net').textContent = fmtInt(fnNet);
   document.getElementById('ar-fortnight-tax').textContent = 'tax: ' + fmtInt(fnTax);
   document.getElementById('ar-weekly-net').textContent    = fmtInt(weeklyNet);
   document.getElementById('ar-weekly-tax').textContent    = 'tax: ' + fmtInt(weeklyTax);
+
   document.getElementById('annual-breakdowns').style.display = 'grid';
 
   highlightBracket(annual, true);
