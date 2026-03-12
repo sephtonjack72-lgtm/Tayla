@@ -599,11 +599,11 @@ function autoAddToBudget(periodIndex, netVal) {
   if (!APP_DATA.budget[budgetMonthIndex]) APP_DATA.budget[budgetMonthIndex] = [];
 
   if (TAX_MODE === 'weekly') {
-    // Sum all weeks in this month
+    // Sum all weeks in this month — combined income 1 + income 2
     let monthlyTotal = 0;
     for (let w = 0; w < 52; w++) {
       if (getWeekMonth(w) === budgetMonthIndex) {
-        monthlyTotal += APP_DATA.weeks[w] || 0;
+        monthlyTotal += (APP_DATA.weeks[w] || 0) + (APP_DATA.weeks2[w] || 0);
       }
     }
     APP_DATA.budget[budgetMonthIndex] = APP_DATA.budget[budgetMonthIndex]
