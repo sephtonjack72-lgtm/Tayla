@@ -456,18 +456,15 @@ function setMode(mode) {
   });
 
   // Annualised projection row — only show in weekly/monthly
-  document.getElementById('annualised-row').style.display = isAnnual ? 'none' : 'none'; // shown after data entry
+  document.getElementById('annualised-row').style.display = 'none';
 
   if (!isAnnual) buildPeriodRows();
   else {
-    // Restore annual input if saved
     const saved = APP_DATA.annualIncome || '';
-    document.getElementById('annual-input').value = saved;
-    if (saved) onAnnualInput();
-    else {
-      setSummary(0, 0);
-      document.getElementById('annual-results').style.display = 'none';
-      document.getElementById('annual-breakdowns').style.display = 'none';
+    const netInput = document.getElementById('annual-net-input');
+    if (netInput) {
+      netInput.value = saved || '';
+      if (saved) onAnnualNetInput();
     }
   }
 }
@@ -487,36 +484,25 @@ function buildPeriodRows() {
   const container = document.getElementById('period-rows');
   container.innerHTML = '';
 
+  // Update header — net only, no tax column
+  const headInput = document.getElementById('head-input-col');
+  const headRight = document.getElementById('head-right-col');
+  if (headInput) headInput.textContent = 'Net Pay ($)';
+  if (headRight) headRight.textContent = '';
+
   for (let i = 0; i < cfg.count; i++) {
     const label = TAX_MODE === 'monthly' ? MONTH_NAMES[i] : getWeekLabel(i);
-    const grossStored = data[i] || 0;
-    // In net mode, show the net value in the input field
-    const displayVal = INPUT_MODE === 'net' && grossStored
-      ? parseFloat((grossStored - calcTaxForPeriod(grossStored, TAX_MODE)).toFixed(2))
-      : grossStored;
+    const netStored = data[i] || 0;
     const row = document.createElement('div');
-    row.className = 'week-row' + (grossStored ? ' has-value' : '');
+    row.className = 'week-row' + (netStored ? ' has-value' : '');
     row.id = 'wr' + i;
-
-    if (INPUT_MODE === 'net') {
-      // Net mode: input(net) | tax | gross
-      row.innerHTML = `
-        <div class="wc wc-label">${label}</div>
-        <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-          id="wi${i}" value="${displayVal ? displayVal : ''}" oninput="onPeriodInput(${i})"></div>
-        <div class="wc wc-tax wc-empty" id="wt${i}">—</div>
-        <div class="wc wc-gross wc-empty" id="wn${i}">—</div>`;
-    } else {
-      // Gross mode: input(gross) | tax | net
-      row.innerHTML = `
-        <div class="wc wc-label">${label}</div>
-        <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-          id="wi${i}" value="${grossStored ? grossStored : ''}" oninput="onPeriodInput(${i})"></div>
-        <div class="wc wc-tax wc-empty" id="wt${i}">—</div>
-        <div class="wc wc-net wc-empty" id="wn${i}">—</div>`;
-    }
+    row.innerHTML = `
+      <div class="wc wc-label">${label}</div>
+      <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
+        id="wi${i}" value="${netStored ? netStored : ''}" oninput="onPeriodInput(${i})"></div>
+      <div class="wc wc-net wc-empty" id="wn${i}">—</div>`;
     container.appendChild(row);
-    if (grossStored) refreshPeriodRow(i);
+    if (netStored) refreshPeriodRow(i);
   }
   refreshPeriodSummary();
 }
@@ -565,24 +551,21 @@ function syncWeeksToMonths() {
 }
 
 function onPeriodInput(i) {
-  let val = parseFloat(document.getElementById('wi'+i).value) || 0;
-  // If user entered net, reverse-calculate gross before storing
-  const grossVal = INPUT_MODE === 'net' ? netToGrossPeriod(val, TAX_MODE) : val;
+  const netVal = parseFloat(document.getElementById('wi'+i).value) || 0;
   if (TAX_MODE === 'weekly') {
-    APP_DATA.weeks[i] = grossVal || null;
-    syncWeeksToMonths(); // weekly → monthly only, never reverse
+    APP_DATA.weeks[i] = netVal || null;
+    syncWeeksToMonths();
   }
   if (TAX_MODE === 'monthly') {
-    APP_DATA.months[i] = grossVal || null;
-    // monthly does NOT backfill weekly — independent
+    APP_DATA.months[i] = netVal || null;
   }
   refreshPeriodRow(i);
   refreshPeriodSummary();
-  autoAddToBudget(i, grossVal);
+  autoAddToBudget(i, netVal);
   persist();
 }
 
-function autoAddToBudget(periodIndex, grossVal) {
+function autoAddToBudget(periodIndex, netVal) {
   let budgetMonthIndex;
   if (TAX_MODE === 'monthly') {
     budgetMonthIndex = periodIndex;
@@ -595,15 +578,13 @@ function autoAddToBudget(periodIndex, grossVal) {
   if (!APP_DATA.budget[budgetMonthIndex]) APP_DATA.budget[budgetMonthIndex] = [];
 
   if (TAX_MODE === 'weekly') {
-    // Sum all weeks that belong to this month into a single entry
+    // Sum all weeks in this month
     let monthlyTotal = 0;
     for (let w = 0; w < 52; w++) {
       if (getWeekMonth(w) === budgetMonthIndex) {
-        const g = APP_DATA.weeks[w] || 0;
-        if (g > 0) monthlyTotal += g - calcTaxForPeriod(g, 'weekly');
+        monthlyTotal += APP_DATA.weeks[w] || 0;
       }
     }
-    // Remove old auto entry for this month and replace with single updated total
     APP_DATA.budget[budgetMonthIndex] = APP_DATA.budget[budgetMonthIndex]
       .filter(e => e.autoTaxPeriod !== 'weekly_month_' + budgetMonthIndex);
     if (monthlyTotal > 0) {
@@ -618,16 +599,13 @@ function autoAddToBudget(periodIndex, grossVal) {
       });
     }
   } else {
-    // Monthly or annual — single entry per period
-    const tax    = calcTaxForPeriod(grossVal, TAX_MODE);
-    const netPay = grossVal - tax;
     APP_DATA.budget[budgetMonthIndex] = APP_DATA.budget[budgetMonthIndex]
       .filter(e => e.autoTaxPeriod !== periodIndex + '_' + TAX_MODE);
-    if (grossVal > 0) {
+    if (netVal > 0) {
       APP_DATA.budget[budgetMonthIndex].push({
         id: Date.now(),
         desc: MONTH_NAMES[periodIndex] + ' salary (after tax)',
-        amount: parseFloat(netPay.toFixed(2)),
+        amount: parseFloat(netVal.toFixed(2)),
         type: 'income',
         cat: 'Salary/Wages',
         date: new Date().toLocaleDateString('en-AU'),
@@ -639,26 +617,15 @@ function autoAddToBudget(periodIndex, grossVal) {
 }
 
 function refreshPeriodRow(i) {
-  const data = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
-  const g = data[i] || 0; // always stored as gross
-  const t = calcTaxForPeriod(g, TAX_MODE);
-  const n = g - t;
-  const taxEl   = document.getElementById('wt'+i);
+  const data    = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
+  const net     = data[i] || 0;
   const rightEl = document.getElementById('wn'+i);
   const row     = document.getElementById('wr'+i);
-  if (g === 0) {
-    taxEl.textContent   = '—'; taxEl.className   = 'wc wc-tax wc-empty';
-    rightEl.textContent = '—'; rightEl.className = INPUT_MODE === 'net' ? 'wc wc-gross wc-empty' : 'wc wc-net wc-empty';
+  if (net === 0) {
+    if (rightEl) { rightEl.textContent = '—'; rightEl.className = 'wc wc-net wc-empty'; }
     row.classList.remove('has-value');
   } else {
-    taxEl.textContent = fmt(t); taxEl.className = 'wc wc-tax';
-    if (INPUT_MODE === 'net') {
-      // Right col shows gross
-      rightEl.textContent = fmt(g); rightEl.className = 'wc wc-gross';
-    } else {
-      // Right col shows net
-      rightEl.textContent = fmt(n); rightEl.className = 'wc wc-net';
-    }
+    if (rightEl) { rightEl.textContent = fmt(net); rightEl.className = 'wc wc-net'; }
     row.classList.add('has-value');
   }
 }
@@ -666,44 +633,47 @@ function refreshPeriodRow(i) {
 function refreshPeriodSummary() {
   const cfg  = MODE_CONFIG[TAX_MODE];
   const data = TAX_MODE === 'weekly' ? APP_DATA.weeks : APP_DATA.months;
-  let gross = 0, tax = 0, filled = 0;
+  let totalNet = 0, filled = 0;
   for (let i = 0; i < cfg.count; i++) {
-    const g = data[i] || 0;
-    if (g > 0) { gross += g; tax += calcTaxForPeriod(g, TAX_MODE); filled++; }
+    const n = data[i] || 0;
+    if (n > 0) { totalNet += n; filled++; }
   }
-  setSummary(gross, tax);
+  // Show net as the primary figure in summary — tax is unknown (net only mode)
+  document.getElementById('s-gross').textContent      = fmt(totalNet);
+  document.getElementById('s-tax').textContent        = '—';
+  document.getElementById('s-net').textContent        = '—';
+  document.getElementById('eff-rate-pct').textContent = '—';
+  document.getElementById('rate-fill').style.width    = '0%';
   document.getElementById('periods-filled').textContent = filled;
-
-  // Update annual gross income field to reflect total
-  const annualTotal = TAX_MODE === 'weekly'
-    ? APP_DATA.months.reduce((s, v) => s + (v || 0), 0)  // months already synced from weeks
-    : APP_DATA.months.reduce((s, v) => s + (v || 0), 0);
-  if (annualTotal > 0) {
-    APP_DATA.annualIncome = parseFloat(annualTotal.toFixed(2));
-    document.getElementById('annual-input').value = APP_DATA.annualIncome;
-  }
 
   // Annualised projection
   const annRow = document.getElementById('annualised-row');
   if (filled > 0 && filled < cfg.count) {
-    const avgGross = gross / filled;
-    const avgTax   = tax / filled;
-    const projGross = avgGross * cfg.count;
-    const projNet   = (avgGross - avgTax) * cfg.count;
-    document.getElementById('proj-gross').textContent = fmtInt(projGross);
-    document.getElementById('proj-net').textContent   = fmtInt(projNet);
+    const avgNet   = totalNet / filled;
+    const projNet  = avgNet * cfg.count;
+    document.getElementById('proj-gross').textContent = '—';
+    document.getElementById('proj-net').textContent   = fmt(projNet);
     annRow.style.display = 'block';
   } else {
     annRow.style.display = 'none';
   }
-
-  // Bracket highlight (annualise avg period)
-  const avgPeriodGross = filled > 0 ? gross / filled : 0;
-  const annualised = avgPeriodGross * (TAX_MODE === 'weekly' ? 52 : 12);
-  highlightBracket(annualised, gross > 0);
 }
-
-function onAnnualInput() {
+function onAnnualNetInput() {
+  const net = parseFloat(document.getElementById('annual-net-input').value) || 0;
+  APP_DATA.annualIncome = net;
+  persist();
+  const resultsEl = document.getElementById('annual-net-results');
+  if (!net) {
+    if (resultsEl) resultsEl.style.display = 'none';
+    document.getElementById('s-gross').textContent = '$0.00';
+    return;
+  }
+  document.getElementById('ar-monthly-net').textContent   = fmt(net / 12);
+  document.getElementById('ar-fortnight-net').textContent = fmt(net / 26);
+  document.getElementById('ar-weekly-net').textContent    = fmt(net / 52);
+  if (resultsEl) resultsEl.style.display = 'block';
+  document.getElementById('s-gross').textContent = fmt(net);
+}
   let entered = parseFloat(document.getElementById('annual-input').value) || 0;
   // If net mode, reverse-calculate gross first
   const annual = INPUT_MODE === 'net' ? netToGrossAnnual(entered) : entered;
