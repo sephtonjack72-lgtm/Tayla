@@ -880,3 +880,6 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   .add-entry-grid { grid-template-columns: 1fr; }
   .add-entry-grid .btn { grid-column: span 1; }
 }
+input, select, textarea {
+  font-size: 16px !important;
+}
