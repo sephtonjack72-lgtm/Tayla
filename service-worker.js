@@ -9,7 +9,7 @@
      the browser to detect a new SW version.
 ═══════════════════════════════════════════════════════════ */
 
-const BUILD = '2026-03-15T00:00:00'; // ← update this string on every deploy
+const BUILD = '2026-03-15T10:00:00'; // ← update this string on every deploy
 const CACHE_NAME = 'tayla-v3-' + BUILD;
 
 const PRECACHE_ASSETS = [
