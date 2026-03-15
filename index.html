@@ -997,38 +997,55 @@
 <script src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/Tayla/service-worker.js')
-        .then(reg => {
-          console.log('Tayla SW registered:', reg.scope);
+    window.addEventListener('load', async () => {
 
-          // Check for updates every 60 seconds while the app is open
-          setInterval(() => reg.update(), 60 * 1000);
+      // Cache-bust the SW file so GitHub Pages never serves a stale copy.
+      // The browser compares SW file contents byte-for-byte — the ?v param
+      // forces a fresh network fetch of service-worker.js on every page load.
+      const swUrl = '/Tayla/service-worker.js?v=' + Date.now();
 
-          // New SW installed and waiting — show toast immediately
-          if (reg.waiting) showUpdateToast();
+      let reg;
+      try {
+        reg = await navigator.serviceWorker.register(swUrl);
+        console.log('Tayla SW registered:', reg.scope);
+      } catch (err) {
+        console.log('SW registration failed:', err);
+        return;
+      }
 
-          reg.addEventListener('updatefound', () => {
-            const newSW = reg.installing;
-            newSW.addEventListener('statechange', () => {
-              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateToast();
-              }
-            });
-          });
-        })
-        .catch(err => console.log('SW registration failed:', err));
+      // Helper — show the update toast
+      function showUpdateToast() {
+        const toast = document.getElementById('update-toast');
+        if (toast) toast.style.display = 'flex';
+      }
 
-      // SW activated and claimed clients — show toast
+      // Helper — a waiting SW is already ready to take over
+      function promptUpdateIfWaiting(sw) {
+        if (sw) showUpdateToast();
+      }
+
+      // Case 1: SW was already waiting when page loaded (e.g. user had
+      // the app open when a deploy went out, then refreshed)
+      promptUpdateIfWaiting(reg.waiting);
+
+      // Case 2: New SW found and installed during this session
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateToast();
+          }
+        });
+      });
+
+      // Case 3: SW posts UPDATE_READY after activate + clients.claim()
       navigator.serviceWorker.addEventListener('message', event => {
         if (event.data?.type === 'UPDATE_READY') showUpdateToast();
       });
 
-      // After controller changes (SW took over), reload cleanly
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) { refreshing = true; window.location.reload(); }
-      });
+      // Poll for updates every 30 seconds while the app is open
+      setInterval(() => reg.update(), 30 * 1000);
     });
   }
 
@@ -1039,11 +1056,14 @@
 
   function applyUpdate() {
     document.getElementById('update-toast').style.display = 'none';
+    // Tell the waiting SW to skip waiting and take over
     if (navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      window.location.reload();
     }
+    // Once it takes over, controllerchange fires — then we reload
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    }, { once: true }); // once:true prevents double-reload
   }
 </script>
 </body>
