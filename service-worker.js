@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tayla-v2';
+const CACHE_NAME = 'tayla-v3';
 const ASSETS = [
   '/Tayla/',
   '/Tayla/index.html',
