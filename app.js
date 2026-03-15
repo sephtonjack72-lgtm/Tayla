@@ -1175,8 +1175,21 @@ function getCurrentBudget() {
   return APP_DATA.budget[BUDGET_MONTH];
 }
 
+let BUDGET_ENTRIES_SHOWN = 5;
+
+function showMoreEntries() {
+  BUDGET_ENTRIES_SHOWN += 10;
+  renderBudget();
+}
+
+function showLessEntries() {
+  BUDGET_ENTRIES_SHOWN = 5;
+  renderBudget();
+}
+
 function changeBudgetMonth() {
   BUDGET_MONTH = parseInt(document.getElementById('budget-month-select').value);
+  BUDGET_ENTRIES_SHOWN = 5; // reset on month change
   renderBudget();
 }
 
@@ -1249,7 +1262,9 @@ function renderBudget() {
   if (entries.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-3);font-size:0.82rem">No entries yet.</div>';
   } else {
-    list.innerHTML = entries.slice(0, 40).map(e => {
+    const shown    = Math.min(BUDGET_ENTRIES_SHOWN, entries.length);
+    const remaining = entries.length - shown;
+    const renderEntry = e => {
       const isIncome  = e.type === 'income';
       const isSavings = e.type === 'savings rate';
       const isDraw    = e.type === 'savings draw';
@@ -1270,7 +1285,24 @@ function renderBudget() {
         <div class="entry-amount ${amtClass}">${prefix}${fmt(e.amount)}</div>
         <button class="entry-del" onclick="deleteBudgetEntry(${e.id})" title="Delete">×</button>
       </div>`;
-    }).join('');
+    };
+    list.innerHTML = entries.slice(0, shown).map(renderEntry).join('');
+    if (remaining > 0) {
+      list.innerHTML += `<button onclick="showMoreEntries()" style="
+        width:100%;padding:12px;margin-top:6px;background:var(--paper-2);
+        border:1px solid var(--rule);border-radius:var(--r-sm);cursor:pointer;
+        font-size:0.8rem;font-weight:600;color:var(--ink-3);font-family:inherit;
+        transition:background 0.15s,color 0.15s;
+      " onmouseover="this.style.background='var(--paper-3)';this.style.color='var(--ink)'"
+         onmouseout="this.style.background='var(--paper-2)';this.style.color='var(--ink-3)'">
+        Show ${remaining} more entr${remaining === 1 ? 'y' : 'ies'}
+      </button>`;
+    } else if (entries.length > 5) {
+      list.innerHTML += `<button onclick="showLessEntries()" style="
+        width:100%;padding:10px;margin-top:6px;background:none;
+        border:none;cursor:pointer;font-size:0.75rem;color:var(--ink-3);font-family:inherit;
+      ">Show less ↑</button>`;
+    }
   }
 
   // Spending pie chart
