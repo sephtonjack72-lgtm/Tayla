@@ -472,6 +472,8 @@ function setTheme(theme) {
   };
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', themeColors[theme] || '#111e1e');
+  // Re-render budget so pie chart picks up new palette immediately
+  if (typeof renderBudget === 'function') renderBudget();
   // Save
   localStorage.setItem(THEME_LS_KEY, theme);
   if (CURRENT_USER?.id) {
