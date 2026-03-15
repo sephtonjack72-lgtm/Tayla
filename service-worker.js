@@ -5,10 +5,12 @@
    - Serve from cache immediately (fast / offline-capable)
    - Fetch fresh copy in background, update cache
    - On new SW activation, notify the page to prompt reload
-   - Cache version bump is automatic — no manual v3/v4 needed
+   - Update this BUILD constant on every deploy to force
+     the browser to detect a new SW version.
 ═══════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'tayla-v3';
+const BUILD = '2026-03-15T00:00:00'; // ← update this string on every deploy
+const CACHE_NAME = 'tayla-v4-' + BUILD;
 
 const PRECACHE_ASSETS = [
   '/Tayla/',
