@@ -1006,3 +1006,62 @@ h3 { font-size: 1.1rem; font-weight: 700; }
     font-size: 16px !important;
   }
 }
+
+/* ═══════════════════════════════════════
+   TIER GATING
+   ═══════════════════════════════════════ */
+
+/* Cards that can be locked */
+.tier-gateable {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Frosted lock overlay */
+.tier-lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(240,244,243,0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: background 0.2s;
+}
+.tier-lock-overlay:hover { background: rgba(240,244,243,0.88); }
+
+.tier-lock-content {
+  text-align: center;
+  padding: 24px;
+  color: var(--ink);
+}
+.tier-lock-content div:first-child {
+  color: var(--gold);
+}
+
+/* Nav tier badge */
+.nav-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-right: 4px;
+}
+.badge-free {
+  background: var(--paper-2);
+  color: var(--ink-3);
+  border: 1px solid var(--rule);
+}
+.badge-plus {
+  background: linear-gradient(135deg, rgba(26,122,140,0.15), rgba(26,122,140,0.08));
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
