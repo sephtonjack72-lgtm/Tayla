@@ -652,6 +652,50 @@
                 <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--red)" id="debt-total-amt">$0.00</span>
               </div>
             </div>
+
+            <!-- ACCRUED EXPENSES -->
+            <div class="card" style="margin-top:20px">
+              <div class="card-title">Recurring Expenses</div>
+              <div class="card-sub">Subscriptions, phone bills, and regular payments — auto-added to your budget on their due date</div>
+              <div class="add-entry-grid" style="margin-top:14px">
+                <div>
+                  <div class="form-label">Expense Name</div>
+                  <input class="form-input" type="text" id="ac-name" placeholder="e.g. Netflix, Phone bill" oninput="autoSuggestAccruedCat()">
+                </div>
+                <div>
+                  <div class="form-label">Due Day of Month</div>
+                  <input class="form-input" type="number" id="ac-day" min="1" max="31" placeholder="e.g. 15">
+                </div>
+                <div>
+                  <div class="form-label">Amount ($)</div>
+                  <input class="form-input" type="number" id="ac-amount" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <div>
+                  <div class="form-label">Category <span id="ac-cat-hint" style="font-size:0.68rem;color:var(--gold);margin-left:4px;font-weight:600"></span></div>
+                  <select class="form-input cat-select" id="ac-cat">
+                    <optgroup label="📺 Subscriptions &amp; Streaming">
+                      <option value="Subscriptions">Subscriptions — streaming, apps, software</option>
+                    </optgroup>
+                    <optgroup label="🏠 Bills &amp; Utilities">
+                      <option value="Utilities">Utilities — phone, electricity, gas, internet</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="Insurance">Insurance</option>
+                      <option value="Transport">Transport</option>
+                      <option value="Healthcare">Healthcare</option>
+                      <option value="Education">Education</option>
+                      <option value="Other Expense">Other</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <button class="btn btn-primary" onclick="addAccrued()" style="grid-column:span 1">+ Add</button>
+              </div>
+              <div class="alert alert-error" id="ac-error" style="margin-top:10px"></div>
+              <div id="accrued-list" style="margin-top:12px"></div>
+              <p style="font-size:0.72rem;color:var(--ink-3);margin-top:10px;line-height:1.6">
+                💡 Entries are automatically added to your Budget on the due date each month. They won't be duplicated if you view this tab multiple times.
+              </p>
+            </div>
           </div>
         </div>
       </div>
