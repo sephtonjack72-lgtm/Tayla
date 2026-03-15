@@ -932,6 +932,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   /* Health */
   .health-grid { grid-template-columns: 1fr; }
   .health-inputs { grid-template-columns: 1fr; }
+  .health-bottom-row { grid-template-columns: 1fr !important; }
 
   /* Goals */
   .goals-grid { grid-template-columns: 1fr; }
