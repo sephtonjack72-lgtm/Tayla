@@ -32,7 +32,7 @@
         <span style="font-size:0.75rem;color:var(--ink-3);background:var(--paper-2);padding:3px 10px;border-radius:20px;border:1px solid var(--rule)">👤 Guest</span>
         <button class="btn btn-primary btn-sm" onclick="doLogout();switchAuthTab('register')">Save My Data — Create Free Account</button>
       </div>
-      <button class="btn btn-ghost btn-sm" id="nav-settings-btn" onclick="openModal('settings-modal')">⚙ Settings</button>
+      <button class="btn btn-ghost btn-sm" id="nav-settings-btn" onclick="syncSettingsAccountUI();openModal('settings-modal')">⚙ Settings</button>
       <button class="btn btn-ghost btn-sm" id="nav-logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
@@ -770,6 +770,43 @@
       <button class="modal-close" onclick="closeModal('settings-modal')">&times;</button>
     </div>
     <div class="modal-body">
+
+      <!-- ACCOUNT & SUBSCRIPTION -->
+      <div class="settings-section">
+        <div class="settings-section-title">Account</div>
+        <div class="settings-section-desc">Your plan and subscription details</div>
+        <div class="card" style="margin-bottom:0">
+          <div class="setting-row">
+            <div class="setting-info">
+              <h4>Current Plan</h4>
+              <p id="settings-plan-desc">Loading...</p>
+            </div>
+            <div class="toggle-wrap">
+              <span id="settings-plan-badge" class="nav-tier-badge badge-free">Free</span>
+            </div>
+          </div>
+          <!-- Upgrade CTA — shown for free users -->
+          <div class="setting-row" id="settings-upgrade-row" style="display:none">
+            <div class="setting-info">
+              <h4>Upgrade to Tayla Plus</h4>
+              <p>Unlock Portfolio, auto health scoring, debt register, recurring expenses, and savings tracking.</p>
+            </div>
+            <div class="toggle-wrap">
+              <button class="btn btn-primary btn-sm" onclick="closeModal('settings-modal');openModal('plus-upgrade-modal')">Upgrade</button>
+            </div>
+          </div>
+          <!-- Cancel subscription — shown for Plus users -->
+          <div class="setting-row" id="settings-cancel-row" style="display:none">
+            <div class="setting-info">
+              <h4>Cancel Subscription</h4>
+              <p>Your plan will revert to Free at the end of your current billing period. Your data will not be deleted.</p>
+            </div>
+            <div class="toggle-wrap">
+              <button class="btn btn-ghost btn-sm" style="color:var(--red);border-color:var(--red)" onclick="confirmCancelSubscription()">Cancel Plan</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- DATA STORAGE -->
       <div class="settings-section">
