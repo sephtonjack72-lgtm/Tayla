@@ -41,12 +41,21 @@ async function fetchUserTier(userId) {
   try {
     const { data, error } = await sb
       .from('profiles')
-      .select('tier')
+      .select('tier, theme')
       .eq('id', userId)
       .maybeSingle();
-    if (!error && data) CURRENT_TIER = data.tier || 'free';
-    else CURRENT_TIER = 'free';
-  } catch { CURRENT_TIER = 'free'; }
+    if (!error && data) {
+      CURRENT_TIER = data.tier || 'free';
+      // Apply saved theme
+      loadTheme(data.theme || localStorage.getItem(THEME_LS_KEY) || 'default');
+    } else {
+      CURRENT_TIER = 'free';
+      loadTheme(localStorage.getItem(THEME_LS_KEY) || 'default');
+    }
+  } catch {
+    CURRENT_TIER = 'free';
+    loadTheme(localStorage.getItem(THEME_LS_KEY) || 'default');
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -250,6 +259,7 @@ function enterGuest() {
   if (sidebarCta) sidebarCta.style.display = 'block';
 
   showScreen('app-screen');
+  loadTheme(localStorage.getItem(THEME_LS_KEY) || 'default');
   loadAllUserData().then(() => {
     buildWeekRows();
     renderBudget();
@@ -437,6 +447,42 @@ async function confirmCancelSubscription() {
     alert('Something went wrong. Please try again or contact support.');
     console.error('Cancel subscription error:', e);
   }
+}
+
+/* ═══════════════════════════════════════════════════
+   THEMES
+═══════════════════════════════════════════════════ */
+const THEME_LS_KEY = 'tayla_theme';
+
+function setTheme(theme) {
+  // Apply to DOM
+  if (theme === 'default') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+  // Update active swatch
+  document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+  const active = document.getElementById('swatch-' + theme);
+  if (active) active.classList.add('active');
+  // Update PWA theme-color meta
+  const themeColors = {
+    default: '#111e1e', green: '#051a08', blue: '#0a1628',
+    pink: '#2a0a1a', red: '#1e0a08', yellow: '#1e1600', black: '#000000'
+  };
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', themeColors[theme] || '#111e1e');
+  // Save
+  localStorage.setItem(THEME_LS_KEY, theme);
+  if (CURRENT_USER?.id) {
+    sb.from('profiles').update({ theme, updated_at: new Date().toISOString() })
+      .eq('id', CURRENT_USER.id).then(() => {});
+  }
+}
+
+function loadTheme(theme) {
+  if (theme && theme !== 'default') setTheme(theme);
+  else setTheme('default');
 }
 
 function updateCatConsent() {
@@ -1996,6 +2042,11 @@ const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
    INIT
 ═══════════════════════════════════════════════════ */
 (async function init() {
+  // Apply saved theme immediately to avoid flash of default
+  const savedTheme = localStorage.getItem(THEME_LS_KEY);
+  if (savedTheme && savedTheme !== 'default') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     const email = session.user.email;
