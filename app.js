@@ -1571,6 +1571,9 @@ function renderAccrued() {
     </div>`;
   }).join('');
 }
+
+/* ═══════════════════════════════════════════════════
+   GOALS
 ═══════════════════════════════════════════════════ */
 // System goals that always exist and cannot be deleted
 
