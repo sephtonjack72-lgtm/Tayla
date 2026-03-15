@@ -626,13 +626,18 @@
               <div id="health-auto-summary" style="margin-top:8px"></div>
               <p style="font-size:0.72rem;color:var(--ink-3);margin-top:12px;line-height:1.6">Add more budget entries to improve accuracy. Not financial advice.</p>
             </div>
+          </div>
+        </div>
+
+        <!-- DEBT REGISTER + RECURRING EXPENSES — side by side -->
+        <div class="health-bottom-row" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
 
             <!-- DEBT REGISTER -->
-            <div class="card" style="margin-top:20px">
+            <div class="card">
               <div class="card-title">Debt Register</div>
               <div class="card-sub">Track your loans and liabilities</div>
-              <div class="add-entry-grid" style="margin-top:12px">
-                <div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+                <div style="grid-column:span 2">
                   <div class="form-label">Debt Name</div>
                   <input class="form-input" type="text" id="debt-name" placeholder="e.g. Car loan, HECS">
                 </div>
@@ -644,7 +649,9 @@
                   <div class="form-label">Interest Rate (%)</div>
                   <input class="form-input" type="number" id="debt-rate" min="0" step="0.01" placeholder="e.g. 6.5">
                 </div>
-                <button class="btn btn-primary" onclick="addDebt()">+ Add Debt</button>
+                <div style="grid-column:span 2">
+                  <button class="btn btn-primary" style="width:100%" onclick="addDebt()">+ Add Debt</button>
+                </div>
               </div>
               <div id="debt-list" style="margin-top:12px"></div>
               <div id="debt-total-row" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center">
@@ -653,24 +660,24 @@
               </div>
             </div>
 
-            <!-- ACCRUED EXPENSES -->
-            <div class="card" style="margin-top:20px">
+            <!-- RECURRING EXPENSES -->
+            <div class="card">
               <div class="card-title">Recurring Expenses</div>
-              <div class="card-sub">Subscriptions, phone bills, and regular payments — auto-added to your budget on their due date</div>
-              <div class="add-entry-grid" style="margin-top:14px">
-                <div>
+              <div class="card-sub">Auto-added to your budget on their due date each month</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+                <div style="grid-column:span 2">
                   <div class="form-label">Expense Name</div>
                   <input class="form-input" type="text" id="ac-name" placeholder="e.g. Netflix, Phone bill" oninput="autoSuggestAccruedCat()">
-                </div>
-                <div>
-                  <div class="form-label">Due Day of Month</div>
-                  <input class="form-input" type="number" id="ac-day" min="1" max="31" placeholder="e.g. 15">
                 </div>
                 <div>
                   <div class="form-label">Amount ($)</div>
                   <input class="form-input" type="number" id="ac-amount" min="0" step="0.01" placeholder="0.00">
                 </div>
                 <div>
+                  <div class="form-label">Due Day</div>
+                  <input class="form-input" type="number" id="ac-day" min="1" max="31" placeholder="e.g. 15">
+                </div>
+                <div style="grid-column:span 2">
                   <div class="form-label">Category <span id="ac-cat-hint" style="font-size:0.68rem;color:var(--gold);margin-left:4px;font-weight:600"></span></div>
                   <select class="form-input cat-select" id="ac-cat">
                     <optgroup label="📺 Subscriptions &amp; Streaming">
@@ -688,15 +695,17 @@
                     </optgroup>
                   </select>
                 </div>
-                <button class="btn btn-primary" onclick="addAccrued()" style="grid-column:span 1">+ Add</button>
+                <div style="grid-column:span 2">
+                  <button class="btn btn-primary" style="width:100%" onclick="addAccrued()">+ Add Recurring Expense</button>
+                </div>
               </div>
               <div class="alert alert-error" id="ac-error" style="margin-top:10px"></div>
               <div id="accrued-list" style="margin-top:12px"></div>
               <p style="font-size:0.72rem;color:var(--ink-3);margin-top:10px;line-height:1.6">
-                💡 Entries are automatically added to your Budget on the due date each month. They won't be duplicated if you view this tab multiple times.
+                💡 Added to Budget automatically on the due date. Never duplicated.
               </p>
             </div>
-          </div>
+
         </div>
       </div>
 
@@ -1043,14 +1052,9 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
 
-      // Cache-bust the SW file so GitHub Pages never serves a stale copy.
-      // The browser compares SW file contents byte-for-byte — the ?v param
-      // forces a fresh network fetch of service-worker.js on every page load.
-      const swUrl = '/Tayla/service-worker.js?v=' + Date.now();
-
       let reg;
       try {
-        reg = await navigator.serviceWorker.register(swUrl);
+        reg = await navigator.serviceWorker.register('/Tayla/service-worker.js');
         console.log('Tayla SW registered:', reg.scope);
       } catch (err) {
         console.log('SW registration failed:', err);
