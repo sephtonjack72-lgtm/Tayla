@@ -152,7 +152,9 @@ async function doRegister() {
     categoryData:{ given: cCat,  timestamp: now, canWithdraw: true },
   });
 
-  showAlert('reg-success', '✓ Account created! Check your email to confirm, then sign in.', 'success');
+  showAlert('reg-success', '', 'success'); // clear any old messages
+  document.getElementById('verify-email-display').textContent = email;
+  showScreen('verify-screen');
 }
 
 async function doLogout() {
