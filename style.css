@@ -94,7 +94,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 
 /* ══ NAV ══ */
 .nav {
-  background: #1c1c1e;
+  background: #000;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   position: sticky; top: 0; z-index: 200;
   padding: 0 28px;
@@ -571,7 +571,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 .weeks-container {
   max-height: 580px; overflow-y: auto;
   border: 1px solid var(--rule); border-radius: var(--r);
-  background: #fff;
+  background: transparent;
 }
 .weeks-container::-webkit-scrollbar { width: 6px; }
 .weeks-container::-webkit-scrollbar-track { background: var(--paper-2); }
@@ -580,7 +580,6 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 .week-row {
   display: grid; grid-template-columns: 160px 1fr 1fr 1fr;
   align-items: center; gap: 0;
-  background: #fff;
   border-bottom: 1px solid var(--rule); transition: background 0.12s;
 }
 .week-row:last-child { border-bottom: none; }
@@ -1107,8 +1106,11 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   background: linear-gradient(145deg, #1a0810 0%, #2e1020 60%, #200a18 100%);
 }
 [data-theme="pink"] body::before { background-image: none; }
-[data-theme="pink"] .nav { background: #1c1c1e; }
-[data-theme="pink"] .sidebar { background: #1c1c1e; }
+[data-theme="pink"] .nav { background: #000; }
+[data-theme="pink"] .sidebar { background: #000; }
+[data-theme="pink"] .weeks-container { background: #fff; }
+[data-theme="pink"] .week-row { background: #fff; }
+[data-theme="pink"] .week-head { background: #f8f8f8; }
 
 /* $10 — Blue */
 [data-theme="blue"] {
@@ -1147,8 +1149,11 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   background: linear-gradient(145deg, #1a0806 0%, #300e08 60%, #220a06 100%);
 }
 [data-theme="red"] body::before { background-image: none; }
-[data-theme="red"] .nav { background: #1c1c1e; }
-[data-theme="red"] .sidebar { background: #1c1c1e; }
+[data-theme="red"] .nav { background: #000; }
+[data-theme="red"] .sidebar { background: #000; }
+[data-theme="red"] .weeks-container { background: #fff; }
+[data-theme="red"] .week-row { background: #fff; }
+[data-theme="red"] .week-head { background: #f8f8f8; }
 
 /* $50 — Gold */
 [data-theme="yellow"] {
@@ -1166,7 +1171,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   background: linear-gradient(145deg, #181200 0%, #2a1e00 60%, #201600 100%);
 }
 [data-theme="yellow"] body::before { background-image: none; }
-[data-theme="yellow"] .nav { background: #1c1c1e; }
+[data-theme="yellow"] .nav { background: #000; }
 
 /* $100 — Green */
 [data-theme="green"] {
