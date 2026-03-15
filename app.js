@@ -1188,33 +1188,92 @@ function exportCSV() {
 /* ═══════════════════════════════════════════════════
    BUDGET TRACKER
 ═══════════════════════════════════════════════════ */
-const CAT_COLORS = {
-  // Income
-  'Salary/Wages':      '#4a6fa5', // slate blue
-  'Freelance':         '#6b7fd7', // soft indigo
-  'Other Income':      '#7e8fbf', // muted periwinkle
-  // Housing & Utilities
-  'Rent/Mortgage':     '#2d3561', // deep navy
-  'Utilities':         '#5c6bc0', // medium indigo
-  // Food
-  'Groceries':         '#546e8a', // steel blue-grey
-  'Dining Out':        '#7986a3', // dusty blue
-  // Transport & lifestyle
-  'Transport':         '#4a5568', // cool grey
-  'Entertainment':     '#7c6fa0', // soft purple
-  'Clothing':          '#9c8fb5', // lavender grey
-  // Financial
-  'Insurance':         '#3d4f6e', // dark slate
-  'Subscriptions':     '#6e5fa0', // medium purple
-  'Savings/Investment':'#3a5068', // teal-navy
-  'Emergency Fund':    '#4a6880', // muted teal-blue
-  'Debt Repayments':   '#6b4f7a', // dark plum
-  // Health & education
-  'Healthcare':        '#5b7fa6', // sky-steel
-  'Education':         '#7b8fa8', // grey-blue
-  // Catch-all
-  'Other Expense':     '#8892a4', // neutral grey-blue
+// Theme-aware pie chart palettes — each is a harmonious set of
+// desaturated hues tinted toward the theme's accent colour.
+const THEME_PALETTES = {
+  default: {
+    'Salary/Wages':       '#4a6fa5','Freelance':           '#6b7fd7',
+    'Other Income':       '#7e8fbf','Rent/Mortgage':       '#2d3561',
+    'Utilities':          '#5c6bc0','Groceries':           '#546e8a',
+    'Dining Out':         '#7986a3','Transport':           '#4a5568',
+    'Entertainment':      '#7c6fa0','Clothing':            '#9c8fb5',
+    'Insurance':          '#3d4f6e','Subscriptions':       '#6e5fa0',
+    'Savings/Investment': '#3a5068','Emergency Fund':      '#4a6880',
+    'Debt Repayments':    '#6b4f7a','Healthcare':          '#5b7fa6',
+    'Education':          '#7b8fa8','Other Expense':       '#8892a4',
+  },
+  green: {
+    'Salary/Wages':       '#3a6b4a','Freelance':           '#5a8c65',
+    'Other Income':       '#7aaa82','Rent/Mortgage':       '#2a4a35',
+    'Utilities':          '#4a7a58','Groceries':           '#5a8060',
+    'Dining Out':         '#7a9878','Transport':           '#4a5e50',
+    'Entertainment':      '#6a8a5a','Clothing':            '#8aaa80',
+    'Insurance':          '#3a5a42','Subscriptions':       '#5a7a50',
+    'Savings/Investment': '#3a6040','Emergency Fund':      '#4a7050',
+    'Debt Repayments':    '#5a6a48','Healthcare':          '#5a8862',
+    'Education':          '#789a78','Other Expense':       '#889a84',
+  },
+  blue: {
+    'Salary/Wages':       '#3a5a8a','Freelance':           '#5570b0',
+    'Other Income':       '#7090c8','Rent/Mortgage':       '#2a3a6a',
+    'Utilities':          '#4560a0','Groceries':           '#4a6080',
+    'Dining Out':         '#6878a8','Transport':           '#404e70',
+    'Entertainment':      '#5a6898','Clothing':            '#8090b8',
+    'Insurance':          '#344878','Subscriptions':       '#5060a0',
+    'Savings/Investment': '#304878','Emergency Fund':      '#405888',
+    'Debt Repayments':    '#506080','Healthcare':          '#4a70a8',
+    'Education':          '#6880a8','Other Expense':       '#7888a8',
+  },
+  pink: {
+    'Salary/Wages':       '#8a4a6a','Freelance':           '#a86080',
+    'Other Income':       '#c08098','Rent/Mortgage':       '#6a2a4a',
+    'Utilities':          '#9a5070','Groceries':           '#885068',
+    'Dining Out':         '#a87088','Transport':           '#6a4a58',
+    'Entertainment':      '#9a5878','Clothing':            '#b87890',
+    'Insurance':          '#6a3858','Subscriptions':       '#985070',
+    'Savings/Investment': '#684060','Emergency Fund':      '#785070',
+    'Debt Repayments':    '#885068','Healthcare':          '#8a5878',
+    'Education':          '#a07888','Other Expense':       '#a08088',
+  },
+  red: {
+    'Salary/Wages':       '#8a4a3a','Freelance':           '#aa6050',
+    'Other Income':       '#c08070','Rent/Mortgage':       '#6a2a20',
+    'Utilities':          '#9a5040','Groceries':           '#886050',
+    'Dining Out':         '#a87868','Transport':           '#6a4840',
+    'Entertainment':      '#9a5848','Clothing':            '#b88878',
+    'Insurance':          '#6a3830','Subscriptions':       '#985048',
+    'Savings/Investment': '#684038','Emergency Fund':      '#785048',
+    'Debt Repayments':    '#885048','Healthcare':          '#8a5850',
+    'Education':          '#a07868','Other Expense':       '#a08070',
+  },
+  yellow: {
+    'Salary/Wages':       '#8a7a3a','Freelance':           '#aa9a50',
+    'Other Income':       '#c0b870','Rent/Mortgage':       '#6a5a20',
+    'Utilities':          '#9a8a40','Groceries':           '#887a50',
+    'Dining Out':         '#a89860','Transport':           '#6a6040',
+    'Entertainment':      '#9a8840','Clothing':            '#b8b070',
+    'Insurance':          '#6a5a30','Subscriptions':       '#98883a',
+    'Savings/Investment': '#686030','Emergency Fund':      '#787040',
+    'Debt Repayments':    '#887050','Healthcare':          '#8a8050',
+    'Education':          '#a09860','Other Expense':       '#a0a068',
+  },
+  black: {
+    'Salary/Wages':       '#5a7aaa','Freelance':           '#7080c8',
+    'Other Income':       '#8090c0','Rent/Mortgage':       '#384878',
+    'Utilities':          '#6070b0','Groceries':           '#587090',
+    'Dining Out':         '#7080a8','Transport':           '#505870',
+    'Entertainment':      '#7868a8','Clothing':            '#9888b8',
+    'Insurance':          '#405070','Subscriptions':       '#706898',
+    'Savings/Investment': '#405870','Emergency Fund':      '#506880',
+    'Debt Repayments':    '#706880','Healthcare':          '#5878a8',
+    'Education':          '#7080a8','Other Expense':       '#808898',
+  },
 };
+
+function getCatColors() {
+  const theme = document.documentElement.getAttribute('data-theme') || 'default';
+  return THEME_PALETTES[theme] || THEME_PALETTES.default;
+}
 
 function getCurrentBudget() {
   if (!APP_DATA.budget[BUDGET_MONTH]) APP_DATA.budget[BUDGET_MONTH] = [];
@@ -1323,7 +1382,7 @@ function renderBudget() {
       const catLabel  = isDebt ? (debtName || 'Debt Repayment') : e.cat;
       return `
       <div class="entry-item">
-        <div class="entry-cat-dot" style="background:${isDebt ? 'var(--red)' : (CAT_COLORS[e.cat]||'#999')}"></div>
+        <div class="entry-cat-dot" style="background:${isDebt ? 'var(--red)' : (getCatColors()[e.cat]||'#999')}"></div>
         <div>
           <div class="entry-desc">${escHtml(e.desc)}${drawBadge}${debtBadge}</div>
           <span class="entry-cat-label">${catLabel} · ${e.date}</span>
@@ -1377,7 +1436,7 @@ function renderBudget() {
       const ix2 = cx + inner * Math.cos(angle + slice);
       const iy2 = cy + inner * Math.sin(angle + slice);
       const large = slice > Math.PI ? 1 : 0;
-      const color = CAT_COLORS[cat] || '#5a7070';
+      const color = getCatColors()[cat] || '#5a7070';
       const midAngle = angle + slice / 2;
       const path = `M${ix1},${iy1} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large},0 ${ix1},${iy1} Z`;
       angle += slice;
@@ -1861,7 +1920,7 @@ function renderAccrued() {
     const catLabel = isDebtRepay
       ? 'Debt repayment — ' + (debt ? escHtml(debt.name) : 'unknown debt')
       : a.cat;
-    const dotColor = isDebtRepay ? CAT_COLORS['Debt Repayments'] : (CAT_COLORS[a.cat] || '#5a7070');
+    const dotColor = isDebtRepay ? getCatColors()['Debt Repayments'] : (getCatColors()[a.cat] || '#5a7070');
     const statusBadge = injected
       ? '<span style="font-size:0.65rem;background:#e6f4ea;color:#2e7d32;border-radius:4px;padding:1px 7px;margin-left:6px;font-weight:600">✓ Added this month</span>'
       : '<span style="font-size:0.65rem;background:var(--paper-2);color:var(--ink-3);border-radius:4px;padding:1px 7px;margin-left:6px">Due ' + daySuffix(a.day) + '</span>';
