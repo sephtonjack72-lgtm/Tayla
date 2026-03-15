@@ -195,10 +195,7 @@ async function enterApp(email, name, id) {
   CURRENT_USER = { email, name, id };
   GUEST_MODE   = false;
 
-  // Fetch tier first — everything gates on this
-  await fetchUserTier(id);
-
-  // Reset any guest locked styles
+  // Show the shell immediately — don't wait for data
   ['health','goals'].forEach(t => {
     const s = document.getElementById('nav-' + t);
     const m = document.getElementById('mnav-' + t);
@@ -213,7 +210,10 @@ async function enterApp(email, name, id) {
   document.getElementById('privacy-banner').style.display = 'flex';
   document.getElementById('mobile-nav').style.display = 'block';
   showScreen('app-screen');
-  await loadAllUserData();
+
+  // Fetch tier + data in parallel — one round trip wait instead of two
+  await Promise.all([fetchUserTier(id), loadAllUserData()]);
+
   applyTierGating();
   applyAccruedExpenses();
   syncConsentUI();
