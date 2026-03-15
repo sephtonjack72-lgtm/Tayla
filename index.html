@@ -974,14 +974,76 @@
   </div>
 </div>
 
+<!-- UPDATE TOAST -->
+<div id="update-toast" style="
+  display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:40px;
+  font-size:0.82rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  display:none;align-items:center;gap:14px;z-index:9999;white-space:nowrap;
+  animation:slideUp 0.3s ease;
+" id="update-toast">
+  <span>⚡ Update available</span>
+  <button onclick="applyUpdate()" style="
+    background:var(--gold);color:#fff;border:none;border-radius:20px;
+    padding:5px 14px;font-size:0.78rem;font-weight:600;cursor:pointer;
+    font-family:inherit;
+  ">Refresh</button>
+  <button onclick="document.getElementById('update-toast').style.display='none'" style="
+    background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;
+    font-size:1rem;padding:0 2px;line-height:1;
+  ">×</button>
+</div>
+
 <script src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/Tayla/service-worker.js')
-        .then(reg => console.log('Tayla SW registered:', reg.scope))
+        .then(reg => {
+          console.log('Tayla SW registered:', reg.scope);
+
+          // Check for updates every 60 seconds while the app is open
+          setInterval(() => reg.update(), 60 * 1000);
+
+          // New SW installed and waiting — show toast immediately
+          if (reg.waiting) showUpdateToast();
+
+          reg.addEventListener('updatefound', () => {
+            const newSW = reg.installing;
+            newSW.addEventListener('statechange', () => {
+              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        })
         .catch(err => console.log('SW registration failed:', err));
+
+      // SW activated and claimed clients — show toast
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data?.type === 'UPDATE_READY') showUpdateToast();
+      });
+
+      // After controller changes (SW took over), reload cleanly
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) { refreshing = true; window.location.reload(); }
+      });
     });
+  }
+
+  function showUpdateToast() {
+    const toast = document.getElementById('update-toast');
+    if (toast) toast.style.display = 'flex';
+  }
+
+  function applyUpdate() {
+    document.getElementById('update-toast').style.display = 'none';
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      window.location.reload();
+    }
   }
 </script>
 </body>
