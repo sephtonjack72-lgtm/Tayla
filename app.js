@@ -215,6 +215,9 @@ async function enterApp(email, name, id) {
   await Promise.all([fetchUserTier(id), loadAllUserData()]);
 
   applyTierGating();
+  // Restore health mode now that tier is known — never triggers modal on login
+  const savedMode = isPlus() ? HEALTH_MODE : 'manual';
+  HEALTH_MODE = savedMode;
   applyAccruedExpenses();
   syncConsentUI();
   buildWeekRows();
@@ -278,7 +281,14 @@ function applyTierGating() {
     autoBtn.disabled = !plus;
     autoBtn.style.opacity = plus ? '' : '0.4';
     autoBtn.title = plus ? '' : 'Tayla Plus feature';
-    if (!plus) setHealthMode('manual');
+    // Force manual mode for non-plus without triggering the upgrade modal
+    if (!plus) {
+      HEALTH_MODE = 'manual';
+      document.getElementById('health-btn-auto')?.classList.remove('active');
+      document.getElementById('health-btn-manual')?.classList.add('active');
+      document.getElementById('health-manual-card') && (document.getElementById('health-manual-card').style.display = 'block');
+      document.getElementById('health-auto-card')   && (document.getElementById('health-auto-card').style.display   = 'none');
+    }
   }
 
   // ── Debt Register card ──
@@ -369,14 +379,31 @@ function syncConsentUI() {
 
 function syncSettingsAccountUI() {
   const plus = isPlus();
+  const guest = isGuest();
   const badge = document.getElementById('settings-plan-badge');
   const desc  = document.getElementById('settings-plan-desc');
   const upgradeRow = document.getElementById('settings-upgrade-row');
   const cancelRow  = document.getElementById('settings-cancel-row');
+  const guestRow   = document.getElementById('settings-guest-row');
+  const emailEl    = document.getElementById('settings-email-display');
+
+  // Email / guest label
+  if (emailEl) {
+    emailEl.textContent = guest ? 'Guest — not signed in' : (CURRENT_USER?.email || '');
+  }
+
+  // Guest row (mobile save data CTA)
+  if (guestRow) guestRow.style.display = guest ? 'flex' : 'none';
 
   if (!badge) return;
 
-  if (plus) {
+  if (guest) {
+    badge.textContent = '👤 Guest';
+    badge.className   = 'nav-tier-badge badge-free';
+    if (desc) desc.textContent = 'You\'re using Tayla as a guest. Create a free account to save your data.';
+    if (upgradeRow) upgradeRow.style.display = 'none';
+    if (cancelRow)  cancelRow.style.display  = 'none';
+  } else if (plus) {
     badge.textContent = '✦ Plus';
     badge.className   = 'nav-tier-badge badge-plus';
     if (desc) desc.textContent = 'You\'re on Tayla Plus. Thank you for supporting Tayla!';
@@ -477,8 +504,6 @@ async function loadAllUserData() {
     const el = document.getElementById('h-' + k);
     if (el && h[k]) { el.value = h[k]; }
   });
-  // Restore health mode UI
-  setHealthMode(HEALTH_MODE);
   refreshAccruedDebtOptions();
 }
 
