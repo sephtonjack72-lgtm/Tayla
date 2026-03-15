@@ -10,7 +10,7 @@
 ═══════════════════════════════════════════════════════════ */
 
 const BUILD = '2026-03-15T00:00:00'; // ← update this string on every deploy
-const CACHE_NAME = 'tayla-v5-' + BUILD;
+const CACHE_NAME = 'tayla-v6-' + BUILD;
 
 const PRECACHE_ASSETS = [
   '/Tayla/',
