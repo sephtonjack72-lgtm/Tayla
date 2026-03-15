@@ -364,6 +364,52 @@ function syncConsentUI() {
   document.getElementById('cat-toggle-status').textContent = hasCat ? 'On' : 'Off';
   document.getElementById('sidebar-consent-status').textContent = hasCat ? 'on' : 'off';
   document.getElementById('cat-consent-notice').style.display = hasCat ? 'block' : 'none';
+  syncSettingsAccountUI();
+}
+
+function syncSettingsAccountUI() {
+  const plus = isPlus();
+  const badge = document.getElementById('settings-plan-badge');
+  const desc  = document.getElementById('settings-plan-desc');
+  const upgradeRow = document.getElementById('settings-upgrade-row');
+  const cancelRow  = document.getElementById('settings-cancel-row');
+
+  if (!badge) return;
+
+  if (plus) {
+    badge.textContent = '✦ Plus';
+    badge.className   = 'nav-tier-badge badge-plus';
+    if (desc) desc.textContent = 'You\'re on Tayla Plus. Thank you for supporting Tayla!';
+    if (upgradeRow) upgradeRow.style.display = 'none';
+    if (cancelRow)  cancelRow.style.display  = 'flex';
+  } else {
+    badge.textContent = 'Free';
+    badge.className   = 'nav-tier-badge badge-free';
+    if (desc) desc.textContent = 'You\'re on the Free plan. Upgrade to Tayla Plus to unlock all features.';
+    if (upgradeRow) upgradeRow.style.display = 'flex';
+    if (cancelRow)  cancelRow.style.display  = 'none';
+  }
+}
+
+async function confirmCancelSubscription() {
+  if (!confirm('Are you sure you want to cancel Tayla Plus?\n\nYour plan will revert to Free immediately. Your data will not be deleted.')) return;
+
+  try {
+    const { error } = await sb
+      .from('profiles')
+      .update({ tier: 'free', stripe_subscription_id: null, updated_at: new Date().toISOString() })
+      .eq('id', CURRENT_USER.id);
+
+    if (error) throw error;
+
+    CURRENT_TIER = 'free';
+    applyTierGating();
+    syncSettingsAccountUI();
+    alert('Your subscription has been cancelled. You\'re now on the Free plan.');
+  } catch (e) {
+    alert('Something went wrong. Please try again or contact support.');
+    console.error('Cancel subscription error:', e);
+  }
 }
 
 function updateCatConsent() {
