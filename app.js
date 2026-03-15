@@ -360,7 +360,7 @@ function openTab(t) {
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
   if (t === 'goals')  renderGoals();
-  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto' && isPlus()) autoFillHealth(); else { setHealthMode('manual'); calcHealth(); } }
+  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (isPlus()) { setHealthMode(HEALTH_MODE); } else { setHealthMode('manual'); } }
 }
 
 /* ═══════════════════════════════════════════════════
