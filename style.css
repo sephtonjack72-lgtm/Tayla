@@ -1081,3 +1081,222 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   color: var(--gold);
   border: 1px solid var(--gold);
 }
+
+/* ═══════════════════════════════════════
+   THEMES — Australian Banknote Palette
+   ═══════════════════════════════════════ */
+
+/* $5 — Pink/Magenta (default is teal, this is the pink note) */
+[data-theme="pink"] {
+  --ink:        #2a0a1a;
+  --ink-2:      #4a1530;
+  --ink-3:      #8a4060;
+  --paper:      #fdf0f4;
+  --paper-2:    #f5d8e4;
+  --paper-3:    #e8b8cc;
+  --rule:       rgba(100,20,60,0.15);
+  --gold:       #c0395a;
+  --gold-light: #e87898;
+  --gold-dim:   rgba(192,57,90,0.15);
+  --green:      #c0395a;
+  --green-dim:  rgba(192,57,90,0.12);
+  --red:        #a01030;
+  --red-dim:    rgba(160,16,48,0.12);
+  --blue:       #8a2050;
+  --blue-dim:   rgba(138,32,80,0.14);
+  --shadow-sm:  0 1px 4px rgba(42,10,26,0.10);
+  --shadow-md:  0 4px 20px rgba(42,10,26,0.13);
+  --shadow-lg:  0 12px 48px rgba(42,10,26,0.16);
+}
+[data-theme="pink"] .auth-hero {
+  background: linear-gradient(145deg, #2a0a1a 0%, #4a1530 60%, #380820 100%);
+}
+[data-theme="pink"] body::before {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(192,57,90,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,57,90,0.04) 0%, transparent 50%);
+}
+
+/* $10 — Blue */
+[data-theme="blue"] {
+  --ink:        #0a1628;
+  --ink-2:      #152540;
+  --ink-3:      #3a5878;
+  --paper:      #f0f4fa;
+  --paper-2:    #d8e4f5;
+  --paper-3:    #b8cce8;
+  --rule:       rgba(20,50,100,0.15);
+  --gold:       #1a5fa0;
+  --gold-light: #5a9fd4;
+  --gold-dim:   rgba(26,95,160,0.15);
+  --green:      #1a5fa0;
+  --green-dim:  rgba(26,95,160,0.12);
+  --red:        #a83232;
+  --red-dim:    rgba(168,50,50,0.12);
+  --blue:       #1a5fa0;
+  --blue-dim:   rgba(26,95,160,0.14);
+  --shadow-sm:  0 1px 4px rgba(10,22,40,0.10);
+  --shadow-md:  0 4px 20px rgba(10,22,40,0.13);
+  --shadow-lg:  0 12px 48px rgba(10,22,40,0.16);
+}
+[data-theme="blue"] .auth-hero {
+  background: linear-gradient(145deg, #0a1628 0%, #152540 60%, #0c1e38 100%);
+}
+[data-theme="blue"] body::before {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(26,95,160,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(26,95,160,0.04) 0%, transparent 50%);
+}
+
+/* $20 — Red/Orange */
+[data-theme="red"] {
+  --ink:        #1e0a08;
+  --ink-2:      #3a1208;
+  --ink-3:      #7a3020;
+  --paper:      #fdf2f0;
+  --paper-2:    #f5dbd8;
+  --paper-3:    #e8bab5;
+  --rule:       rgba(100,30,20,0.15);
+  --gold:       #c04820;
+  --gold-light: #e88060;
+  --gold-dim:   rgba(192,72,32,0.15);
+  --green:      #c04820;
+  --green-dim:  rgba(192,72,32,0.12);
+  --red:        #a02010;
+  --red-dim:    rgba(160,32,16,0.12);
+  --blue:       #8a3010;
+  --blue-dim:   rgba(138,48,16,0.14);
+  --shadow-sm:  0 1px 4px rgba(30,10,8,0.10);
+  --shadow-md:  0 4px 20px rgba(30,10,8,0.13);
+  --shadow-lg:  0 12px 48px rgba(30,10,8,0.16);
+}
+[data-theme="red"] .auth-hero {
+  background: linear-gradient(145deg, #1e0a08 0%, #3a1208 60%, #280c08 100%);
+}
+[data-theme="red"] body::before {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(192,72,32,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,72,32,0.04) 0%, transparent 50%);
+}
+
+/* $50 — Yellow/Gold */
+[data-theme="yellow"] {
+  --ink:        #1e1600;
+  --ink-2:      #382800;
+  --ink-3:      #786020;
+  --paper:      #fdfaf0;
+  --paper-2:    #f5ecc8;
+  --paper-3:    #e8d898;
+  --rule:       rgba(100,80,0,0.15);
+  --gold:       #b08000;
+  --gold-light: #d4b040;
+  --gold-dim:   rgba(176,128,0,0.15);
+  --green:      #b08000;
+  --green-dim:  rgba(176,128,0,0.12);
+  --red:        #a04000;
+  --red-dim:    rgba(160,64,0,0.12);
+  --blue:       #806000;
+  --blue-dim:   rgba(128,96,0,0.14);
+  --shadow-sm:  0 1px 4px rgba(30,22,0,0.10);
+  --shadow-md:  0 4px 20px rgba(30,22,0,0.13);
+  --shadow-lg:  0 12px 48px rgba(30,22,0,0.16);
+}
+[data-theme="yellow"] .auth-hero {
+  background: linear-gradient(145deg, #1e1600 0%, #382800 60%, #281e00 100%);
+}
+[data-theme="yellow"] body::before {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(176,128,0,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(176,128,0,0.04) 0%, transparent 50%);
+}
+
+/* $100 — Green */
+[data-theme="green"] {
+  --ink:        #051a08;
+  --ink-2:      #0a2e10;
+  --ink-3:      #2a6030;
+  --paper:      #f0faf2;
+  --paper-2:    #d0ecd5;
+  --paper-3:    #a8d8b0;
+  --rule:       rgba(10,60,20,0.15);
+  --gold:       #1a8a30;
+  --gold-light: #50c060;
+  --gold-dim:   rgba(26,138,48,0.15);
+  --green:      #1a8a30;
+  --green-dim:  rgba(26,138,48,0.12);
+  --red:        #a83232;
+  --red-dim:    rgba(168,50,50,0.12);
+  --blue:       #0a6828;
+  --blue-dim:   rgba(10,104,40,0.14);
+  --shadow-sm:  0 1px 4px rgba(5,26,8,0.10);
+  --shadow-md:  0 4px 20px rgba(5,26,8,0.13);
+  --shadow-lg:  0 12px 48px rgba(5,26,8,0.16);
+}
+[data-theme="green"] .auth-hero {
+  background: linear-gradient(145deg, #051a08 0%, #0a2e10 60%, #081e08 100%);
+}
+[data-theme="green"] body::before {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(26,138,48,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(26,138,48,0.04) 0%, transparent 50%);
+}
+
+/* Black / AMOLED */
+[data-theme="black"] {
+  --ink:        #e8e8e8;
+  --ink-2:      #c0c0c0;
+  --ink-3:      #808080;
+  --paper:      #0a0a0a;
+  --paper-2:    #181818;
+  --paper-3:    #282828;
+  --rule:       rgba(255,255,255,0.10);
+  --gold:       #a0a0ff;
+  --gold-light: #c0c0ff;
+  --gold-dim:   rgba(160,160,255,0.15);
+  --green:      #60c060;
+  --green-dim:  rgba(96,192,96,0.12);
+  --red:        #f06060;
+  --red-dim:    rgba(240,96,96,0.12);
+  --blue:       #6090e0;
+  --blue-dim:   rgba(96,144,224,0.14);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.40);
+  --shadow-md:  0 4px 20px rgba(0,0,0,0.50);
+  --shadow-lg:  0 12px 48px rgba(0,0,0,0.60);
+}
+[data-theme="black"] .auth-hero {
+  background: linear-gradient(145deg, #000000 0%, #0d0d0d 60%, #080808 100%);
+}
+[data-theme="black"] body::before { background-image: none; }
+[data-theme="black"] .nav {
+  background: #000;
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+[data-theme="black"] .card {
+  background: var(--paper-2);
+  border-color: rgba(255,255,255,0.06);
+}
+
+/* ── Theme picker swatches ── */
+.theme-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.theme-swatch {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+  position: relative;
+}
+.theme-swatch:hover { transform: scale(1.12); }
+.theme-swatch.active { border-color: var(--gold); }
+.theme-swatch.active::after {
+  content: '✓';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
