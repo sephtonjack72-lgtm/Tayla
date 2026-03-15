@@ -870,6 +870,10 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   z-index: 300;
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+@media (min-width: 769px) {
+  .mobile-nav { display: none !important; }
+}
 .mobile-nav-inner {
   display: flex;
   justify-content: space-around;
