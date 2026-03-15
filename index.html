@@ -183,6 +183,31 @@
 </div>
 
 <!-- ═══════════════════════════════════════
+     VERIFY EMAIL SCREEN
+════════════════════════════════════════ -->
+<div class="screen" id="verify-screen">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--paper);padding:24px">
+    <div style="max-width:420px;width:100%;text-align:center">
+      <div style="font-size:4rem;margin-bottom:24px">📬</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:12px">Check your email</h2>
+      <p style="font-size:0.9rem;color:var(--ink-3);line-height:1.7;margin-bottom:8px">
+        We've sent a confirmation link to
+      </p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.9rem;font-weight:600;color:var(--ink);background:var(--paper-2);padding:8px 16px;border-radius:var(--r-sm);display:inline-block;margin-bottom:28px" id="verify-email-display"></p>
+      <p style="font-size:0.82rem;color:var(--ink-3);line-height:1.7;margin-bottom:32px">
+        Click the link in the email to activate your account, then come back here to sign in. If you don't see it, check your spam folder.
+      </p>
+      <button class="btn btn-primary btn-full" onclick="showScreen('auth-screen');switchAuthTab('login')" style="margin-bottom:12px">
+        Back to Sign In
+      </button>
+      <p style="font-size:0.75rem;color:var(--ink-3);margin-top:8px">
+        Wrong email? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="showScreen('auth-screen');switchAuthTab('register')">Start over</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
      APP SCREEN
 ════════════════════════════════════════ -->
 <div class="screen" id="app-screen">
