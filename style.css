@@ -98,6 +98,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   border-bottom: 1px solid rgba(255,255,255,0.08);
   position: sticky; top: 0; z-index: 200;
   padding: 0 28px;
+  isolation: isolate;
 }
 .nav-inner {
   max-width: 1180px; margin: 0 auto;
@@ -1104,11 +1105,8 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 [data-theme="pink"] .auth-hero {
   background: linear-gradient(145deg, #1a0810 0%, #2e1020 60%, #200a18 100%);
 }
-[data-theme="pink"] body::before {
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(184,72,104,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(184,72,104,0.03) 0%, transparent 50%);
-}
+[data-theme="pink"] body::before { background-image: none; }
+[data-theme="pink"] .nav { background: #1c1c1e; }
 
 /* $10 — Blue */
 [data-theme="blue"] {
@@ -1146,11 +1144,8 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 [data-theme="red"] .auth-hero {
   background: linear-gradient(145deg, #1a0806 0%, #300e08 60%, #220a06 100%);
 }
-[data-theme="red"] body::before {
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(176,64,48,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(176,64,48,0.03) 0%, transparent 50%);
-}
+[data-theme="red"] body::before { background-image: none; }
+[data-theme="red"] .nav { background: #1c1c1e; }
 
 /* $50 — Gold */
 [data-theme="yellow"] {
@@ -1167,11 +1162,8 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 [data-theme="yellow"] .auth-hero {
   background: linear-gradient(145deg, #181200 0%, #2a1e00 60%, #201600 100%);
 }
-[data-theme="yellow"] body::before {
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(154,120,0,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(154,120,0,0.03) 0%, transparent 50%);
-}
+[data-theme="yellow"] body::before { background-image: none; }
+[data-theme="yellow"] .nav { background: #1c1c1e; }
 
 /* $100 — Green */
 [data-theme="green"] {
