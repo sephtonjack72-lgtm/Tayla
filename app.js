@@ -29,11 +29,25 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let CURRENT_USER = null; // { email, name, id } | null
 let GUEST_MODE   = false; // true when using app without an account
+let CURRENT_TIER = 'free'; // 'free' | 'plus' | 'pro'
 
 const GUEST_LS_KEY = 'tayla_guest_data';
-const GUEST_ALLOWED_TABS = ['tax', 'budget']; // tabs available to guest
+const GUEST_ALLOWED_TABS = ['tax', 'budget'];
 
 function isGuest() { return GUEST_MODE && !CURRENT_USER; }
+function isPlus()  { return CURRENT_TIER === 'plus' || CURRENT_TIER === 'pro'; }
+
+async function fetchUserTier(userId) {
+  try {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('tier')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!error && data) CURRENT_TIER = data.tier || 'free';
+    else CURRENT_TIER = 'free';
+  } catch { CURRENT_TIER = 'free'; }
+}
 
 /* ═══════════════════════════════════════════════════
    STORAGE HELPERS (consents stored in browser, all app data via Supabase)
@@ -152,6 +166,8 @@ async function doLogout() {
   const sidebarCta = document.getElementById('sidebar-guest-cta');
   if (sidebarCta) sidebarCta.style.display = 'none';
   document.getElementById('guest-nav-label').style.display = 'none';
+  const tierBadge = document.getElementById('nav-tier-badge');
+  if (tierBadge) tierBadge.style.display = 'none';
   showScreen('auth-screen');
 }
 
@@ -178,20 +194,27 @@ function showScreen(id) {
 async function enterApp(email, name, id) {
   CURRENT_USER = { email, name, id };
   GUEST_MODE   = false;
-  // Reset locked styles from any prior guest session
+
+  // Fetch tier first — everything gates on this
+  await fetchUserTier(id);
+
+  // Reset any guest locked styles
   ['health','goals'].forEach(t => {
     const s = document.getElementById('nav-' + t);
     const m = document.getElementById('mnav-' + t);
     if (s) s.classList.remove('nav-locked');
     if (m) m.classList.remove('nav-locked');
   });
+  document.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'none');
   document.getElementById('guest-nav-label').style.display = 'none';
   document.getElementById('nav-username').textContent = name;
+  document.getElementById('nav-tier-badge').style.display = 'inline-flex';
   document.getElementById('main-nav').style.display = 'block';
   document.getElementById('privacy-banner').style.display = 'flex';
   document.getElementById('mobile-nav').style.display = 'block';
   showScreen('app-screen');
   await loadAllUserData();
+  applyTierGating();
   applyAccruedExpenses();
   syncConsentUI();
   buildWeekRows();
@@ -231,15 +254,85 @@ function enterGuest() {
   });
 }
 
+function applyTierGating() {
+  const plus = isPlus();
+
+  // ── Portfolio tab ──
+  const navGoals  = document.getElementById('nav-goals');
+  const mnavGoals = document.getElementById('mnav-goals');
+  if (!plus) {
+    if (navGoals)  navGoals.classList.add('nav-locked');
+    if (mnavGoals) mnavGoals.classList.add('nav-locked');
+    // Show lock badge on portfolio nav item only
+    navGoals?.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'inline');
+    mnavGoals?.classList.add('nav-locked');
+  } else {
+    if (navGoals)  navGoals.classList.remove('nav-locked');
+    if (mnavGoals) mnavGoals.classList.remove('nav-locked');
+    navGoals?.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'none');
+  }
+
+  // ── Auto health toggle ──
+  const autoBtn = document.getElementById('health-btn-auto');
+  if (autoBtn) {
+    autoBtn.disabled = !plus;
+    autoBtn.style.opacity = plus ? '' : '0.4';
+    autoBtn.title = plus ? '' : 'Tayla Plus feature';
+    if (!plus) setHealthMode('manual');
+  }
+
+  // ── Debt Register card ──
+  const debtCard = document.getElementById('debt-register-card');
+  if (debtCard) {
+    debtCard.classList.toggle('tier-locked', !plus);
+    const overlay = debtCard.querySelector('.tier-lock-overlay');
+    if (overlay) overlay.style.display = plus ? 'none' : 'flex';
+  }
+
+  // ── Recurring Expenses card ──
+  const accruedCard = document.getElementById('accrued-card');
+  if (accruedCard) {
+    accruedCard.classList.toggle('tier-locked', !plus);
+    const overlay = accruedCard.querySelector('.tier-lock-overlay');
+    if (overlay) overlay.style.display = plus ? 'none' : 'flex';
+  }
+
+  // ── Savings rate options in budget ──
+  ['savings rate|Savings/Investment','savings rate|Emergency Fund',
+   'savings draw|Emergency Fund','savings draw|Savings/Investment'].forEach(val => {
+    const opt = document.querySelector(`option[value="${val}"]`);
+    if (opt) {
+      opt.disabled = !plus;
+      opt.textContent = opt.textContent.replace(' ✦ Plus', '') + (!plus ? ' ✦ Plus' : '');
+    }
+  });
+
+  // ── Sidebar Plus CTA ──
+  const plusCta = document.getElementById('sidebar-plus-cta');
+  if (plusCta) plusCta.style.display = plus ? 'none' : 'block';
+
+  // ── Nav tier badge ──
+  const tierBadge = document.getElementById('nav-tier-badge');
+  if (tierBadge) {
+    tierBadge.textContent = plus ? '✦ Plus' : 'Free';
+    tierBadge.className   = 'nav-tier-badge ' + (plus ? 'badge-plus' : 'badge-free');
+  }
+}
+
 function setMobileNav(el) {
   document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
 }
 
 function openTab(t) {
-  // Guest mode: block access to non-allowed tabs
+  // Guest: only Income + Budget
   if (isGuest() && !GUEST_ALLOWED_TABS.includes(t)) {
     openModal('guest-upgrade-modal');
+    return;
+  }
+  // Free: no Portfolio
+  if (!isGuest() && !isPlus() && t === 'goals') {
+    openModal('plus-upgrade-modal');
     return;
   }
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -247,7 +340,7 @@ function openTab(t) {
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
   if (t === 'goals')  renderGoals();
-  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
+  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto' && isPlus()) autoFillHealth(); else { setHealthMode('manual'); calcHealth(); } }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1221,6 +1314,10 @@ function clearBudgetData() {
 let HEALTH_MODE = 'auto'; // 'auto' | 'manual'
 
 function setHealthMode(mode) {
+  if (mode === 'auto' && !isPlus() && !isGuest()) {
+    openModal('plus-upgrade-modal');
+    return;
+  }
   HEALTH_MODE = mode;
   document.getElementById('health-btn-auto').classList.toggle('active', mode === 'auto');
   document.getElementById('health-btn-manual').classList.toggle('active', mode === 'manual');
@@ -1353,6 +1450,7 @@ function refreshDebtDropdown() {
 }
 
 function addDebt() {
+  if (!isPlus()) { openModal('plus-upgrade-modal'); return; }
   const name    = document.getElementById('debt-name').value.trim();
   const balance = parseFloat(document.getElementById('debt-balance').value) || 0;
   const rate    = parseFloat(document.getElementById('debt-rate').value) || 0;
@@ -1550,6 +1648,7 @@ function autoSuggestAccruedCat() {
 }
 
 function addAccrued() {
+  if (!isPlus()) { openModal('plus-upgrade-modal'); return; }
   const name   = document.getElementById('ac-name').value.trim();
   const day    = parseInt(document.getElementById('ac-day').value);
   const amount = parseFloat(document.getElementById('ac-amount').value);
