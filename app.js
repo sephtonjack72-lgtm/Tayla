@@ -978,12 +978,31 @@ function exportCSV() {
    BUDGET TRACKER
 ═══════════════════════════════════════════════════ */
 const CAT_COLORS = {
-  'Salary/Wages':'#1a7a8c','Freelance':'#1a6080','Other Income':'#2a6e5e',
-  'Groceries':'#5a7a2a','Rent/Mortgage':'#a83232','Transport':'#1a6080',
-  'Utilities':'#4a6868','Dining Out':'#7a5a1a','Entertainment':'#4a3a8a',
-  'Healthcare':'#1a7a8c','Clothing':'#7a3a3a','Education':'#2a6e5e',
-  'Insurance':'#4a6868','Subscriptions':'#1e3535','Savings/Investment':'#1a7a8c','Emergency Fund':'#1a6080',
-  'Other Expense':'#5a7070','Debt Repayments':'#c0392b',
+  // Income
+  'Salary/Wages':      '#4a6fa5', // slate blue
+  'Freelance':         '#6b7fd7', // soft indigo
+  'Other Income':      '#7e8fbf', // muted periwinkle
+  // Housing & Utilities
+  'Rent/Mortgage':     '#2d3561', // deep navy
+  'Utilities':         '#5c6bc0', // medium indigo
+  // Food
+  'Groceries':         '#546e8a', // steel blue-grey
+  'Dining Out':        '#7986a3', // dusty blue
+  // Transport & lifestyle
+  'Transport':         '#4a5568', // cool grey
+  'Entertainment':     '#7c6fa0', // soft purple
+  'Clothing':          '#9c8fb5', // lavender grey
+  // Financial
+  'Insurance':         '#3d4f6e', // dark slate
+  'Subscriptions':     '#6e5fa0', // medium purple
+  'Savings/Investment':'#3a5068', // teal-navy
+  'Emergency Fund':    '#4a6880', // muted teal-blue
+  'Debt Repayments':   '#6b4f7a', // dark plum
+  // Health & education
+  'Healthcare':        '#5b7fa6', // sky-steel
+  'Education':         '#7b8fa8', // grey-blue
+  // Catch-all
+  'Other Expense':     '#8892a4', // neutral grey-blue
 };
 
 function getCurrentBudget() {
