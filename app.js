@@ -27,7 +27,13 @@ const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-let CURRENT_USER = null; // { email, name, id }
+let CURRENT_USER = null; // { email, name, id } | null
+let GUEST_MODE   = false; // true when using app without an account
+
+const GUEST_LS_KEY = 'tayla_guest_data';
+const GUEST_ALLOWED_TABS = ['tax', 'budget']; // tabs available to guest
+
+function isGuest() { return GUEST_MODE && !CURRENT_USER; }
 
 /* ═══════════════════════════════════════════════════
    STORAGE HELPERS (consents stored in browser, all app data via Supabase)
@@ -61,8 +67,31 @@ async function doLogin() {
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
   if (error) return showAlert('login-error', error.message || 'Login failed. Please try again.');
 
+  // Migrate any guest data into this account
+  if (data.user) await migrateGuestData(data.user.id);
+
   const name = data.user.user_metadata?.name || email.split('@')[0];
   enterApp(email, name, data.user.id);
+}
+
+// Migrate guest localStorage data into Supabase after signup/login
+async function migrateGuestData(userId) {
+  try {
+    const raw = localStorage.getItem(GUEST_LS_KEY);
+    if (!raw) return;
+    const all = JSON.parse(raw);
+    const keys = Object.keys(all);
+    if (keys.length === 0) return;
+    const upserts = keys.map(fy_key => ({
+      user_id: userId,
+      fy_key,
+      data: all[fy_key],
+      updated_at: new Date().toISOString(),
+    }));
+    await sb.from('user_data').upsert(upserts, { onConflict: 'user_id,fy_key', ignoreDuplicates: true });
+    localStorage.removeItem(GUEST_LS_KEY);
+    console.log('Guest data migrated to account.');
+  } catch (e) { console.warn('Guest migration failed:', e); }
 }
 
 async function doRegister() {
@@ -89,6 +118,9 @@ async function doRegister() {
   });
   if (error) return showAlert('reg-error', error.message || 'Registration failed. Please try again.');
 
+  // Migrate any guest data into the new account
+  if (data.user) await migrateGuestData(data.user.id);
+
   const now = new Date().toISOString();
   saveConsents(email, {
     tos:         { given: true,  timestamp: now, version: '1.0' },
@@ -101,11 +133,25 @@ async function doRegister() {
 }
 
 async function doLogout() {
-  await sb.auth.signOut();
+  if (!isGuest()) {
+    await sb.auth.signOut();
+  }
   CURRENT_USER = null;
+  GUEST_MODE   = false;
   document.getElementById('main-nav').style.display = 'none';
   document.getElementById('privacy-banner').style.display = 'none';
   document.getElementById('mobile-nav').style.display = 'none';
+  // Reset locked tab styles
+  ['health','goals'].forEach(t => {
+    const s = document.getElementById('nav-' + t);
+    const m = document.getElementById('mnav-' + t);
+    if (s) s.classList.remove('nav-locked');
+    if (m) m.classList.remove('nav-locked');
+  });
+  document.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'none');
+  const sidebarCta = document.getElementById('sidebar-guest-cta');
+  if (sidebarCta) sidebarCta.style.display = 'none';
+  document.getElementById('guest-nav-label').style.display = 'none';
   showScreen('auth-screen');
 }
 
@@ -131,6 +177,15 @@ function showScreen(id) {
 
 async function enterApp(email, name, id) {
   CURRENT_USER = { email, name, id };
+  GUEST_MODE   = false;
+  // Reset locked styles from any prior guest session
+  ['health','goals'].forEach(t => {
+    const s = document.getElementById('nav-' + t);
+    const m = document.getElementById('mnav-' + t);
+    if (s) s.classList.remove('nav-locked');
+    if (m) m.classList.remove('nav-locked');
+  });
+  document.getElementById('guest-nav-label').style.display = 'none';
   document.getElementById('nav-username').textContent = name;
   document.getElementById('main-nav').style.display = 'block';
   document.getElementById('privacy-banner').style.display = 'flex';
@@ -143,12 +198,49 @@ async function enterApp(email, name, id) {
   document.getElementById('budget-month-select').value = BUDGET_MONTH;
 }
 
+function enterGuest() {
+  GUEST_MODE   = true;
+  CURRENT_USER = null;
+
+  // Nav — hide user name, show guest label + sign-up prompt
+  document.getElementById('nav-username').textContent = '';
+  document.getElementById('guest-nav-label').style.display = 'flex';
+  document.getElementById('main-nav').style.display   = 'block';
+  document.getElementById('privacy-banner').style.display = 'none';
+  document.getElementById('mobile-nav').style.display = 'block';
+
+  // Lock tabs in sidebar and mobile nav
+  ['health','goals'].forEach(t => {
+    const s = document.getElementById('nav-' + t);
+    const m = document.getElementById('mnav-' + t);
+    if (s) s.classList.add('nav-locked');
+    if (m) m.classList.add('nav-locked');
+  });
+  // Show lock badges on sidebar items
+  document.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'inline');
+  // Show sidebar guest CTA
+  const sidebarCta = document.getElementById('sidebar-guest-cta');
+  if (sidebarCta) sidebarCta.style.display = 'block';
+
+  showScreen('app-screen');
+  loadAllUserData().then(() => {
+    buildWeekRows();
+    renderBudget();
+    document.getElementById('budget-month-select').value = BUDGET_MONTH;
+  });
+}
+
 function setMobileNav(el) {
   document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
 }
 
 function openTab(t) {
+  // Guest mode: block access to non-allowed tabs
+  if (isGuest() && !GUEST_ALLOWED_TABS.includes(t)) {
+    openModal('guest-upgrade-modal');
+    return;
+  }
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item[id^=nav-]').forEach(i => i.classList.remove('active'));
   document.getElementById('panel-' + t).classList.add('active');
@@ -212,6 +304,7 @@ let FY_START   = CURRENT_FY.start;
 async function loadAllUserData() {
   let saved = {};
   if (CURRENT_USER && CURRENT_USER.id) {
+    // Authenticated user — load from Supabase
     const { data, error } = await sb
       .from('user_data')
       .select('data')
@@ -219,6 +312,13 @@ async function loadAllUserData() {
       .eq('fy_key', CURRENT_FY.key)
       .maybeSingle();
     if (!error && data) saved = data.data || {};
+  } else if (isGuest()) {
+    // Guest — load from localStorage
+    try {
+      const raw = localStorage.getItem(GUEST_LS_KEY);
+      const all = raw ? JSON.parse(raw) : {};
+      saved = all[CURRENT_FY.key] || {};
+    } catch { saved = {}; }
   }
   APP_DATA = {
     weeks:        saved.weeks        || new Array(52).fill(null),
@@ -241,13 +341,23 @@ async function loadAllUserData() {
 }
 
 async function persist() {
-  if (!CURRENT_USER || !CURRENT_USER.id) return;
-  await sb.from('user_data').upsert({
-    user_id: CURRENT_USER.id,
-    fy_key:  CURRENT_FY.key,
-    data:    APP_DATA,
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'user_id,fy_key' });
+  if (CURRENT_USER && CURRENT_USER.id) {
+    // Authenticated — save to Supabase
+    await sb.from('user_data').upsert({
+      user_id: CURRENT_USER.id,
+      fy_key:  CURRENT_FY.key,
+      data:    APP_DATA,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,fy_key' });
+  } else if (isGuest()) {
+    // Guest — save to localStorage per FY key
+    try {
+      const raw = localStorage.getItem(GUEST_LS_KEY);
+      const all = raw ? JSON.parse(raw) : {};
+      all[CURRENT_FY.key] = APP_DATA;
+      localStorage.setItem(GUEST_LS_KEY, JSON.stringify(all));
+    } catch (e) { console.warn('Guest persist failed:', e); }
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1298,6 +1408,7 @@ async function syncSystemGoalsFromBudget() {
   let totalEmergency = 0, totalSavings = 0;
 
   if (CURRENT_USER && CURRENT_USER.id) {
+    // Authenticated: sum across ALL FY rows in Supabase
     const { data: rows } = await sb
       .from('user_data')
       .select('data')
@@ -1314,6 +1425,20 @@ async function syncSystemGoalsFromBudget() {
             if (e.cat === 'Savings/Investment') totalSavings   -= e.amount;
           }
         });
+      });
+    });
+  } else {
+    // Guest: only current FY in memory
+    Object.values(APP_DATA.budget || {}).forEach(monthEntries => {
+      (monthEntries || []).forEach(e => {
+        if (e.type === 'savings rate') {
+          if (e.cat === 'Emergency Fund')     totalEmergency += e.amount;
+          if (e.cat === 'Savings/Investment') totalSavings   += e.amount;
+        }
+        if (e.type === 'savings draw') {
+          if (e.cat === 'Emergency Fund')     totalEmergency -= e.amount;
+          if (e.cat === 'Savings/Investment') totalSavings   -= e.amount;
+        }
       });
     });
   }
