@@ -247,7 +247,7 @@ function openTab(t) {
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
   if (t === 'goals')  renderGoals();
-  if (t === 'health') { renderDebts(); renderAccrued(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
+  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1409,6 +1409,7 @@ function renderDebts() {
   // Auto-populate debt field in manual mode
   const debtEl = document.getElementById('h-debt');
   if (debtEl) { debtEl.value = total > 0 ? total : ''; calcHealth(); }
+  refreshAccruedDebtOptions();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1458,20 +1459,43 @@ function applyAccruedExpenses() {
     if (alreadyAdded) return;
 
     APP_DATA.budget[fyMonth].unshift({
-      id:               Date.now() + Math.random(), // unique
+      id:               Date.now() + Math.random(),
       desc:             exp.name,
       amount:           exp.amount,
-      type:             'expense',
-      cat:              exp.cat || 'Subscriptions',
+      type:             exp.debtId ? 'debt repayment' : 'expense',
+      cat:              exp.debtId ? String(exp.debtId) : (exp.cat || 'Subscriptions'),
       date:             new Date(today.getFullYear(), today.getMonth(), exp.day)
                           .toLocaleDateString('en-AU'),
       autoAccruedId:    exp.id,
       autoAccruedMonth: monthKey,
     });
+
+    // Reduce debt balance if this is a repayment
+    if (exp.debtId) {
+      const debt = (APP_DATA.debts || []).find(d => d.id === exp.debtId);
+      if (debt) {
+        debt.balance = Math.max(0, parseFloat((debt.balance - exp.amount).toFixed(2)));
+      }
+    }
+
     changed = true;
   });
 
   if (changed) persist();
+}
+
+// Keep the debt repayment options in the accrued category select in sync with the debt register
+function refreshAccruedDebtOptions() {
+  const optgroup = document.getElementById('ac-debt-options');
+  if (!optgroup) return;
+  const debts = (APP_DATA.debts || []).filter(d => d.balance > 0);
+  if (debts.length === 0) {
+    optgroup.innerHTML = '<option disabled>No debts registered</option>';
+  } else {
+    optgroup.innerHTML = debts.map(d =>
+      `<option value="debt-repayment|${d.id}">Repay — ${escHtml(d.name)} (${fmt(d.balance)} remaining)</option>`
+    ).join('');
+  }
 }
 
 // Keyword map — name fragments → category value
@@ -1528,23 +1552,31 @@ function addAccrued() {
   const name   = document.getElementById('ac-name').value.trim();
   const day    = parseInt(document.getElementById('ac-day').value);
   const amount = parseFloat(document.getElementById('ac-amount').value);
-  const cat    = document.getElementById('ac-cat').value;
+  const catVal = document.getElementById('ac-cat').value;
 
-  if (!name)              return showAlert('ac-error', 'Please enter an expense name.');
+  if (!name)                       return showAlert('ac-error', 'Please enter an expense name.');
   if (!day || day < 1 || day > 31) return showAlert('ac-error', 'Please enter a valid day (1–31).');
-  if (!amount || amount <= 0)       return showAlert('ac-error', 'Please enter a valid amount.');
+  if (!amount || amount <= 0)      return showAlert('ac-error', 'Please enter a valid amount.');
 
   if (!APP_DATA.accrued) APP_DATA.accrued = [];
-  APP_DATA.accrued.push({ id: Date.now(), name, day, amount, cat });
+
+  // Debt repayment — catVal will be 'debt-repayment|<debtId>'
+  const isDebtRepayment = catVal.startsWith('debt-repayment|');
+  const debtId = isDebtRepayment ? parseInt(catVal.split('|')[1]) : null;
+  const cat    = isDebtRepayment ? 'Debt Repayments' : catVal;
+
+  APP_DATA.accrued.push({ id: Date.now(), name, day, amount, cat, debtId });
   persist();
   applyAccruedExpenses();
   renderAccrued();
   renderBudget();
+  renderDebts();
 
   document.getElementById('ac-name').value   = '';
   document.getElementById('ac-day').value    = '';
   document.getElementById('ac-amount').value = '';
   document.getElementById('ac-cat-hint').textContent = '';
+  refreshAccruedDebtOptions(); // reset select back to top
 }
 
 function deleteAccrued(id) {
@@ -1575,15 +1607,21 @@ function renderAccrued() {
     const injected = (APP_DATA.budget[fyMonth] || []).some(
       e => e.autoAccruedId === a.id && e.autoAccruedMonth === monthKey
     );
+    const isDebtRepay = !!a.debtId;
+    const debt = isDebtRepay ? (APP_DATA.debts || []).find(d => d.id === a.debtId) : null;
+    const catLabel = isDebtRepay
+      ? 'Debt repayment — ' + (debt ? escHtml(debt.name) : 'unknown debt')
+      : a.cat;
+    const dotColor = isDebtRepay ? CAT_COLORS['Debt Repayments'] : (CAT_COLORS[a.cat] || '#5a7070');
     const statusBadge = injected
       ? '<span style="font-size:0.65rem;background:#e6f4ea;color:#2e7d32;border-radius:4px;padding:1px 7px;margin-left:6px;font-weight:600">✓ Added this month</span>'
       : '<span style="font-size:0.65rem;background:var(--paper-2);color:var(--ink-3);border-radius:4px;padding:1px 7px;margin-left:6px">Due ' + daySuffix(a.day) + '</span>';
     return `
     <div class="entry-item">
-      <div class="entry-cat-dot" style="background:${CAT_COLORS[a.cat]||'#5a7070'}"></div>
+      <div class="entry-cat-dot" style="background:${dotColor}"></div>
       <div>
         <div class="entry-desc">${escHtml(a.name)}${statusBadge}</div>
-        <span class="entry-cat-label">${a.cat} · every ${daySuffix(a.day)} of the month</span>
+        <span class="entry-cat-label">${catLabel} · every ${daySuffix(a.day)} of the month</span>
       </div>
       <div class="entry-amount" style="color:var(--red)">-${fmt(a.amount)}</div>
       <button class="entry-del" onclick="deleteAccrued(${a.id})" title="Delete">×</button>
