@@ -84,12 +84,20 @@
 
   <div class="auth-panel">
     <div class="auth-panel-inner">
-      <div style="margin-bottom:28px">
-        <div class="logo" style="margin-bottom:8px; font-size:1.2rem"><div class="logo-dot"></div>Tayla</div>
-        <p style="font-size:0.82rem;color:var(--ink-3)">Your personal finance companion</p>
+
+      <!-- GUEST CTA — top of panel, always visible -->
+      <div class="guest-hero-cta" onclick="enterGuest()">
+        <div class="guest-hero-left">
+          <div class="guest-hero-badge">No account needed</div>
+          <div class="guest-hero-title">Try Tayla instantly →</div>
+          <div class="guest-hero-sub">Income &amp; Budget · your data stays on this device</div>
+        </div>
+        <div class="guest-hero-right">⚡</div>
       </div>
 
-      <div class="auth-tabs">
+      <div class="auth-divider-label">or sign in / create an account for full access</div>
+
+      <div class="auth-tabs" style="margin-top:20px">
         <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">Sign In</div>
         <div class="auth-tab" id="tab-reg-btn" onclick="switchAuthTab('register')">Create Account</div>
       </div>
@@ -106,14 +114,7 @@
           <input class="form-input" type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
         <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
-        <div class="divider-text" style="margin:20px 0"><span>or</span></div>
-        <button class="btn btn-ghost btn-full" onclick="enterGuest()" style="border:1.5px dashed var(--rule);color:var(--ink-3)">
-          Try without an account →
-        </button>
-        <p style="font-size:0.72rem;color:var(--ink-3);text-align:center;margin-top:10px">Income &amp; Budget only · data stays on this device</p>
-        <div style="margin-top:16px;border-top:1px solid var(--rule);padding-top:12px">
-        <p style="font-size:0.75rem;color:var(--ink-3);text-align:center">Don't have an account? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="switchAuthTab('register')">Create one free</a></p>
-        </div>
+        <p style="font-size:0.75rem;color:var(--ink-3);text-align:center;margin-top:16px">Don't have an account? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="switchAuthTab('register')">Create one free</a></p>
       </div>
 
       <!-- REGISTER FORM -->
@@ -174,6 +175,7 @@
         </div>
 
         <button class="btn btn-primary btn-full" onclick="doRegister()" style="margin-top:6px">Create Free Account</button>
+        <p style="font-size:0.75rem;color:var(--ink-3);text-align:center;margin-top:16px">Just want to try first? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="enterGuest()">Use guest mode</a></p>
       </div>
     </div>
   </div>
