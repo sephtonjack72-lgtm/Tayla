@@ -4,8 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
-<title>Australian Tax Calculator 2025–26 — Tayla</title>
-<meta name="description" content="Free Australian income tax calculator for 2025–26. Enter your salary and see exactly how much tax you pay and what you take home — weekly, fortnightly, monthly and annually.">
+<title>Australian Income Tax Calculator 2025–26 | Take-Home Pay | Tayla</title>
+<meta name="description" content="Free Australian income tax calculator for 2025–26. Instantly see how much tax you pay and what you take home — weekly, fortnightly, monthly and annually. Includes Medicare levy.">
+<meta name="keywords" content="australian tax calculator, income tax calculator australia, take home pay calculator, salary calculator australia, 2025 tax calculator, how much tax do I pay australia">
+<link rel="canonical" href="https://usetayla.com.au/tax/">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Australian Income Tax Calculator 2025–26 | Tayla">
+<meta property="og:description" content="Free Australian tax calculator. Enter your salary and instantly see your take-home pay — weekly, fortnightly, monthly and annually. Includes Medicare levy.">
+<meta property="og:url" content="https://usetayla.com.au/tax/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tayla — Australian Personal Finance">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Australian Income Tax Calculator 2025–26">
+<meta name="twitter:description" content="Free Australian tax calculator. See your exact take-home pay — weekly, fortnightly, monthly and annual. Includes Medicare levy.">
+
+<!-- Schema — WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Australian Income Tax Calculator 2025–26",
+  "url": "https://usetayla.com.au/tax/",
+  "description": "Free Australian income tax calculator for the 2025–26 financial year. Calculate your take-home pay after tax and Medicare levy — weekly, fortnightly, monthly and annually.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "AUD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tayla",
+    "url": "https://usetayla.com.au"
+  }
+}
+</script>
+
+<!-- Schema — FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much tax do I pay on $80,000 in Australia?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On a $80,000 annual salary in Australia (2025–26), you pay approximately $16,288 in income tax plus $1,600 in Medicare levy — a total of $17,888. Your take-home pay is approximately $62,112 per year, or $5,176 per month."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the tax-free threshold in Australia?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tax-free threshold in Australia is $18,200. If you earn $18,200 or less per year, you pay no income tax. Earnings above this amount are taxed at the applicable marginal rate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the Medicare levy calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Medicare levy is 2% of your taxable income. It phases in for lower incomes — you pay no Medicare levy if you earn under $26,000, with a gradual increase up to $32,500 where the full 2% applies."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the Australian income tax brackets for 2025–26?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The 2025–26 Australian tax brackets are: $0–$18,200 (0%), $18,201–$45,000 (16%), $45,001–$135,000 (30%), $135,001–$190,000 (37%), and $190,001+ (45%). These are marginal rates — you only pay each rate on the income within that bracket."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate my weekly take-home pay in Australia?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To calculate your weekly take-home pay: take your annual gross salary, subtract income tax and Medicare levy to get your annual net income, then divide by 52. For example, a $70,000 salary gives approximately $55,717 net per year, or $1,072 per week."
+      }
+    }
+  ]
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ── Design tokens ── */
@@ -274,6 +361,21 @@ body {
 }
 .cta-feature::before { content: '✓'; color: var(--gold-light); font-weight: 700; }
 
+/* ── FAQ ── */
+.faq-list { margin-top: 4px; }
+.faq-item {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.faq-q {
+  font-weight: 700; font-size: 0.9rem;
+  color: var(--ink); margin-bottom: 8px; line-height: 1.4;
+}
+.faq-a {
+  font-size: 0.82rem; color: var(--ink-3); line-height: 1.7;
+}
+.faq-a strong { color: var(--ink-2); }
+
 /* ── Footer ── */
 footer {
   text-align: center; padding: 32px 24px;
@@ -394,11 +496,11 @@ footer a { color: var(--gold); text-decoration: none; }
         </tr>
       </thead>
       <tbody>
-        <tr id="br-0"><td>$0 – $18,200</td><td class="mono">0%</td><td class="mono">$0</td></tr>
-        <tr id="br-1"><td>$18,201 – $45,000</td><td class="mono">16%</td><td class="mono">up to $4,288</td></tr>
-        <tr id="br-2"><td>$45,001 – $135,000</td><td class="mono">30%</td><td class="mono">up to $27,000</td></tr>
-        <tr id="br-3"><td>$135,001 – $190,000</td><td class="mono">37%</td><td class="mono">up to $20,350</td></tr>
-        <tr id="br-4"><td>$190,001+</td><td class="mono">45%</td><td class="mono">45¢ per $1 over $190,000</td></tr>
+        <tr id="br-0"><td>$0 – $18,200</td><td class="mono">0%</td><td class="mono">Nil</td></tr>
+        <tr id="br-1"><td>$18,201 – $45,000</td><td class="mono">16%</td><td class="mono">16c for each $1 over $18,200</td></tr>
+        <tr id="br-2"><td>$45,001 – $135,000</td><td class="mono">30%</td><td class="mono">$4,288 plus 30c for each $1 over $45,000</td></tr>
+        <tr id="br-3"><td>$135,001 – $190,000</td><td class="mono">37%</td><td class="mono">$31,288 plus 37c for each $1 over $135,000</td></tr>
+        <tr id="br-4"><td>$190,001+</td><td class="mono">45%</td><td class="mono">$51,638 plus 45c for each $1 over $190,000</td></tr>
       </tbody>
     </table>
   </div>
@@ -416,6 +518,40 @@ footer a { color: var(--gold); text-decoration: none; }
     </div>
   </div>
 
+</div>
+
+<!-- FAQ SECTION -->
+<div class="card" style="margin-top:20px">
+  <div class="card-title">Frequently Asked Questions</div>
+  <div class="card-sub">Common questions about Australian income tax</div>
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <div class="faq-q">How much tax do I pay on $80,000 in Australia?</div>
+      <div class="faq-a">On an $80,000 salary (2025–26) you pay approximately <strong>$16,288 in income tax</strong> plus <strong>$1,600 Medicare levy</strong> — total $17,888. Your take-home is around <strong>$62,112/year</strong> or <strong>$5,176/month</strong>. Use the calculator above for your exact figure.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What is the tax-free threshold in Australia?</div>
+      <div class="faq-a">The tax-free threshold is <strong>$18,200</strong>. If you earn $18,200 or less per year you pay no income tax. Above that, you're only taxed on the amount over $18,200 — at a 16% marginal rate up to $45,000.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What are the 2025–26 Australian tax brackets?</div>
+      <div class="faq-a">The 2025–26 marginal tax rates are: <strong>$0–$18,200 (0%)</strong>, <strong>$18,201–$45,000 (16%)</strong>, <strong>$45,001–$135,000 (30%)</strong>, <strong>$135,001–$190,000 (37%)</strong>, and <strong>$190,001+ (45%)</strong>. These are marginal rates — you only pay each rate on income within that bracket, not your whole salary.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">How is the Medicare levy calculated?</div>
+      <div class="faq-a">The Medicare levy is <strong>2% of your taxable income</strong>. It phases in for lower incomes — no levy under $26,000, gradually increasing to the full 2% at $32,500. Toggle it on or off in the calculator above.</div>
+    </div>
+
+    <div class="faq-item" style="border-bottom:none">
+      <div class="faq-q">Does this calculator include HECS/HELP repayments?</div>
+      <div class="faq-a">No — this calculator covers income tax and Medicare levy only. HECS/HELP repayments depend on your individual debt balance and repayment threshold, so they're not included. Your actual take-home may be lower if you have a HECS/HELP debt.</div>
+    </div>
+
+  </div>
 </div>
 
 <!-- FOOTER -->
