@@ -866,7 +866,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: var(--ink-2);
+  background: #000;
   border-top: 1px solid rgba(255,255,255,0.08);
   z-index: 300;
   padding-bottom: env(safe-area-inset-bottom);
