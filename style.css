@@ -994,3 +994,14 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   border-color: var(--gold);
   color: var(--gold);
 }
+
+/* ═══════════════════════════════════════
+   IOS PWA — PREVENT INPUT ZOOM
+   Force all inputs to minimum 16px so iOS
+   doesn't auto-zoom on focus.
+   ═══════════════════════════════════════ */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
