@@ -192,6 +192,7 @@ async function enterApp(email, name, id) {
   document.getElementById('mobile-nav').style.display = 'block';
   showScreen('app-screen');
   await loadAllUserData();
+  applyAccruedExpenses();
   syncConsentUI();
   buildWeekRows();
   renderBudget();
@@ -246,7 +247,7 @@ function openTab(t) {
   document.getElementById('panel-' + t).classList.add('active');
   if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
   if (t === 'goals')  renderGoals();
-  if (t === 'health') { renderDebts(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
+  if (t === 'health') { renderDebts(); renderAccrued(); applyAccruedExpenses(); if (HEALTH_MODE === 'auto') autoFillHealth(); else calcHealth(); }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -330,6 +331,7 @@ async function loadAllUserData() {
     health:       saved.health       || {},
     goals:        saved.goals        || [],
     debts:        saved.debts        || [],
+    accrued:      saved.accrued      || [],
   };
   const h = APP_DATA.health;
   ['income','expenses','emergency','debt','housing','savings'].forEach(k => {
@@ -1391,7 +1393,184 @@ function renderDebts() {
 }
 
 /* ═══════════════════════════════════════════════════
-   GOALS
+   ACCRUED EXPENSES
+   Recurring bills (subscriptions, phone, etc.) that
+   auto-post to Budget on their due day each month.
+═══════════════════════════════════════════════════ */
+
+// Convert a day-of-month (1–31) to a display suffix
+function daySuffix(d) {
+  if (d >= 11 && d <= 13) return d + 'th';
+  const s = ['th','st','nd','rd'];
+  return d + (s[d % 10] || 'th');
+}
+
+// Work out which FY month index a calendar date falls in
+function fyMonthFromDate(date) {
+  const m = date.getMonth(); // 0=Jan … 11=Dec
+  return m >= 6 ? m - 6 : m + 6; // 0=Jul … 11=Jun
+}
+
+// Called on load and whenever the health tab is opened.
+// For each accrued expense, if today is on or past its due day
+// this calendar month and no entry has been injected yet this month,
+// add it to the budget automatically.
+function applyAccruedExpenses() {
+  const accrued = APP_DATA.accrued || [];
+  if (accrued.length === 0) return;
+
+  const today     = new Date();
+  const todayDay  = today.getDate();
+  const monthKey  = today.getFullYear() + '-' + (today.getMonth() + 1); // e.g. "2025-3"
+  const fyMonth   = fyMonthFromDate(today);
+
+  if (!APP_DATA.budget[fyMonth]) APP_DATA.budget[fyMonth] = [];
+
+  let changed = false;
+
+  accrued.forEach(exp => {
+    // Only inject if today is on or past the due day this month
+    if (todayDay < exp.day) return;
+
+    // Check if already injected for this calendar month
+    const alreadyAdded = APP_DATA.budget[fyMonth].some(
+      e => e.autoAccruedId === exp.id && e.autoAccruedMonth === monthKey
+    );
+    if (alreadyAdded) return;
+
+    APP_DATA.budget[fyMonth].unshift({
+      id:               Date.now() + Math.random(), // unique
+      desc:             exp.name,
+      amount:           exp.amount,
+      type:             'expense',
+      cat:              exp.cat || 'Subscriptions',
+      date:             new Date(today.getFullYear(), today.getMonth(), exp.day)
+                          .toLocaleDateString('en-AU'),
+      autoAccruedId:    exp.id,
+      autoAccruedMonth: monthKey,
+    });
+    changed = true;
+  });
+
+  if (changed) persist();
+}
+
+// Keyword map — name fragments → category value
+const ACCRUED_CAT_KEYWORDS = {
+  Subscriptions: [
+    'netflix','stan','disney','binge','paramount','apple tv','prime video','spotify',
+    'youtube','adobe','microsoft 365','office 365','icloud','google one','dropbox',
+    'canva','slack','zoom','chatgpt','claude','antivirus','vpn','gaming','xbox',
+    'playstation','nintendo','twitch','patreon','substack','audible','kindle',
+    'subscription','streaming','app','software','saas',
+  ],
+  Utilities: [
+    'phone','mobile','telstra','optus','vodafone','tpg','belong','boost',
+    'electricity','electric','power','energy','gas','water','internet','broadband',
+    'nbn','wifi','wi-fi','foxtel','fetch','kayo','council','rates','strata','body corp',
+    'bill','utility','utilities',
+  ],
+  Insurance: [
+    'insurance','cover','allianz','medibank','bupa','hcf','nib','aami','gio',
+    'budget direct','youi','racq','rac','racv','life insurance','car insurance',
+    'health insurance','home insurance','contents','income protection',
+  ],
+  Transport: [
+    'toll','opal','myki','go card','translink','parking','rego','registration',
+    'lease','car payment','fuel','petrol','uber','didi','ola',
+  ],
+  Healthcare: [
+    'gym','fitness','yoga','pilates','crossfit','anytime','goodlife','planet fitness',
+    'f45','medicare','dental','physio','therapy','medication','pharmacy',
+  ],
+  Education: [
+    'tafe','uni','university','course','udemy','coursera','masterclass','duolingo',
+    'school','tuition','tutoring',
+  ],
+};
+
+function autoSuggestAccruedCat() {
+  const name = document.getElementById('ac-name').value.toLowerCase().trim();
+  const select = document.getElementById('ac-cat');
+  const hint   = document.getElementById('ac-cat-hint');
+  if (!name) { hint.textContent = ''; return; }
+
+  for (const [cat, keywords] of Object.entries(ACCRUED_CAT_KEYWORDS)) {
+    if (keywords.some(k => name.includes(k))) {
+      select.value = cat;
+      hint.textContent = '← auto-selected';
+      return;
+    }
+  }
+  hint.textContent = '';
+}
+
+function addAccrued() {
+  const name   = document.getElementById('ac-name').value.trim();
+  const day    = parseInt(document.getElementById('ac-day').value);
+  const amount = parseFloat(document.getElementById('ac-amount').value);
+  const cat    = document.getElementById('ac-cat').value;
+
+  if (!name)              return showAlert('ac-error', 'Please enter an expense name.');
+  if (!day || day < 1 || day > 31) return showAlert('ac-error', 'Please enter a valid day (1–31).');
+  if (!amount || amount <= 0)       return showAlert('ac-error', 'Please enter a valid amount.');
+
+  if (!APP_DATA.accrued) APP_DATA.accrued = [];
+  APP_DATA.accrued.push({ id: Date.now(), name, day, amount, cat });
+  persist();
+  applyAccruedExpenses();
+  renderAccrued();
+  renderBudget();
+
+  document.getElementById('ac-name').value   = '';
+  document.getElementById('ac-day').value    = '';
+  document.getElementById('ac-amount').value = '';
+  document.getElementById('ac-cat-hint').textContent = '';
+}
+
+function deleteAccrued(id) {
+  APP_DATA.accrued = (APP_DATA.accrued || []).filter(a => a.id !== id);
+  // Remove any auto-injected budget entries for this accrued expense
+  Object.keys(APP_DATA.budget).forEach(m => {
+    APP_DATA.budget[m] = (APP_DATA.budget[m] || []).filter(e => e.autoAccruedId !== id);
+  });
+  persist();
+  renderAccrued();
+  renderBudget();
+}
+
+function renderAccrued() {
+  const list    = document.getElementById('accrued-list');
+  const accrued = APP_DATA.accrued || [];
+
+  if (accrued.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-3);font-size:0.82rem">No recurring expenses added yet.</div>';
+    return;
+  }
+
+  const today    = new Date();
+  const monthKey = today.getFullYear() + '-' + (today.getMonth() + 1);
+  const fyMonth  = fyMonthFromDate(today);
+
+  list.innerHTML = accrued.map(a => {
+    const injected = (APP_DATA.budget[fyMonth] || []).some(
+      e => e.autoAccruedId === a.id && e.autoAccruedMonth === monthKey
+    );
+    const statusBadge = injected
+      ? '<span style="font-size:0.65rem;background:#e6f4ea;color:#2e7d32;border-radius:4px;padding:1px 7px;margin-left:6px;font-weight:600">✓ Added this month</span>'
+      : '<span style="font-size:0.65rem;background:var(--paper-2);color:var(--ink-3);border-radius:4px;padding:1px 7px;margin-left:6px">Due ' + daySuffix(a.day) + '</span>';
+    return `
+    <div class="entry-item">
+      <div class="entry-cat-dot" style="background:${CAT_COLORS[a.cat]||'#5a7070'}"></div>
+      <div>
+        <div class="entry-desc">${escHtml(a.name)}${statusBadge}</div>
+        <span class="entry-cat-label">${a.cat} · every ${daySuffix(a.day)} of the month</span>
+      </div>
+      <div class="entry-amount" style="color:var(--red)">-${fmt(a.amount)}</div>
+      <button class="entry-del" onclick="deleteAccrued(${a.id})" title="Delete">×</button>
+    </div>`;
+  }).join('');
+}
 ═══════════════════════════════════════════════════ */
 // System goals that always exist and cannot be deleted
 
