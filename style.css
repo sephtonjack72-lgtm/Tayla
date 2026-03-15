@@ -94,7 +94,7 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 
 /* ══ NAV ══ */
 .nav {
-  background: var(--ink);
+  background: #1c1c1e;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   position: sticky; top: 0; z-index: 200;
   padding: 0 28px;
