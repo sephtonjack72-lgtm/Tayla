@@ -117,6 +117,41 @@ async function migrateGuestData(userId) {
   } catch (e) { console.warn('Guest migration failed:', e); }
 }
 
+/* ═══════════════════════════════════════════════════
+   PROMO CODES
+═══════════════════════════════════════════════════ */
+const PROMO_CODES = {
+  '2FREE2MONTH': { months: 2, label: '2 months of Tayla Plus free', validUntil: new Date('2025-04-22T23:59:59') },
+};
+
+function checkPromoCode() {
+  const code     = document.getElementById('promo-code').value.trim().toUpperCase();
+  const feedback = document.getElementById('promo-feedback');
+  if (!code) { feedback.textContent = ''; return; }
+  const promo = PROMO_CODES[code];
+  if (promo && new Date() <= promo.validUntil) {
+    feedback.innerHTML = `<span style="color:var(--green)">✓ Valid code — ${promo.label} will be applied</span>`;
+  } else if (promo && new Date() > promo.validUntil) {
+    feedback.innerHTML = `<span style="color:var(--red)">✗ This promo code has expired</span>`;
+  } else {
+    feedback.innerHTML = `<span style="color:var(--red)">✗ Invalid promo code</span>`;
+  }
+}
+
+async function applyPromoCode(userId, code) {
+  const promo = PROMO_CODES[code];
+  if (!promo) return;
+  if (new Date() > promo.validUntil) return; // expired — don't apply
+  const expiresAt = new Date();
+  expiresAt.setMonth(expiresAt.getMonth() + promo.months);
+  await sb.from('profiles').update({
+    tier:            'plus',
+    promo_used:      code,
+    plus_expires_at: expiresAt.toISOString(),
+    updated_at:      new Date().toISOString(),
+  }).eq('id', userId);
+}
+
 async function doRegister() {
   const name  = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim().toLowerCase();
@@ -143,6 +178,12 @@ async function doRegister() {
 
   // Migrate any guest data into the new account
   if (data.user) await migrateGuestData(data.user.id);
+
+  // Apply promo code if entered
+  const promoCode = document.getElementById('promo-code')?.value.trim().toUpperCase();
+  if (promoCode && PROMO_CODES[promoCode] && data.user) {
+    await applyPromoCode(data.user.id, promoCode);
+  }
 
   const now = new Date().toISOString();
   saveConsents(email, {
