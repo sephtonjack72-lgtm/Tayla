@@ -587,9 +587,9 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 .week-row.has-value { background: rgba(200,146,42,0.03); }
 
 .week-head {
-  background: var(--paper-2); border-bottom: 2px solid var(--rule);
+  background: #f0f0f0; border-bottom: 2px solid rgba(0,0,0,0.08);
   font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-3);
+  text-transform: uppercase; color: #6a6a6a;
 }
 .week-head .wc { padding: 10px 14px; }
 
@@ -836,12 +836,12 @@ h3 { font-size: 1.1rem; font-weight: 700; }
    PRIVACY NOTICE BANNER (at top of app)
 ════════════════════════════════════ */
 .privacy-banner {
-  background: var(--blue-dim); border-bottom: 1px solid rgba(26,82,118,0.15);
-  padding: 10px 28px; font-size: 0.78rem; color: var(--blue);
+  background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 10px 28px; font-size: 0.78rem; color: var(--ink-3);
   display: flex; align-items: center; gap: 10px;
 }
 .privacy-banner strong { font-weight: 600; }
-.privacy-banner a { color: var(--blue); text-decoration: underline; cursor: pointer; }
+.privacy-banner a { color: var(--gold); text-decoration: underline; cursor: pointer; }
 
 /* ════════════════════════════════════
    PRIVACY / LEGAL PAGES (in modal)
@@ -1271,8 +1271,10 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   border-color: rgba(255,255,255,0.07);
 }
 [data-theme="black"] .weeks-container { background: #1a1a1a; }
+[data-theme="black"] .week-head { background: #222; border-bottom-color: rgba(255,255,255,0.08); color: #808080; }
 [data-theme="black"] .week-row { border-bottom-color: rgba(255,255,255,0.05); }
 [data-theme="black"] .week-row.has-value { background: rgba(255,255,255,0.03); }
+[data-theme="black"] .privacy-banner { background: rgba(255,255,255,0.04); border-bottom-color: rgba(255,255,255,0.06); color: #808080; }
 [data-theme="black"] .add-entry-form { background: #1a1a1a; border-color: rgba(255,255,255,0.07); }
 [data-theme="black"] .entry-item { border-bottom-color: rgba(255,255,255,0.05); }
 [data-theme="black"] .form-input {
