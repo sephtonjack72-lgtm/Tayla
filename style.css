@@ -1084,196 +1084,172 @@ h3 { font-size: 1.1rem; font-weight: 700; }
 
 /* ═══════════════════════════════════════
    THEMES — Australian Banknote Palette
+   Approach: keep ink/paper near-neutral,
+   only shift the accent (--gold) and add
+   a whisper of tint to the paper surface.
    ═══════════════════════════════════════ */
 
-/* $5 — Pink/Magenta (default is teal, this is the pink note) */
+/* $5 — Pink */
 [data-theme="pink"] {
-  --ink:        #2a0a1a;
-  --ink-2:      #4a1530;
-  --ink-3:      #8a4060;
-  --paper:      #fdf0f4;
-  --paper-2:    #f5d8e4;
-  --paper-3:    #e8b8cc;
-  --rule:       rgba(100,20,60,0.15);
-  --gold:       #c0395a;
-  --gold-light: #e87898;
-  --gold-dim:   rgba(192,57,90,0.15);
-  --green:      #c0395a;
-  --green-dim:  rgba(192,57,90,0.12);
-  --red:        #a01030;
-  --red-dim:    rgba(160,16,48,0.12);
-  --blue:       #8a2050;
-  --blue-dim:   rgba(138,32,80,0.14);
-  --shadow-sm:  0 1px 4px rgba(42,10,26,0.10);
-  --shadow-md:  0 4px 20px rgba(42,10,26,0.13);
-  --shadow-lg:  0 12px 48px rgba(42,10,26,0.16);
+  --paper:      #fdf5f7;
+  --paper-2:    #f5e8ec;
+  --paper-3:    #e8d0d8;
+  --rule:       rgba(140,40,70,0.13);
+  --gold:       #b84868;
+  --gold-light: #d88098;
+  --gold-dim:   rgba(184,72,104,0.13);
+  --green:      #b84868;
+  --green-dim:  rgba(184,72,104,0.10);
 }
 [data-theme="pink"] .auth-hero {
-  background: linear-gradient(145deg, #2a0a1a 0%, #4a1530 60%, #380820 100%);
+  background: linear-gradient(145deg, #1a0810 0%, #2e1020 60%, #200a18 100%);
 }
 [data-theme="pink"] body::before {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(192,57,90,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(192,57,90,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(184,72,104,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(184,72,104,0.03) 0%, transparent 50%);
 }
 
 /* $10 — Blue */
 [data-theme="blue"] {
-  --ink:        #0a1628;
-  --ink-2:      #152540;
-  --ink-3:      #3a5878;
-  --paper:      #f0f4fa;
-  --paper-2:    #d8e4f5;
-  --paper-3:    #b8cce8;
-  --rule:       rgba(20,50,100,0.15);
-  --gold:       #1a5fa0;
-  --gold-light: #5a9fd4;
-  --gold-dim:   rgba(26,95,160,0.15);
-  --green:      #1a5fa0;
-  --green-dim:  rgba(26,95,160,0.12);
-  --red:        #a83232;
-  --red-dim:    rgba(168,50,50,0.12);
-  --blue:       #1a5fa0;
-  --blue-dim:   rgba(26,95,160,0.14);
-  --shadow-sm:  0 1px 4px rgba(10,22,40,0.10);
-  --shadow-md:  0 4px 20px rgba(10,22,40,0.13);
-  --shadow-lg:  0 12px 48px rgba(10,22,40,0.16);
+  --paper:      #f5f7fd;
+  --paper-2:    #e8edf8;
+  --paper-3:    #d0daee;
+  --rule:       rgba(30,60,130,0.13);
+  --gold:       #2a62a8;
+  --gold-light: #6090cc;
+  --gold-dim:   rgba(42,98,168,0.13);
+  --green:      #2a62a8;
+  --green-dim:  rgba(42,98,168,0.10);
 }
 [data-theme="blue"] .auth-hero {
-  background: linear-gradient(145deg, #0a1628 0%, #152540 60%, #0c1e38 100%);
+  background: linear-gradient(145deg, #080f20 0%, #102038 60%, #0a1828 100%);
 }
 [data-theme="blue"] body::before {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(26,95,160,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(26,95,160,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(42,98,168,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(42,98,168,0.03) 0%, transparent 50%);
 }
 
-/* $20 — Red/Orange */
+/* $20 — Red */
 [data-theme="red"] {
-  --ink:        #1e0a08;
-  --ink-2:      #3a1208;
-  --ink-3:      #7a3020;
-  --paper:      #fdf2f0;
-  --paper-2:    #f5dbd8;
-  --paper-3:    #e8bab5;
-  --rule:       rgba(100,30,20,0.15);
-  --gold:       #c04820;
-  --gold-light: #e88060;
-  --gold-dim:   rgba(192,72,32,0.15);
-  --green:      #c04820;
-  --green-dim:  rgba(192,72,32,0.12);
-  --red:        #a02010;
-  --red-dim:    rgba(160,32,16,0.12);
-  --blue:       #8a3010;
-  --blue-dim:   rgba(138,48,16,0.14);
-  --shadow-sm:  0 1px 4px rgba(30,10,8,0.10);
-  --shadow-md:  0 4px 20px rgba(30,10,8,0.13);
-  --shadow-lg:  0 12px 48px rgba(30,10,8,0.16);
+  --paper:      #fdf5f4;
+  --paper-2:    #f5e8e6;
+  --paper-3:    #e8d0cc;
+  --rule:       rgba(140,40,28,0.13);
+  --gold:       #b04030;
+  --gold-light: #d07868;
+  --gold-dim:   rgba(176,64,48,0.13);
+  --green:      #b04030;
+  --green-dim:  rgba(176,64,48,0.10);
 }
 [data-theme="red"] .auth-hero {
-  background: linear-gradient(145deg, #1e0a08 0%, #3a1208 60%, #280c08 100%);
+  background: linear-gradient(145deg, #1a0806 0%, #300e08 60%, #220a06 100%);
 }
 [data-theme="red"] body::before {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(192,72,32,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(192,72,32,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(176,64,48,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(176,64,48,0.03) 0%, transparent 50%);
 }
 
-/* $50 — Yellow/Gold */
+/* $50 — Gold */
 [data-theme="yellow"] {
-  --ink:        #1e1600;
-  --ink-2:      #382800;
-  --ink-3:      #786020;
   --paper:      #fdfaf0;
-  --paper-2:    #f5ecc8;
-  --paper-3:    #e8d898;
-  --rule:       rgba(100,80,0,0.15);
-  --gold:       #b08000;
-  --gold-light: #d4b040;
-  --gold-dim:   rgba(176,128,0,0.15);
-  --green:      #b08000;
-  --green-dim:  rgba(176,128,0,0.12);
-  --red:        #a04000;
-  --red-dim:    rgba(160,64,0,0.12);
-  --blue:       #806000;
-  --blue-dim:   rgba(128,96,0,0.14);
-  --shadow-sm:  0 1px 4px rgba(30,22,0,0.10);
-  --shadow-md:  0 4px 20px rgba(30,22,0,0.13);
-  --shadow-lg:  0 12px 48px rgba(30,22,0,0.16);
+  --paper-2:    #f5f0d8;
+  --paper-3:    #e8e0b8;
+  --rule:       rgba(120,96,0,0.13);
+  --gold:       #9a7800;
+  --gold-light: #c8a830;
+  --gold-dim:   rgba(154,120,0,0.13);
+  --green:      #9a7800;
+  --green-dim:  rgba(154,120,0,0.10);
 }
 [data-theme="yellow"] .auth-hero {
-  background: linear-gradient(145deg, #1e1600 0%, #382800 60%, #281e00 100%);
+  background: linear-gradient(145deg, #181200 0%, #2a1e00 60%, #201600 100%);
 }
 [data-theme="yellow"] body::before {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(176,128,0,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(176,128,0,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(154,120,0,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(154,120,0,0.03) 0%, transparent 50%);
 }
 
 /* $100 — Green */
 [data-theme="green"] {
-  --ink:        #051a08;
-  --ink-2:      #0a2e10;
-  --ink-3:      #2a6030;
-  --paper:      #f0faf2;
-  --paper-2:    #d0ecd5;
-  --paper-3:    #a8d8b0;
-  --rule:       rgba(10,60,20,0.15);
-  --gold:       #1a8a30;
-  --gold-light: #50c060;
-  --gold-dim:   rgba(26,138,48,0.15);
-  --green:      #1a8a30;
-  --green-dim:  rgba(26,138,48,0.12);
-  --red:        #a83232;
-  --red-dim:    rgba(168,50,50,0.12);
-  --blue:       #0a6828;
-  --blue-dim:   rgba(10,104,40,0.14);
-  --shadow-sm:  0 1px 4px rgba(5,26,8,0.10);
-  --shadow-md:  0 4px 20px rgba(5,26,8,0.13);
-  --shadow-lg:  0 12px 48px rgba(5,26,8,0.16);
+  --paper:      #f4faf5;
+  --paper-2:    #e4f2e6;
+  --paper-3:    #c8e4cc;
+  --rule:       rgba(20,90,35,0.13);
+  --gold:       #1e7a32;
+  --gold-light: #52a862;
+  --gold-dim:   rgba(30,122,50,0.13);
+  --green:      #1e7a32;
+  --green-dim:  rgba(30,122,50,0.10);
 }
 [data-theme="green"] .auth-hero {
-  background: linear-gradient(145deg, #051a08 0%, #0a2e10 60%, #081e08 100%);
+  background: linear-gradient(145deg, #041208 0%, #082010 60%, #061808 100%);
 }
 [data-theme="green"] body::before {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(26,138,48,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(26,138,48,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(30,122,50,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(30,122,50,0.03) 0%, transparent 50%);
 }
 
-/* Black / AMOLED */
+/* Black / AMOLED — keep original, just fix sidebar readability */
 [data-theme="black"] {
   --ink:        #e8e8e8;
-  --ink-2:      #c0c0c0;
-  --ink-3:      #808080;
-  --paper:      #0a0a0a;
-  --paper-2:    #181818;
-  --paper-3:    #282828;
+  --ink-2:      #c8c8c8;
+  --ink-3:      #909090;
+  --paper:      #0c0c0c;
+  --paper-2:    #1a1a1a;
+  --paper-3:    #2a2a2a;
   --rule:       rgba(255,255,255,0.10);
-  --gold:       #a0a0ff;
-  --gold-light: #c0c0ff;
-  --gold-dim:   rgba(160,160,255,0.15);
-  --green:      #60c060;
-  --green-dim:  rgba(96,192,96,0.12);
-  --red:        #f06060;
-  --red-dim:    rgba(240,96,96,0.12);
-  --blue:       #6090e0;
-  --blue-dim:   rgba(96,144,224,0.14);
-  --shadow-sm:  0 1px 4px rgba(0,0,0,0.40);
-  --shadow-md:  0 4px 20px rgba(0,0,0,0.50);
-  --shadow-lg:  0 12px 48px rgba(0,0,0,0.60);
+  --gold:       #8888ee;
+  --gold-light: #aaaaff;
+  --gold-dim:   rgba(136,136,238,0.15);
+  --green:      #66bb66;
+  --green-dim:  rgba(102,187,102,0.12);
+  --red:        #e06060;
+  --red-dim:    rgba(224,96,96,0.12);
+  --blue:       #6090d8;
+  --blue-dim:   rgba(96,144,216,0.14);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.50);
+  --shadow-md:  0 4px 20px rgba(0,0,0,0.60);
+  --shadow-lg:  0 12px 48px rgba(0,0,0,0.70);
 }
 [data-theme="black"] .auth-hero {
-  background: linear-gradient(145deg, #000000 0%, #0d0d0d 60%, #080808 100%);
+  background: linear-gradient(145deg, #000 0%, #0d0d0d 60%, #060606 100%);
 }
 [data-theme="black"] body::before { background-image: none; }
 [data-theme="black"] .nav {
   background: #000;
-  border-bottom-color: rgba(255,255,255,0.06);
+  border-bottom-color: rgba(255,255,255,0.08);
 }
+/* Sidebar needs lighter text in dark mode for readability */
+[data-theme="black"] .sidebar {
+  background: #111;
+  border-right-color: rgba(255,255,255,0.06);
+}
+[data-theme="black"] .sidebar-item {
+  color: #c0c0c0;
+}
+[data-theme="black"] .sidebar-item:hover,
+[data-theme="black"] .sidebar-item.active {
+  background: #222;
+  color: #fff;
+}
+[data-theme="black"] .sidebar-label { color: #606060; }
 [data-theme="black"] .card {
-  background: var(--paper-2);
-  border-color: rgba(255,255,255,0.06);
+  background: #1a1a1a;
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="black"] .form-input {
+  background: #222;
+  border-color: rgba(255,255,255,0.12);
+  color: #e0e0e0;
+}
+[data-theme="black"] .mobile-nav {
+  background: #000;
+  border-top-color: rgba(255,255,255,0.08);
 }
 
 /* ── Theme picker swatches ── */
