@@ -177,6 +177,17 @@
         </div>
 
         <button class="btn btn-primary btn-full" onclick="doRegister()" style="margin-top:6px">Create Free Account</button>
+
+        <!-- PROMO CODE -->
+        <div style="margin-top:14px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="form-input" type="text" id="promo-code" placeholder="Promo code (optional)"
+              style="text-transform:uppercase;letter-spacing:0.05em;font-family:'IBM Plex Mono',monospace;font-size:0.82rem"
+              oninput="this.value=this.value.toUpperCase();checkPromoCode()">
+          </div>
+          <div id="promo-feedback" style="font-size:0.72rem;margin-top:6px;min-height:18px"></div>
+        </div>
+
         <p style="font-size:0.75rem;color:var(--ink-3);text-align:center;margin-top:16px">Just want to try first? <a style="color:var(--gold);cursor:pointer;border-bottom:1px solid var(--gold-light)" onclick="enterGuest()">Use guest mode</a></p>
       </div>
     </div>
