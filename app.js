@@ -340,6 +340,7 @@ async function loadAllUserData() {
   });
   // Restore health mode UI
   setHealthMode(HEALTH_MODE);
+  refreshAccruedDebtOptions();
 }
 
 async function persist() {
@@ -1385,9 +1386,9 @@ function renderDebts() {
   if (debts.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-3);font-size:0.82rem">No debts added yet.</div>';
     if (totalRow) totalRow.style.display = 'none';
-    // Clear debt field in manual mode
     const debtEl = document.getElementById('h-debt');
     if (debtEl) { debtEl.value = ''; }
+    refreshAccruedDebtOptions();
     return;
   }
 
