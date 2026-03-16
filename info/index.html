@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
+<title>Tayla — Australian Personal Finance App</title>
+<meta name="description" content="Tayla is the personal finance app built for Australians. Track income, manage budgets, automate recurring expenses, and monitor your financial health — all in one place.">
+<link rel="canonical" href="https://usetayla.com.au/info/">
+<meta property="og:title" content="Tayla — Australian Personal Finance">
+<meta property="og:description" content="Budget, track and automate your finances. Built for Australians.">
+<meta property="og:url" content="https://usetayla.com.au/info/">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #111e1e;
+  --ink-2:      #1e3535;
+  --ink-3:      #4a6868;
+  --paper:      #f0f4f3;
+  --paper-2:    #e0eae8;
+  --paper-3:    #c8d8d5;
+  --rule:       rgba(30,80,80,0.15);
+  --gold:       #1a7a8c;
+  --gold-light: #7cc4d0;
+  --gold-dim:   rgba(26,122,140,0.12);
+  --green:      #1a7a4a;
+  --r:          10px;
+  --r-sm:       6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+.nav {
+  background: #000;
+  padding: 0 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.4rem;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-dot {
+  width: 9px; height: 9px;
+  background: var(--gold-light); border-radius: 50%;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.3); opacity: 0.7; }
+}
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-link {
+  font-size: 0.82rem; color: rgba(255,255,255,0.55);
+  text-decoration: none; transition: color 0.15s;
+}
+.nav-link:hover { color: #fff; }
+.nav-cta {
+  font-size: 0.82rem; font-weight: 600;
+  padding: 9px 22px; border-radius: var(--r-sm);
+  background: var(--gold); color: #fff;
+  text-decoration: none; transition: opacity 0.15s;
+}
+.nav-cta:hover { opacity: 0.88; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  background: #0a1a1a;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 100px 32px 60px;
+  position: relative; overflow: hidden;
+  text-align: center;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,122,140,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, rgba(26,122,74,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 70%, rgba(26,96,128,0.12) 0%, transparent 50%);
+}
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(26,122,140,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,122,140,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold-light); margin-bottom: 24px;
+  display: inline-flex; align-items: center; gap: 12px;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ''; width: 32px; height: 1px; background: var(--gold-light); opacity: 0.6;
+}
+.hero-h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 900; color: #fff;
+  line-height: 1.05; margin-bottom: 12px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+.hero-h1 em {
+  font-style: italic; color: var(--gold-light);
+  display: block;
+}
+.hero-sub {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: rgba(255,255,255,0.5); max-width: 520px;
+  line-height: 1.7; margin: 0 auto 40px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  justify-content: center; margin-bottom: 64px;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+.btn-hero-primary {
+  background: var(--gold); color: #fff;
+  padding: 16px 40px; border-radius: var(--r-sm);
+  font-weight: 700; font-size: 0.95rem;
+  text-decoration: none; transition: all 0.2s;
+  border: none; cursor: pointer;
+}
+.btn-hero-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+.btn-hero-ghost {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.75);
+  padding: 16px 32px; border-radius: var(--r-sm);
+  font-weight: 600; font-size: 0.95rem;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-hero-ghost:hover { background: rgba(255,255,255,0.10); color: #fff; }
+
+/* Stat pills */
+.hero-stats {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+.stat-pill {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 0.76rem; color: rgba(255,255,255,0.5);
+  display: flex; align-items: center; gap: 6px;
+}
+.stat-pill strong { color: var(--gold-light); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION BASE ── */
+.section { padding: 80px 32px; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before { content: ''; width: 20px; height: 1.5px; background: var(--gold); }
+.section-h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900; margin-bottom: 14px; line-height: 1.15;
+}
+.section-sub {
+  font-size: 0.92rem; color: var(--ink-3);
+  max-width: 560px; line-height: 1.75; margin-bottom: 48px;
+}
+
+/* ── FEATURES ── */
+.features-section { background: var(--paper); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.feature-card {
+  background: #fff; border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 28px 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(17,30,30,0.10);
+}
+.feature-icon {
+  width: 44px; height: 44px; border-radius: var(--r-sm);
+  background: var(--gold-dim); border: 1px solid rgba(26,122,140,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: 16px;
+}
+.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; font-weight: 700; margin-bottom: 8px;
+}
+.feature-desc { font-size: 0.82rem; color: var(--ink-3); line-height: 1.65; }
+.feature-tag {
+  display: inline-block; margin-top: 12px;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 10px;
+}
+.tag-free { background: var(--gold-dim); color: var(--gold); }
+.tag-plus { background: rgba(26,122,74,0.10); color: var(--green); border: 1px solid rgba(26,122,74,0.2); }
+
+/* ── TIERS ── */
+.tiers-section { background: #0a1a1a; }
+.tiers-section .section-h2 { color: #fff; }
+.tiers-section .section-sub { color: rgba(255,255,255,0.45); }
+.tiers-section .section-label { color: var(--gold-light); }
+.tiers-section .section-label::before { background: var(--gold-light); }
+.tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.tier-card {
+  border-radius: var(--r); padding: 32px 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  transition: transform 0.2s;
+}
+.tier-card:hover { transform: translateY(-3px); }
+.tier-card.featured {
+  background: linear-gradient(135deg, rgba(26,122,140,0.15), rgba(26,122,140,0.05));
+  border-color: var(--gold);
+}
+.tier-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;
+}
+.tier-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 2rem; font-weight: 700; color: var(--gold-light);
+  margin: 12px 0 4px;
+}
+.tier-price span { font-size: 0.85rem; color: rgba(255,255,255,0.35); }
+.tier-desc { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 20px; line-height: 1.5; }
+.tier-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.tier-features li {
+  font-size: 0.82rem; color: rgba(255,255,255,0.65);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+}
+.tier-features li::before { content: '✓'; color: var(--gold-light); font-weight: 700; flex-shrink: 0; }
+.tier-features li.locked { color: rgba(255,255,255,0.2); }
+.tier-features li.locked::before { content: '✗'; color: rgba(255,255,255,0.15); }
+.tier-cta {
+  display: block; margin-top: 24px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 11px 16px; border-radius: var(--r-sm);
+  text-align: center; text-decoration: none;
+  font-size: 0.82rem; font-weight: 600;
+  transition: all 0.15s;
+}
+.tier-cta:hover { background: rgba(255,255,255,0.14); color: #fff; }
+.tier-card.featured .tier-cta {
+  background: var(--gold); color: #fff; border-color: var(--gold);
+}
+.tier-card.featured .tier-cta:hover { opacity: 0.88; }
+
+/* ── TOOLS ── */
+.tools-section { background: var(--paper-2); }
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.tool-card {
+  background: #fff; border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 24px 28px;
+  display: flex; align-items: center; gap: 20px;
+  text-decoration: none; color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.tool-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(17,30,30,0.10); }
+.tool-icon { font-size: 2rem; flex-shrink: 0; }
+.tool-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; font-weight: 700; margin-bottom: 4px;
+}
+.tool-desc { font-size: 0.78rem; color: var(--ink-3); line-height: 1.5; }
+.tool-arrow {
+  margin-left: auto; color: var(--gold);
+  font-size: 1.1rem; flex-shrink: 0; opacity: 0.6;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.tool-card:hover .tool-arrow { transform: translateX(3px); opacity: 1; }
+
+/* ── PAGES ── */
+.pages-section { background: var(--paper); }
+.pages-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.page-card {
+  background: #fff; border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 20px;
+  text-decoration: none; color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.page-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(17,30,30,0.09); }
+.page-card-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.page-card-name { font-weight: 700; font-size: 0.9rem; }
+.page-card-url { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--gold); }
+.page-card-desc { font-size: 0.76rem; color: var(--ink-3); line-height: 1.5; }
+
+/* ── FOOTER ── */
+.footer-section {
+  background: #000;
+  padding: 60px 32px 40px;
+}
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.3rem; color: #fff;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.footer-brand-desc {
+  font-size: 0.8rem; color: rgba(255,255,255,0.35);
+  line-height: 1.7; max-width: 220px;
+}
+.footer-col-title {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  margin-bottom: 14px;
+}
+.footer-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-link {
+  font-size: 0.82rem; color: rgba(255,255,255,0.5);
+  text-decoration: none; transition: color 0.15s;
+}
+.footer-link:hover { color: var(--gold-light); }
+.footer-bottom {
+  padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.72rem; color: rgba(255,255,255,0.2);
+  flex-wrap: wrap; gap: 8px;
+}
+.footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; }
+.footer-bottom a:hover { color: var(--gold-light); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .tiers-grid    { grid-template-columns: 1fr; max-width: 420px; }
+  .pages-grid    { grid-template-columns: 1fr 1fr; }
+  .footer-top    { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .nav-links     { display: none; }
+}
+@media (max-width: 600px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .tools-grid    { grid-template-columns: 1fr; }
+  .pages-grid    { grid-template-columns: 1fr 1fr; }
+  .footer-top    { grid-template-columns: 1fr; gap: 24px; }
+  .hero          { padding: 90px 20px 48px; }
+  .section       { padding: 56px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/info/"><div class="logo-dot"></div>Tayla</a>
+    <div class="nav-links">
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="#tools">Free Tools</a>
+      <a class="nav-link" href="/blog/">Blog</a>
+      <a class="nav-link" href="/changelog/">Changelog</a>
+    </div>
+    <a class="nav-cta" href="/">Open App →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">Australian Personal Finance</div>
+  <h1 class="hero-h1">
+    Budget your way.<br>
+    <em>Know where you stand.</em>
+  </h1>
+  <p class="hero-sub">Tayla tracks your income, automates recurring expenses, and gives you a live financial health score — built specifically for Australians.</p>
+  <div class="hero-actions">
+    <a class="btn-hero-primary" href="/">Start for Free →</a>
+    <a class="btn-hero-ghost" href="#features">See Features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-pill">✓ <strong>Free</strong> to get started</div>
+    <div class="stat-pill">✓ No credit card required</div>
+    <div class="stat-pill">✓ ATO <strong>2025–26</strong> tax brackets</div>
+    <div class="stat-pill">✓ Works on <strong>iPhone, Android & desktop</strong></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section features-section" id="features">
+  <div class="section-inner">
+    <div class="section-label">What's Inside</div>
+    <h2 class="section-h2">Everything your finances need</h2>
+    <p class="section-sub">Built for how Australians actually get paid — weekly, fortnightly, or monthly, with Australian tax brackets baked in.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💵</div>
+        <div class="feature-title">Income Tracker</div>
+        <div class="feature-desc">Track weekly, fortnightly or monthly income across two income sources. Australian tax calculations built in — see your real take-home pay.</div>
+        <span class="feature-tag tag-free">Free</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Budget Tracker</div>
+        <div class="feature-desc">Log income and expenses by category. Spending pie chart, monthly summaries, and savings rate — all updated in real time.</div>
+        <span class="feature-tag tag-free">Free</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Financial Health Score</div>
+        <div class="feature-desc">Automatic score based on your savings rate, emergency fund, debt-to-income ratio, and housing costs. Manual or auto mode.</div>
+        <span class="feature-tag tag-free">Free</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔁</div>
+        <div class="feature-title">Recurring Expenses</div>
+        <div class="feature-desc">Add subscriptions, rent, and bills once. They auto-post to your budget on their due date every month — no manual entry.</div>
+        <span class="feature-tag tag-plus">✦ Plus</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Debt Register</div>
+        <div class="feature-desc">Track all your loans and liabilities. Balances update automatically as you make repayments. Feeds directly into your health score.</div>
+        <span class="feature-tag tag-plus">✦ Plus</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Portfolio & Goals</div>
+        <div class="feature-desc">Set savings targets, track progress, and see an estimated timeline to reach each goal. Emergency fund and investments auto-tracked from your budget.</div>
+        <span class="feature-tag tag-plus">✦ Plus</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="section tiers-section" id="pricing">
+  <div class="section-inner">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-h2">Start free. Upgrade when ready.</h2>
+    <p class="section-sub">No credit card required. Try Tayla without even creating an account.</p>
+    <div class="tiers-grid">
+      <div class="tier-card">
+        <div class="tier-name">Guest</div>
+        <div class="tier-price">Free <span>forever</span></div>
+        <div class="tier-desc">Try Tayla instantly — no signup required. Data stays on your device.</div>
+        <ul class="tier-features">
+          <li>Income tracker</li>
+          <li>Budget tracker</li>
+          <li>Data saved to device</li>
+          <li class="locked">Financial Health Score</li>
+          <li class="locked">Cloud sync</li>
+          <li class="locked">Portfolio & Goals</li>
+        </ul>
+        <a class="tier-cta" href="/">Try as Guest</a>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name">Free Account</div>
+        <div class="tier-price">Free <span>forever</span></div>
+        <div class="tier-desc">Create an account to unlock health scoring and cloud sync across devices.</div>
+        <ul class="tier-features">
+          <li>Income tracker</li>
+          <li>Budget tracker</li>
+          <li>Financial Health Score (manual)</li>
+          <li>Cloud sync across devices</li>
+          <li class="locked">Auto Health Score</li>
+          <li class="locked">Portfolio & Goals</li>
+          <li class="locked">Recurring Expenses</li>
+          <li class="locked">Debt Register</li>
+        </ul>
+        <a class="tier-cta" href="/">Create Free Account</a>
+      </div>
+      <div class="tier-card featured">
+        <div class="tier-name">✦ Tayla Plus</div>
+        <div class="tier-price">$3.99 <span>/ month AUD</span></div>
+        <div class="tier-desc">The full Tayla experience — everything automated, everything tracked.</div>
+        <ul class="tier-features">
+          <li>Everything in Free</li>
+          <li>Auto Financial Health Score</li>
+          <li>Portfolio & Goals tracking</li>
+          <li>Recurring Expenses (auto-post)</li>
+          <li>Debt Register</li>
+          <li>Savings auto-tracking</li>
+          <li>Theme customisation</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="tier-cta" href="/">Upgrade to Plus</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FREE TOOLS -->
+<div class="section tools-section" id="tools">
+  <div class="section-inner">
+    <div class="section-label">Free Tools</div>
+    <h2 class="section-h2">No login. No catch.</h2>
+    <p class="section-sub">Standalone calculators and planners — free forever, no account required.</p>
+    <div class="tools-grid">
+      <a class="tool-card" href="/tax/">
+        <div class="tool-icon">🧮</div>
+        <div>
+          <div class="tool-name">Australian Tax Calculator</div>
+          <div class="tool-desc">Enter your salary and instantly see your take-home pay — weekly, fortnightly, monthly and annual. Includes Medicare levy. ATO 2025–26 brackets.</div>
+        </div>
+        <div class="tool-arrow">→</div>
+      </a>
+      <a class="tool-card" href="/budget/">
+        <div class="tool-icon">📋</div>
+        <div>
+          <div class="tool-name">Budget Planner</div>
+          <div class="tool-desc">Step-by-step monthly budget wizard. Enter income and expenses to see your surplus or deficit, with a 50/30/20 breakdown.</div>
+        </div>
+        <div class="tool-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ALL PAGES -->
+<div class="section pages-section">
+  <div class="section-inner">
+    <div class="section-label">Everything on Tayla</div>
+    <h2 class="section-h2">All pages & resources</h2>
+    <p class="section-sub">Everything Tayla has to offer — tools, updates, transparency and more.</p>
+    <div class="pages-grid">
+      <a class="page-card" href="/">
+        <div class="page-card-icon">🏠</div>
+        <div class="page-card-name">App</div>
+        <div class="page-card-url">usetayla.com.au</div>
+        <div class="page-card-desc">The main Tayla app — income, budget, health, portfolio.</div>
+      </a>
+      <a class="page-card" href="/tax/">
+        <div class="page-card-icon">🧮</div>
+        <div class="page-card-name">Tax Calculator</div>
+        <div class="page-card-url">usetayla.com.au/tax/</div>
+        <div class="page-card-desc">Free Australian income tax calculator for 2025–26.</div>
+      </a>
+      <a class="page-card" href="/budget/">
+        <div class="page-card-icon">📋</div>
+        <div class="page-card-name">Budget Planner</div>
+        <div class="page-card-url">usetayla.com.au/budget/</div>
+        <div class="page-card-desc">Step-by-step monthly budget wizard.</div>
+      </a>
+      <a class="page-card" href="/blog/">
+        <div class="page-card-icon">✍️</div>
+        <div class="page-card-name">Blog</div>
+        <div class="page-card-url">usetayla.com.au/blog/</div>
+        <div class="page-card-desc">Australian personal finance tips and guides.</div>
+      </a>
+      <a class="page-card" href="/changelog/">
+        <div class="page-card-icon">🚀</div>
+        <div class="page-card-name">Changelog</div>
+        <div class="page-card-url">usetayla.com.au/changelog/</div>
+        <div class="page-card-desc">What's new — every update and improvement.</div>
+      </a>
+      <a class="page-card" href="/business/">
+        <div class="page-card-icon">📊</div>
+        <div class="page-card-name">Business P&L</div>
+        <div class="page-card-url">usetayla.com.au/business/</div>
+        <div class="page-card-desc">Full transparency — Tayla's public P&L and metrics.</div>
+      </a>
+      <a class="page-card" href="/info/">
+        <div class="page-card-icon">ℹ️</div>
+        <div class="page-card-name">About</div>
+        <div class="page-card-url">usetayla.com.au/info/</div>
+        <div class="page-card-desc">You're here — features, pricing and everything Tayla.</div>
+      </a>
+      <a class="page-card" href="mailto:hello@usetayla.com.au">
+        <div class="page-card-icon">✉️</div>
+        <div class="page-card-name">Contact</div>
+        <div class="page-card-url">hello@usetayla.com.au</div>
+        <div class="page-card-desc">Questions, feedback or support — get in touch.</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer-section">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo"><div class="logo-dot"></div>Tayla</div>
+        <p class="footer-brand-desc">The personal finance app built for Australians — budget, track, and automate your finances.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">App</div>
+        <div class="footer-links">
+          <a class="footer-link" href="/">Open App</a>
+          <a class="footer-link" href="/#features">Features</a>
+          <a class="footer-link" href="/info/#pricing">Pricing</a>
+          <a class="footer-link" href="/changelog/">Changelog</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Free Tools</div>
+        <div class="footer-links">
+          <a class="footer-link" href="/tax/">Tax Calculator</a>
+          <a class="footer-link" href="/budget/">Budget Planner</a>
+          <a class="footer-link" href="/blog/">Blog</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-links">
+          <a class="footer-link" href="/business/">P&L</a>
+          <a class="footer-link" href="mailto:hello@usetayla.com.au">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Tayla — Australian Personal Finance. Built in Australia 🇦🇺</span>
+      <span>Not financial advice · <a href="/">Privacy Policy</a></span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
