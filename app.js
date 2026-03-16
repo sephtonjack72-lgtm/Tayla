@@ -1620,7 +1620,7 @@ function autoFillHealth() {
       ['Monthly Expenses',      fmt(avgExpenses), 'avg across ' + count + ' month' + (count===1?'':'s')],
       ['Monthly Savings',       fmt(avgSavings),  'avg across ' + count + ' month' + (count===1?'':'s')],
       ['Monthly Housing Cost',  fmt(avgHousing),  'from Rent/Mortgage entries'],
-      ['Emergency Fund',        fmt(emergencyAmt),'from Goals'],
+      ['Emergency Fund',        fmt(emergencyAmt),'from Portfolio'],
       ['Total Debt',            fmt(totalDebt),   'from Debt Register'],
     ];
     summaryEl.innerHTML = rows.map(([label, val, sub]) => `
