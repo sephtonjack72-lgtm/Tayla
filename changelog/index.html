@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
+<title>Changelog — What's New in Tayla | Australian Personal Finance</title>
+<meta name="description" content="See what's new in Tayla — the Australian personal finance app. New features, improvements and fixes updated regularly.">
+<link rel="canonical" href="https://usetayla.com.au/changelog/">
+<meta property="og:title" content="Tayla Changelog — What's New">
+<meta property="og:description" content="New features, improvements and fixes in Tayla — the Australian personal finance app.">
+<meta property="og:url" content="https://usetayla.com.au/changelog/">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #111e1e;
+  --ink-2:      #1e3535;
+  --ink-3:      #4a6868;
+  --paper:      #f0f4f3;
+  --paper-2:    #e0eae8;
+  --rule:       rgba(30,80,80,0.15);
+  --gold:       #1a7a8c;
+  --gold-light: #7cc4d0;
+  --gold-dim:   rgba(26,122,140,0.12);
+  --green:      #1a7a4a;
+  --red:        #a83232;
+  --r:          10px;
+  --r-sm:       6px;
+  --shadow:     0 4px 24px rgba(17,30,30,0.10);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Nav ── */
+.nav {
+  background: #000;
+  padding: 0 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-inner {
+  max-width: 780px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.3rem;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold-light); border-radius: 50%; }
+.nav-cta {
+  font-size: 0.8rem; font-weight: 600;
+  padding: 8px 18px; border-radius: var(--r-sm);
+  background: var(--gold); color: #fff;
+  text-decoration: none; transition: opacity 0.15s;
+}
+.nav-cta:hover { opacity: 0.88; }
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(145deg, #0d1f1f 0%, #0f2e30 60%, #0c2a38 100%);
+  padding: 52px 28px 44px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,122,140,0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 780px; margin: 0 auto; }
+.hero-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gold-light); margin-bottom: 16px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.hero-label::before { content: ''; width: 24px; height: 1.5px; background: var(--gold-light); }
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900; color: #fff; margin-bottom: 12px;
+}
+.hero h1 em { font-style: normal; color: var(--gold-light); }
+.hero p { color: rgba(255,255,255,0.6); font-size: 0.9rem; max-width: 480px; line-height: 1.7; }
+
+/* ── Main ── */
+.main {
+  max-width: 780px; margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: sticky; top: 80px;
+}
+.sidebar-title {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 12px;
+}
+.sidebar-links { display: flex; flex-direction: column; gap: 4px; }
+.sidebar-link {
+  font-size: 0.82rem; color: var(--ink-3);
+  text-decoration: none; padding: 5px 0;
+  border-left: 2px solid transparent;
+  padding-left: 10px; transition: all 0.15s;
+  cursor: pointer;
+}
+.sidebar-link:hover { color: var(--gold); border-left-color: var(--gold); }
+.sidebar-link.active { color: var(--gold); border-left-color: var(--gold); font-weight: 600; }
+
+/* ── Feed ── */
+.feed { display: flex; flex-direction: column; gap: 0; }
+
+.release {
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 48px;
+  position: relative;
+}
+.release:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.release-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.release-version {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--ink);
+}
+.release-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem; color: var(--ink-3);
+  background: var(--paper-2); padding: 4px 10px;
+  border-radius: 20px; border: 1px solid var(--rule);
+  white-space: nowrap; margin-top: 4px;
+}
+.release-badge {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 3px 10px;
+  border-radius: 20px; white-space: nowrap;
+}
+.badge-launch  { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
+.badge-feature { background: rgba(26,122,74,0.10); color: var(--green); border: 1px solid rgba(26,122,74,0.3); }
+.badge-fix     { background: rgba(168,50,50,0.08); color: var(--red); border: 1px solid rgba(168,50,50,0.2); }
+.badge-improvement { background: var(--paper-2); color: var(--ink-3); border: 1px solid var(--rule); }
+
+.release-summary {
+  font-size: 0.9rem; color: var(--ink-2); line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.change-group { margin-bottom: 20px; }
+.change-group-title {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.change-group-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--rule);
+}
+.change-list { display: flex; flex-direction: column; gap: 8px; }
+.change-item {
+  display: flex; gap: 10px; font-size: 0.85rem;
+  color: var(--ink-2); line-height: 1.5;
+}
+.change-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 7px;
+}
+.dot-new      { background: var(--green); }
+.dot-improved { background: var(--gold); }
+.dot-fixed    { background: var(--red); }
+
+/* ── CTA ── */
+.cta-banner {
+  background: linear-gradient(135deg, var(--ink) 0%, #0f2e30 100%);
+  border-radius: var(--r); padding: 32px;
+  text-align: center; margin-top: 32px;
+}
+.cta-banner h3 {
+  font-family: 'Playfair Display', serif;
+  color: #fff; font-size: 1.2rem; margin-bottom: 10px;
+}
+.cta-banner p { color: rgba(255,255,255,0.55); font-size: 0.82rem; margin-bottom: 20px; }
+.cta-btn {
+  display: inline-block;
+  background: var(--gold); color: #fff;
+  padding: 12px 32px; border-radius: var(--r-sm);
+  font-weight: 700; font-size: 0.88rem;
+  text-decoration: none; transition: opacity 0.15s;
+}
+.cta-btn:hover { opacity: 0.88; }
+
+/* ── Footer ── */
+footer {
+  text-align: center; padding: 32px 24px;
+  font-size: 0.75rem; color: var(--ink-3);
+  border-top: 1px solid var(--rule);
+  max-width: 780px; margin: 0 auto;
+}
+footer a { color: var(--gold); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .main { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .hero { padding: 36px 20px 32px; }
+  .main { padding: 28px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/"><div class="logo-dot"></div>Tayla</a>
+    <a class="nav-cta" href="/">Try Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Building in Public</div>
+    <h1>What's <em>New</em></h1>
+    <p>Every update, improvement and fix to Tayla — the Australian personal finance app built for how Australians actually get paid.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">Releases</div>
+    <div class="sidebar-links" id="sidebar-links"></div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed" id="feed"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <a href="/">Tayla App</a> ·
+    <a href="/tax/">Tax Calculator</a> ·
+    <a href="/budget/">Budget Planner</a> ·
+    <a href="/business/">P&L</a>
+  </p>
+  <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance</p>
+</footer>
+
+<script>
+// ── Changelog data ── 
+// To add a new release, add an object to the top of this array.
+// Types: 'new', 'improved', 'fixed'
+const RELEASES = [
+  {
+    version:  'March 2026',
+    date:     '16 March 2026',
+    badge:    'launch',
+    badgeLabel: '🚀 Public Launch',
+    summary:  'Tayla officially launches to the public. After months of building, the core app is live — income tracking, budget management, financial health scoring, and portfolio tracking, all built specifically for Australians.',
+    changes: [
+      {
+        group: '✦ New Features',
+        type:  'new',
+        items: [
+          'Guest mode — try Tayla without creating an account. Income and Budget tabs available, data saved to your device.',
+          'Tayla Plus tier — unlock all features including Portfolio, auto health score, debt register, and recurring expenses.',
+          'Recurring Expenses — add your subscriptions, rent, and bills once and they auto-post to your budget on their due date each month.',
+          'Debt Register — track loans and liabilities, with balances that update automatically as you make repayments.',
+          'Financial Health Score — automatic scoring based on your savings rate, emergency fund coverage, debt-to-income ratio, and housing cost ratio.',
+          'Auto health mode — financial health score calculated automatically from your budget entries, no manual input required.',
+          'Portfolio & Goals — set savings targets, track progress, and see an estimated timeline to reach your goals.',
+          'Theme customisation — 7 themes including the Australian banknote palette ($5 Pink, $10 Blue, $20 Red, $50 Gold, $100 Green, and Black).',
+          'Promo code support — redeem a promo code at signup for free Plus access.',
+          'Verify email screen — clean full-page email confirmation after signup.',
+          'Standalone tax calculator at usetayla.com.au/tax/ — free tool, no login required.',
+          'Budget planner at usetayla.com.au/budget/ — step-by-step monthly budget wizard.',
+          'Business P&L at usetayla.com.au/business/ — public transparency page.',
+        ]
+      },
+      {
+        group: '⚡ Core App',
+        type:  'new',
+        items: [
+          'Income tracker with ATO 2025–26 tax brackets — weekly, fortnightly, and monthly modes with dual income support.',
+          'Budget tracker with spending pie chart, category breakdown, and month-by-month history.',
+          'Show more / show less on budget entries — defaults to 5 entries so the pie chart is always visible.',
+          'FY selector — switch between FY2024-25, FY2025-26, and FY2026-27.',
+          'CSV export for income data.',
+          'PWA — installable on iPhone, Android, and desktop. Works offline.',
+          'Supabase cloud sync for authenticated users. localStorage for guests.',
+          'Theme syncs across devices for logged-in users.',
+        ]
+      },
+      {
+        group: '🔒 Privacy & Compliance',
+        type:  'new',
+        items: [
+          'Privacy Policy compliant with the Privacy Act 1988 (Cth) and Privacy and Other Legislation Amendment Act 2024.',
+          'Granular consent management — optional category data sharing with full withdraw support.',
+          'APP 12 data access and export rights built into Settings.',
+          'Account deletion with full data removal.',
+        ]
+      }
+    ]
+  }
+];
+
+// ── Render ──
+const feed    = document.getElementById('feed');
+const sidebar = document.getElementById('sidebar-links');
+
+const DOT_CLASSES = { new: 'dot-new', improved: 'dot-improved', fixed: 'dot-fixed' };
+const BADGE_CLASSES = { launch: 'badge-launch', feature: 'badge-feature', fix: 'badge-fix', improvement: 'badge-improvement' };
+
+RELEASES.forEach((r, idx) => {
+  const id = 'release-' + idx;
+
+  // Sidebar link
+  const link = document.createElement('a');
+  link.className = 'sidebar-link' + (idx === 0 ? ' active' : '');
+  link.textContent = r.version;
+  link.onclick = () => document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  sidebar.appendChild(link);
+
+  // Release entry
+  const el = document.createElement('div');
+  el.className = 'release';
+  el.id = id;
+
+  const changesHTML = r.changes.map(g => `
+    <div class="change-group">
+      <div class="change-group-title">${g.group}</div>
+      <div class="change-list">
+        ${g.items.map(item => `
+          <div class="change-item">
+            <div class="change-dot ${DOT_CLASSES[g.type] || 'dot-new'}"></div>
+            <div>${item}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="release-header">
+      <div>
+        <div class="release-version">${r.version}</div>
+        <div class="release-date">${r.date}</div>
+      </div>
+      <span class="release-badge ${BADGE_CLASSES[r.badge] || 'badge-feature'}">${r.badgeLabel}</span>
+    </div>
+    <div class="release-summary">${r.summary}</div>
+    ${changesHTML}
+    ${idx === RELEASES.length - 1 ? `
+    <div class="cta-banner">
+      <h3>Try Tayla Free</h3>
+      <p>No credit card required. Guest mode available — no signup needed to get started.</p>
+      <a class="cta-btn" href="/">Open Tayla →</a>
+    </div>` : ''}
+  `;
+
+  feed.appendChild(el);
+});
+
+// ── Scroll spy ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = e.target.id.replace('release-', '');
+      document.querySelectorAll('.sidebar-link').forEach((l, i) => {
+        l.classList.toggle('active', i === parseInt(idx));
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('.release').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
