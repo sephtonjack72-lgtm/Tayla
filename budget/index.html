@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
+<title>Australian Budget Planner 2025–26 | Free Monthly Budget Calculator | Tayla</title>
+<meta name="description" content="Free Australian budget planner for 2025–26. Enter your income and expenses to see exactly where your money goes and how much you have left over each month.">
+<meta name="keywords" content="budget planner australia, monthly budget calculator australia, budget calculator 2025, australian budget template, how to budget australia">
+<link rel="canonical" href="https://usetayla.com.au/budget/">
+<meta property="og:title" content="Free Australian Budget Planner 2025–26 | Tayla">
+<meta property="og:description" content="Step-by-step budget planner built for Australians. See exactly where your money goes and how much you have left over.">
+<meta property="og:url" content="https://usetayla.com.au/budget/">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Australian Budget Planner 2025–26",
+  "url": "https://usetayla.com.au/budget/",
+  "description": "Free step-by-step budget planner for Australians. Enter your income and expenses to see your monthly surplus or deficit.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much should I spend on rent in Australia?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The general rule is to spend no more than 30% of your gross income on housing. In major Australian cities like Sydney and Melbourne, many people spend 35–40% due to high rents — if you're in this range, focus on reducing other expenses to compensate." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the 50/30/20 budget rule?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The 50/30/20 rule suggests spending 50% of after-tax income on needs (rent, food, utilities), 30% on wants (dining out, entertainment, subscriptions), and saving 20%. It's a useful starting point but may need adjusting for Australian living costs." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much should I save each month in Australia?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Financial advisors generally recommend saving at least 10–20% of your take-home pay. Even starting with $50–$100 per week builds meaningful savings over time. The most important thing is consistency." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are average monthly expenses in Australia?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Average monthly expenses vary by city but rough estimates for a single person: rent $1,500–$2,500, groceries $400–$600, transport $150–$300, utilities $100–$200, dining/entertainment $300–$500. Total typically $2,500–$4,000+ depending on lifestyle and location." }
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #111e1e;
+  --ink-2:      #1e3535;
+  --ink-3:      #4a6868;
+  --paper:      #f0f4f3;
+  --paper-2:    #e0eae8;
+  --paper-3:    #c8d8d5;
+  --rule:       rgba(30,80,80,0.15);
+  --gold:       #1a7a8c;
+  --gold-light: #7cc4d0;
+  --gold-dim:   rgba(26,122,140,0.12);
+  --green:      #1a7a4a;
+  --green-dim:  rgba(26,122,74,0.12);
+  --red:        #a83232;
+  --r:          10px;
+  --r-sm:       6px;
+  --shadow:     0 4px 24px rgba(17,30,30,0.10);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Nav ── */
+.nav {
+  background: #000;
+  padding: 0 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-inner {
+  max-width: 860px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.3rem;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold-light); border-radius: 50%; }
+.nav-cta {
+  font-size: 0.8rem; font-weight: 600;
+  padding: 8px 18px; border-radius: var(--r-sm);
+  background: var(--gold); color: #fff;
+  text-decoration: none; transition: opacity 0.15s;
+}
+.nav-cta:hover { opacity: 0.88; }
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(145deg, #0d1f1f 0%, #0f2e30 60%, #0c2a38 100%);
+  padding: 52px 28px 44px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,122,140,0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gold-light); margin-bottom: 16px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.hero-label::before,
+.hero-label::after { content: ''; width: 24px; height: 1.5px; background: var(--gold-light); }
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 900; color: #fff; margin-bottom: 14px;
+}
+.hero h1 em { font-style: normal; color: var(--gold-light); }
+.hero p { color: rgba(255,255,255,0.6); font-size: 0.9rem; max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+/* ── Progress bar ── */
+.progress-wrap {
+  max-width: 860px; margin: 32px auto 0;
+  padding: 0 24px;
+}
+.progress-steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 32px;
+}
+.step-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; flex: 1; position: relative;
+}
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute; top: 16px; left: calc(50% + 16px);
+  right: calc(-50% + 16px);
+  height: 2px; background: var(--paper-3);
+  z-index: 0;
+}
+.step-item.completed:not(:last-child)::after { background: var(--gold); }
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--paper-3); color: var(--ink-3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; z-index: 1;
+  transition: all 0.2s;
+}
+.step-item.active .step-dot {
+  background: var(--gold); color: #fff;
+  box-shadow: 0 0 0 4px var(--gold-dim);
+}
+.step-item.completed .step-dot { background: var(--green); color: #fff; }
+.step-label {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-3); text-align: center;
+}
+.step-item.active .step-label { color: var(--gold); }
+.step-item.completed .step-label { color: var(--green); }
+
+/* ── Main ── */
+.main {
+  max-width: 860px; margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── Wizard step ── */
+.wizard-step { display: none; }
+.wizard-step.active { display: block; }
+
+/* ── Card ── */
+.card {
+  background: #fff; border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 32px;
+  box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; font-weight: 700; margin-bottom: 6px;
+}
+.card-sub { font-size: 0.82rem; color: var(--ink-3); margin-bottom: 24px; }
+
+/* ── Period toggle ── */
+.period-toggle {
+  display: flex; background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm); padding: 4px; gap: 4px;
+  margin-bottom: 24px; max-width: 420px;
+}
+.period-btn {
+  flex: 1; text-align: center; padding: 8px 4px;
+  border-radius: calc(var(--r-sm) - 2px);
+  cursor: pointer; font-size: 0.78rem; font-weight: 600;
+  border: none; background: none; color: var(--ink-3);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.15s;
+}
+.period-btn.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(17,30,30,0.10); }
+
+/* ── Income input ── */
+.income-wrap { display: flex; align-items: flex-end; gap: 0; max-width: 320px; }
+.income-prefix {
+  background: var(--paper-2); border: 1.5px solid var(--rule);
+  border-right: none; border-radius: var(--r-sm) 0 0 var(--r-sm);
+  padding: 12px 14px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 1rem; color: var(--ink-3);
+}
+.income-input {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 700;
+  border: 1.5px solid var(--rule);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: #fff; color: var(--ink); outline: none;
+  padding: 8px 14px; width: 100%;
+  transition: border-color 0.2s;
+}
+.income-input:focus { border-color: var(--gold); }
+.income-input::placeholder { color: var(--paper-3); font-size: 1.4rem; }
+.income-monthly {
+  font-size: 0.78rem; color: var(--ink-3); margin-top: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.income-monthly span { color: var(--gold); font-weight: 600; }
+
+/* ── Expense rows ── */
+.expense-section { margin-bottom: 28px; }
+.expense-section-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.expense-row {
+  display: grid; grid-template-columns: 1fr 140px;
+  gap: 10px; align-items: center; margin-bottom: 10px;
+}
+.expense-label {
+  font-size: 0.88rem; color: var(--ink-2);
+  display: flex; align-items: center; gap: 8px;
+}
+.expense-icon { font-size: 1rem; width: 24px; text-align: center; }
+.expense-input {
+  border: 1.5px solid var(--rule); border-radius: var(--r-sm);
+  padding: 9px 12px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem; color: var(--ink); background: #fff;
+  outline: none; text-align: right; width: 100%;
+  transition: border-color 0.15s;
+}
+.expense-input:focus { border-color: var(--gold); }
+.add-expense-btn {
+  background: none; border: 1.5px dashed var(--rule);
+  border-radius: var(--r-sm); padding: 9px 16px;
+  font-size: 0.8rem; color: var(--ink-3); cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.15s; width: 100%; text-align: left;
+  margin-top: 4px;
+}
+.add-expense-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Nav buttons ── */
+.wizard-nav {
+  display: flex; gap: 12px; justify-content: space-between;
+  margin-top: 24px;
+}
+.btn-primary {
+  background: var(--ink); color: #fff;
+  border: none; border-radius: var(--r-sm);
+  padding: 13px 32px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-primary:hover { background: var(--ink-2); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: var(--ink-3);
+  border: 1.5px solid var(--rule); border-radius: var(--r-sm);
+  padding: 13px 28px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: var(--ink-3); color: var(--ink); }
+
+/* ── Summary ── */
+.summary-hero {
+  background: var(--ink);
+  border-radius: var(--r); padding: 32px;
+  text-align: center; margin-bottom: 20px; color: #fff;
+}
+.summary-hero-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+  margin-bottom: 8px;
+}
+.summary-hero-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem; font-weight: 900;
+  margin-bottom: 8px;
+}
+.summary-hero-amount.surplus { color: #7ec89a; }
+.summary-hero-amount.deficit { color: #e08080; }
+.summary-hero-desc { font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+
+.summary-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 20px;
+}
+.summary-card {
+  background: #fff; border: 1px solid var(--rule);
+  border-radius: var(--r-sm); padding: 16px;
+}
+.summary-card-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px;
+}
+.summary-card-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700; font-size: 1.3rem; color: var(--ink);
+}
+.summary-card-value.green { color: var(--green); }
+.summary-card-value.red   { color: var(--red); }
+
+.breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.breakdown-table th {
+  text-align: left; padding: 8px 12px;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); background: #f8f8f8;
+  border-bottom: 2px solid #e8e8e8;
+}
+.breakdown-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--rule);
+  color: var(--ink-2);
+}
+.breakdown-table tr:last-child td { border-bottom: none; }
+.breakdown-table td.mono { font-family: 'IBM Plex Mono', monospace; font-weight: 500; text-align: right; }
+.breakdown-table td.red  { color: var(--red); }
+.breakdown-table td.green { color: var(--green); font-weight: 600; }
+.breakdown-table tr.total-row td { font-weight: 700; background: var(--paper); }
+
+/* ── 50/30/20 ── */
+.rule-bars { margin-top: 16px; }
+.rule-bar-row { margin-bottom: 14px; }
+.rule-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; margin-bottom: 5px; color: var(--ink-2);
+}
+.rule-bar-track {
+  height: 8px; background: var(--paper-2);
+  border-radius: 4px; overflow: hidden;
+}
+.rule-bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ── CTA ── */
+.cta-banner {
+  background: linear-gradient(135deg, var(--ink) 0%, #0f2e30 100%);
+  border-radius: var(--r); padding: 40px 32px;
+  text-align: center; margin-top: 32px;
+}
+.cta-banner h3 {
+  font-family: 'Playfair Display', serif;
+  color: #fff; font-size: 1.5rem; margin-bottom: 12px;
+}
+.cta-banner p {
+  color: rgba(255,255,255,0.6); font-size: 0.88rem;
+  margin-bottom: 28px; line-height: 1.7;
+  max-width: 460px; margin-left: auto; margin-right: auto;
+}
+.cta-btn {
+  display: inline-block;
+  background: var(--gold); color: #fff;
+  padding: 15px 40px; border-radius: var(--r-sm);
+  font-weight: 700; font-size: 0.95rem;
+  text-decoration: none; transition: opacity 0.15s;
+  margin-bottom: 16px;
+}
+.cta-btn:hover { opacity: 0.88; }
+.cta-features {
+  display: flex; justify-content: center; gap: 20px;
+  flex-wrap: wrap;
+}
+.cta-feature {
+  font-size: 0.75rem; color: rgba(255,255,255,0.45);
+  display: flex; align-items: center; gap: 6px;
+}
+.cta-feature::before { content: '✓'; color: var(--gold-light); font-weight: 700; }
+
+/* ── FAQ ── */
+.faq-item { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
+.faq-a { font-size: 0.82rem; color: var(--ink-3); line-height: 1.7; }
+
+/* ── Footer ── */
+footer {
+  text-align: center; padding: 32px 24px;
+  font-size: 0.75rem; color: var(--ink-3); line-height: 1.7;
+  border-top: 1px solid var(--rule);
+  max-width: 860px; margin: 0 auto;
+}
+footer a { color: var(--gold); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .summary-grid { grid-template-columns: 1fr; }
+  .expense-row { grid-template-columns: 1fr 120px; }
+  .hero { padding: 36px 20px 32px; }
+  .card { padding: 20px; }
+  .main { padding: 0 16px 60px; }
+  .step-label { display: none; }
+  .wizard-nav { flex-direction: column-reverse; }
+  .btn-primary, .btn-ghost { width: 100%; text-align: center; padding: 13px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/"><div class="logo-dot"></div>Tayla</a>
+    <a class="nav-cta" href="/">Try Tayla Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Free Tool · 2025–26</div>
+  <h1>Australian <em>Budget Planner</em></h1>
+  <p>Three steps to see exactly where your money goes and how much you have left over each month.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step-item active" id="step-indicator-1">
+      <div class="step-dot">1</div>
+      <div class="step-label">Income</div>
+    </div>
+    <div class="step-item" id="step-indicator-2">
+      <div class="step-dot">2</div>
+      <div class="step-label">Expenses</div>
+    </div>
+    <div class="step-item" id="step-indicator-3">
+      <div class="step-dot">3</div>
+      <div class="step-label">Summary</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STEP 1: INCOME -->
+  <div class="wizard-step active" id="step-1">
+    <div class="card">
+      <div class="card-title">What's your income?</div>
+      <div class="card-sub">Enter your take-home pay after tax. Use the Tayla tax calculator if you're not sure.</div>
+
+      <div class="period-toggle">
+        <button class="period-btn active" id="btn-weekly"      onclick="setPeriod('weekly')">Weekly</button>
+        <button class="period-btn"        id="btn-fortnightly" onclick="setPeriod('fortnightly')">Fortnightly</button>
+        <button class="period-btn"        id="btn-monthly"     onclick="setPeriod('monthly')">Monthly</button>
+        <button class="period-btn"        id="btn-annual"      onclick="setPeriod('annual')">Annual</button>
+      </div>
+
+      <div class="income-wrap">
+        <div class="income-prefix">$</div>
+        <input class="income-input" type="number" id="income-input"
+          placeholder="0" min="0" oninput="updateIncomeDisplay()">
+      </div>
+      <div class="income-monthly" id="income-monthly" style="margin-top:10px"></div>
+
+      <div class="wizard-nav">
+        <div></div>
+        <button class="btn-primary" onclick="goToStep(2)">Next — Expenses →</button>
+      </div>
+    </div>
+    <p style="font-size:0.78rem;color:var(--ink-3);text-align:center;margin-top:12px">
+      Not sure of your take-home pay? <a href="/tax/" style="color:var(--gold)">Use our free tax calculator →</a>
+    </p>
+  </div>
+
+  <!-- STEP 2: EXPENSES -->
+  <div class="wizard-step" id="step-2">
+    <div class="card">
+      <div class="card-title">What are your monthly expenses?</div>
+      <div class="card-sub">Enter your average monthly spending in each category. Leave blank for $0.</div>
+
+      <!-- Housing -->
+      <div class="expense-section">
+        <div class="expense-section-title">🏠 Housing</div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🏠</span> Rent / Mortgage</div>
+          <input class="expense-input" type="number" id="exp-rent" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">⚡</span> Utilities (electricity, gas, water)</div>
+          <input class="expense-input" type="number" id="exp-utilities" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">📱</span> Phone / Internet</div>
+          <input class="expense-input" type="number" id="exp-phone" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+      </div>
+
+      <!-- Food -->
+      <div class="expense-section">
+        <div class="expense-section-title">🛒 Food</div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🛒</span> Groceries</div>
+          <input class="expense-input" type="number" id="exp-groceries" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🍽️</span> Dining Out / Takeaway</div>
+          <input class="expense-input" type="number" id="exp-dining" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">☕</span> Coffee</div>
+          <input class="expense-input" type="number" id="exp-coffee" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+      </div>
+
+      <!-- Transport -->
+      <div class="expense-section">
+        <div class="expense-section-title">🚗 Transport</div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🚌</span> Public Transport</div>
+          <input class="expense-input" type="number" id="exp-transport" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">⛽</span> Fuel</div>
+          <input class="expense-input" type="number" id="exp-fuel" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🚗</span> Car (rego, insurance, servicing)</div>
+          <input class="expense-input" type="number" id="exp-car" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+      </div>
+
+      <!-- Lifestyle -->
+      <div class="expense-section">
+        <div class="expense-section-title">🎬 Lifestyle</div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">📺</span> Subscriptions (Netflix, Spotify, etc.)</div>
+          <input class="expense-input" type="number" id="exp-subs" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🎉</span> Entertainment</div>
+          <input class="expense-input" type="number" id="exp-entertainment" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">👕</span> Clothing</div>
+          <input class="expense-input" type="number" id="exp-clothing" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">💪</span> Health &amp; Fitness</div>
+          <input class="expense-input" type="number" id="exp-health" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+      </div>
+
+      <!-- Financial -->
+      <div class="expense-section">
+        <div class="expense-section-title">💳 Financial</div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">🛡️</span> Insurance</div>
+          <input class="expense-input" type="number" id="exp-insurance" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">💳</span> Debt Repayments</div>
+          <input class="expense-input" type="number" id="exp-debt" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+        <div class="expense-row">
+          <div class="expense-label"><span class="expense-icon">💰</span> Savings / Investments</div>
+          <input class="expense-input" type="number" id="exp-savings" placeholder="0.00" min="0" oninput="updateExpenseTotal()">
+        </div>
+      </div>
+
+      <div style="background:var(--paper-2);border-radius:var(--r-sm);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span style="font-size:0.82rem;font-weight:700;color:var(--ink-2)">Total monthly expenses</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--red)" id="expense-total-display">$0.00</span>
+      </div>
+
+      <div class="wizard-nav">
+        <button class="btn-ghost" onclick="goToStep(1)">← Back</button>
+        <button class="btn-primary" onclick="goToStep(3)">See My Summary →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: SUMMARY -->
+  <div class="wizard-step" id="step-3">
+
+    <div class="summary-hero" id="summary-hero">
+      <div class="summary-hero-label">Monthly Surplus / Deficit</div>
+      <div class="summary-hero-amount" id="summary-amount">$0</div>
+      <div class="summary-hero-desc" id="summary-desc"></div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-card-label">Monthly Income</div>
+        <div class="summary-card-value green" id="sum-income">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-label">Monthly Expenses</div>
+        <div class="summary-card-value red" id="sum-expenses">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Expense Breakdown</div>
+      <div class="card-sub">Where your money goes each month</div>
+      <table class="breakdown-table" id="breakdown-table"></table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">50/30/20 Check</div>
+      <div class="card-sub">How does your budget compare to the recommended rule?</div>
+      <div class="rule-bars" id="rule-bars"></div>
+      <p style="font-size:0.75rem;color:var(--ink-3);margin-top:16px;line-height:1.6">
+        The 50/30/20 rule suggests: <strong>50%</strong> on needs, <strong>30%</strong> on wants, <strong>20%</strong> savings. Australian living costs often push housing above 30% — adjust targets to suit your situation.
+      </p>
+    </div>
+
+    <div class="wizard-nav">
+      <button class="btn-ghost" onclick="goToStep(2)">← Edit Expenses</button>
+      <button class="btn-primary" onclick="goToStep(1)">Start Over</button>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-banner">
+      <h3>Track this budget automatically with Tayla</h3>
+      <p>Stop doing this manually every month. Tayla tracks your income and expenses automatically, shows your real-time budget balance, and flags when you're going over in any category.</p>
+      <a class="cta-btn" href="/" style="display:inline-block;margin-bottom:16px">
+        Start Tracking Free — No Credit Card
+      </a>
+      <div class="cta-features">
+        <div class="cta-feature">Auto budget tracking</div>
+        <div class="cta-feature">Recurring expenses</div>
+        <div class="cta-feature">Spending pie chart</div>
+        <div class="cta-feature">Financial health score</div>
+        <div class="cta-feature">Works on your phone</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="card" style="margin-top:32px">
+    <div class="card-title">Frequently Asked Questions</div>
+    <div class="card-sub">Common questions about budgeting in Australia</div>
+    <div class="faq-item">
+      <div class="faq-q">How much should I spend on rent in Australia?</div>
+      <div class="faq-a">The general rule is no more than 30% of your gross income on housing. In Sydney and Melbourne many people spend 35–40% due to high rents — if you're in this range, focus on reducing discretionary spending to compensate.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is the 50/30/20 budget rule?</div>
+      <div class="faq-a">The 50/30/20 rule suggests spending 50% of after-tax income on needs (rent, food, utilities), 30% on wants (dining, entertainment, subscriptions), and saving 20%. It's a useful starting point but may need adjusting for Australian living costs.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How much should I save each month in Australia?</div>
+      <div class="faq-a">Financial advisors generally recommend saving at least 10–20% of your take-home pay. Even starting with $50–$100 per week builds meaningful savings. Consistency matters more than the amount.</div>
+    </div>
+    <div class="faq-item" style="border-bottom:none">
+      <div class="faq-q">What are average monthly expenses in Australia?</div>
+      <div class="faq-a">For a single person: rent $1,500–$2,500, groceries $400–$600, transport $150–$300, utilities $100–$200, dining/entertainment $300–$500. Total typically $2,500–$4,000+ depending on lifestyle and city.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <a href="/">Tayla App</a> ·
+    <a href="/tax/">Tax Calculator</a> ·
+    <a href="/budget/">Budget Planner</a>
+  </p>
+  <p style="margin-top:8px">Not financial advice. For general budgeting guidance only.</p>
+</footer>
+
+<script>
+// ── State ──
+let PERIOD   = 'weekly';
+let MONTHLY  = 0;
+
+const PERIOD_DIVISORS = { weekly: 52/12, fortnightly: 26/12, monthly: 1, annual: 1/12 };
+const PERIOD_LABELS   = { weekly: 'week', fortnightly: 'fortnight', monthly: 'month', annual: 'year' };
+
+const fmt = n => '$' + Math.abs(parseFloat(n)||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtK = n => {
+  const v = Math.abs(parseFloat(n)||0);
+  return v >= 1000 ? '$' + (v/1000).toFixed(1) + 'k' : fmt(v);
+};
+
+// ── Period ──
+function setPeriod(p) {
+  PERIOD = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + p).classList.add('active');
+  updateIncomeDisplay();
+}
+
+function updateIncomeDisplay() {
+  const val = parseFloat(document.getElementById('income-input').value) || 0;
+  MONTHLY = val * PERIOD_DIVISORS[PERIOD];
+  const el = document.getElementById('income-monthly');
+  if (val > 0 && PERIOD !== 'monthly') {
+    el.innerHTML = `= <span>$${MONTHLY.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</span> per month`;
+  } else if (val > 0 && PERIOD === 'monthly') {
+    el.innerHTML = `<span>$${val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</span> per month`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+// ── Expenses ──
+const EXPENSE_IDS = [
+  { id: 'exp-rent',          label: 'Rent / Mortgage',       cat: 'needs',   icon: '🏠' },
+  { id: 'exp-utilities',     label: 'Utilities',              cat: 'needs',   icon: '⚡' },
+  { id: 'exp-phone',         label: 'Phone / Internet',       cat: 'needs',   icon: '📱' },
+  { id: 'exp-groceries',     label: 'Groceries',              cat: 'needs',   icon: '🛒' },
+  { id: 'exp-transport',     label: 'Public Transport',       cat: 'needs',   icon: '🚌' },
+  { id: 'exp-fuel',          label: 'Fuel',                   cat: 'needs',   icon: '⛽' },
+  { id: 'exp-car',           label: 'Car costs',              cat: 'needs',   icon: '🚗' },
+  { id: 'exp-insurance',     label: 'Insurance',              cat: 'needs',   icon: '🛡️' },
+  { id: 'exp-debt',          label: 'Debt Repayments',        cat: 'needs',   icon: '💳' },
+  { id: 'exp-dining',        label: 'Dining Out / Takeaway',  cat: 'wants',   icon: '🍽️' },
+  { id: 'exp-coffee',        label: 'Coffee',                 cat: 'wants',   icon: '☕' },
+  { id: 'exp-subs',          label: 'Subscriptions',          cat: 'wants',   icon: '📺' },
+  { id: 'exp-entertainment', label: 'Entertainment',          cat: 'wants',   icon: '🎉' },
+  { id: 'exp-clothing',      label: 'Clothing',               cat: 'wants',   icon: '👕' },
+  { id: 'exp-health',        label: 'Health & Fitness',       cat: 'wants',   icon: '💪' },
+  { id: 'exp-savings',       label: 'Savings / Investments',  cat: 'savings', icon: '💰' },
+];
+
+function getExpenses() {
+  return EXPENSE_IDS.map(e => ({
+    ...e,
+    amount: parseFloat(document.getElementById(e.id)?.value) || 0
+  })).filter(e => e.amount > 0);
+}
+
+function getTotalExpenses() {
+  return EXPENSE_IDS.reduce((s, e) => s + (parseFloat(document.getElementById(e.id)?.value) || 0), 0);
+}
+
+function updateExpenseTotal() {
+  const total = getTotalExpenses();
+  document.getElementById('expense-total-display').textContent = fmt(total);
+}
+
+// ── Steps ──
+function goToStep(n) {
+  // Validate step 1
+  if (n === 2) {
+    const income = parseFloat(document.getElementById('income-input').value) || 0;
+    if (!income) {
+      document.getElementById('income-input').style.borderColor = 'var(--red)';
+      document.getElementById('income-input').focus();
+      setTimeout(() => document.getElementById('income-input').style.borderColor = '', 2000);
+      return;
+    }
+    MONTHLY = income * PERIOD_DIVISORS[PERIOD];
+  }
+  if (n === 3) renderSummary();
+
+  // Hide all steps
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  // Update indicators
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step-indicator-' + i);
+    el.classList.remove('active', 'completed');
+    if (i < n) el.classList.add('completed');
+    if (i === n) el.classList.add('active');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Summary ──
+function renderSummary() {
+  const expenses = getExpenses();
+  const totalExp = getTotalExpenses();
+  const surplus  = MONTHLY - totalExp;
+  const pct      = MONTHLY > 0 ? (surplus / MONTHLY * 100) : 0;
+
+  // Hero
+  const heroAmt  = document.getElementById('summary-amount');
+  const heroDesc = document.getElementById('summary-desc');
+  heroAmt.textContent = (surplus >= 0 ? '+' : '-') + fmt(Math.abs(surplus));
+  heroAmt.className   = 'summary-hero-amount ' + (surplus >= 0 ? 'surplus' : 'deficit');
+
+  if (surplus >= 0) {
+    heroDesc.textContent = `You have ${fmt(surplus)} left over each month (${pct.toFixed(0)}% of income)`;
+  } else {
+    heroDesc.textContent = `You're spending ${fmt(Math.abs(surplus))} more than you earn each month`;
+  }
+
+  // Cards
+  document.getElementById('sum-income').textContent   = fmt(MONTHLY);
+  document.getElementById('sum-expenses').textContent = fmt(totalExp);
+
+  // Breakdown table
+  let tableHTML = '<thead><tr><th>Category</th><th style="text-align:right">Amount</th><th style="text-align:right">% of Income</th></tr></thead><tbody>';
+  expenses.forEach(e => {
+    const pctE = MONTHLY > 0 ? (e.amount / MONTHLY * 100).toFixed(1) : '—';
+    tableHTML += `<tr>
+      <td>${e.icon} ${e.label}</td>
+      <td class="mono red">${fmt(e.amount)}</td>
+      <td class="mono">${pctE}%</td>
+    </tr>`;
+  });
+  // Surplus row
+  tableHTML += `<tr class="total-row">
+    <td>💵 Remaining</td>
+    <td class="mono ${surplus >= 0 ? 'green' : 'red'}">${surplus >= 0 ? '+' : ''}${fmt(surplus)}</td>
+    <td class="mono">${MONTHLY > 0 ? pct.toFixed(1) : '—'}%</td>
+  </tr>`;
+  tableHTML += '</tbody>';
+  document.getElementById('breakdown-table').innerHTML = tableHTML;
+
+  // 50/30/20
+  const needs   = EXPENSE_IDS.filter(e => e.cat === 'needs').reduce((s,e) => s + (parseFloat(document.getElementById(e.id)?.value)||0), 0);
+  const wants   = EXPENSE_IDS.filter(e => e.cat === 'wants').reduce((s,e) => s + (parseFloat(document.getElementById(e.id)?.value)||0), 0);
+  const savings = parseFloat(document.getElementById('exp-savings')?.value) || 0;
+
+  const needsPct   = MONTHLY > 0 ? Math.min((needs / MONTHLY * 100), 100) : 0;
+  const wantsPct   = MONTHLY > 0 ? Math.min((wants / MONTHLY * 100), 100) : 0;
+  const savingsPct = MONTHLY > 0 ? Math.min((savings / MONTHLY * 100), 100) : 0;
+
+  const ruleData = [
+    { label: 'Needs (target: 50%)',   pct: needsPct,   target: 50,  color: '#4a6fa5', amount: needs   },
+    { label: 'Wants (target: 30%)',   pct: wantsPct,   target: 30,  color: '#7c6fa0', amount: wants   },
+    { label: 'Savings (target: 20%)', pct: savingsPct, target: 20,  color: '#1a7a4a', amount: savings },
+  ];
+
+  document.getElementById('rule-bars').innerHTML = ruleData.map(r => `
+    <div class="rule-bar-row">
+      <div class="rule-bar-label">
+        <span>${r.label}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-weight:600">${r.pct.toFixed(1)}% · ${fmt(r.amount)}</span>
+      </div>
+      <div class="rule-bar-track">
+        <div class="rule-bar-fill" style="width:${r.pct}%;background:${r.pct > r.target * 1.2 ? '#a83232' : r.color}"></div>
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
