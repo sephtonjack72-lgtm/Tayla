@@ -740,10 +740,13 @@
                 <div style="grid-column:span 2">
                   <div class="form-label">Category <span id="ac-cat-hint" style="font-size:0.68rem;color:var(--gold);margin-left:4px;font-weight:600"></span></div>
                   <select class="form-input cat-select" id="ac-cat">
+                    <optgroup label="🏠 Housing">
+                      <option value="Rent/Mortgage">Rent / Mortgage</option>
+                    </optgroup>
                     <optgroup label="📺 Subscriptions &amp; Streaming">
                       <option value="Subscriptions">Subscriptions — streaming, apps, software</option>
                     </optgroup>
-                    <optgroup label="🏠 Bills &amp; Utilities">
+                    <optgroup label="🔌 Bills &amp; Utilities">
                       <option value="Utilities">Utilities — phone, electricity, gas, internet</option>
                     </optgroup>
                     <optgroup label="💳 Debt Repayments" id="ac-debt-options">
@@ -759,7 +762,7 @@
                   </select>
                 </div>
                 <div style="grid-column:span 2">
-                  <button class="btn btn-primary" style="width:100%" onclick="addAccrued()">+ Add Recurring Expense</button>
+                  <button class="btn btn-primary" style="width:100%" onclick="addAccrued()">+ Add</button>
                 </div>
               </div>
               <div class="alert alert-error" id="ac-error" style="margin-top:10px"></div>
