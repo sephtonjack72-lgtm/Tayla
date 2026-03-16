@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
+<title>Blog — Tayla | Australian Personal Finance Tips</title>
+<meta name="description" content="Australian personal finance tips, tax guides, budgeting advice and money strategies from the Tayla team.">
+<link rel="canonical" href="https://usetayla.com.au/blog/">
+<meta property="og:title" content="Tayla Blog — Australian Personal Finance">
+<meta property="og:description" content="Australian personal finance tips, tax guides, budgeting advice and money strategies.">
+<meta property="og:url" content="https://usetayla.com.au/blog/">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#111e1e;--ink-2:#1e3535;--ink-3:#4a6868;
+  --paper:#f0f4f3;--paper-2:#e0eae8;--paper-3:#c8d8d5;
+  --rule:rgba(30,80,80,0.15);
+  --gold:#1a7a8c;--gold-light:#7cc4d0;--gold-dim:rgba(26,122,140,0.12);
+  --r:10px;--r-sm:6px;--shadow:0 4px 24px rgba(17,30,30,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6;}
+.nav{background:#000;padding:0 28px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:#fff;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;background:var(--gold-light);border-radius:50%;}
+.nav-cta{font-size:0.8rem;font-weight:600;padding:8px 18px;border-radius:var(--r-sm);background:var(--gold);color:#fff;text-decoration:none;transition:opacity 0.15s;}
+.nav-cta:hover{opacity:0.88;}
+.hero{background:linear-gradient(145deg,#0d1f1f 0%,#0f2e30 60%,#0c2a38 100%);padding:52px 28px 44px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(26,122,140,0.25) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1000px;margin:0 auto;}
+.hero-label{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-light);margin-bottom:16px;display:inline-flex;align-items:center;gap:8px;}
+.hero-label::before{content:'';width:24px;height:1.5px;background:var(--gold-light);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;color:#fff;margin-bottom:12px;}
+.hero h1 em{font-style:normal;color:var(--gold-light);}
+.hero p{color:rgba(255,255,255,0.6);font-size:0.9rem;max-width:480px;line-height:1.7;}
+.main{max-width:1000px;margin:0 auto;padding:40px 24px 80px;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1.5px solid var(--rule);background:none;cursor:pointer;font-size:0.78rem;font-weight:600;font-family:'IBM Plex Sans',sans-serif;color:var(--ink-3);transition:all 0.15s;}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold);}
+.filter-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.post-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;text-decoration:none;display:block;color:inherit;}
+.post-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(17,30,30,0.14);}
+.post-card-body{padding:20px;}
+.post-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);background:var(--gold-dim);padding:3px 8px;border-radius:10px;display:inline-block;margin-bottom:10px;}
+.post-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.3;}
+.post-excerpt{font-size:0.8rem;color:var(--ink-3);line-height:1.6;margin-bottom:14px;}
+.post-meta{display:flex;align-items:center;justify-content:space-between;font-size:0.72rem;color:var(--ink-3);}
+.post-author{font-weight:600;color:var(--ink-2);}
+.empty-state{text-align:center;padding:60px 24px;color:var(--ink-3);grid-column:1/-1;}
+.empty-state h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:8px;color:var(--ink-2);}
+footer{text-align:center;padding:32px 24px;font-size:0.75rem;color:var(--ink-3);border-top:1px solid var(--rule);max-width:1000px;margin:0 auto;}
+footer a{color:var(--gold);text-decoration:none;}
+@media(max-width:700px){.grid{grid-template-columns:1fr;}.main{padding:24px 16px 60px;}}
+@media(min-width:701px) and (max-width:900px){.grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/"><div class="logo-dot"></div>Tayla</a>
+    <a class="nav-cta" href="/">Try Free →</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Tayla Blog</div>
+    <h1>Australian <em>Finance</em> Tips</h1>
+    <p>Tax guides, budgeting advice, and money strategies — written for Australians, by Australians.</p>
+  </div>
+</div>
+<div class="main">
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="filterPosts('all',this)">All</button>
+  </div>
+  <div class="grid" id="posts-grid">
+    <div class="empty-state">
+      <h3>No posts yet</h3>
+      <p>Check back soon — articles are on the way.</p>
+    </div>
+  </div>
+</div>
+<footer>
+  <p><a href="/">App</a> · <a href="/tax/">Tax Calc</a> · <a href="/budget/">Budget Planner</a> · <a href="/changelog/">Changelog</a></p>
+  <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance</p>
+</footer>
+<script>
+const STORAGE_KEY = 'tayla_blog_posts';
+
+function getPosts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function filterPosts(tag, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(tag);
+}
+
+function renderGrid(activeTag) {
+  const posts = getPosts();
+  const grid  = document.getElementById('posts-grid');
+  const filtered = activeTag === 'all' ? posts : posts.filter(p => p.tag === activeTag);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><h3>No posts yet</h3><p>Check back soon — articles are on the way.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => `
+    <a class="post-card" href="/blog/post/?id=${p.id}">
+      <div class="post-card-body">
+        ${p.tag ? `<span class="post-tag">${p.tag}</span>` : ''}
+        <div class="post-title">${p.title}</div>
+        <div class="post-excerpt">${p.excerpt || ''}</div>
+        <div class="post-meta">
+          <span class="post-author">${p.author || 'Tayla Team'}</span>
+          <span>${p.date || ''}</span>
+        </div>
+      </div>
+    </a>
+  `).join('');
+}
+
+function buildFilters() {
+  const posts = getPosts();
+  const tags  = [...new Set(posts.map(p => p.tag).filter(Boolean))];
+  const bar   = document.getElementById('filter-bar');
+  bar.innerHTML = `<button class="filter-btn active" onclick="filterPosts('all',this)">All</button>`;
+  tags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = tag;
+    btn.onclick = () => filterPosts(tag, btn);
+    bar.appendChild(btn);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildFilters();
+  renderGrid('all');
+});
+</script>
+</body>
+</html>
