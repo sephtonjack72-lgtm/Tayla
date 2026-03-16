@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tayla — P&L Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root {
+  --ink:        #111e1e;
+  --ink-3:      #4a6868;
+  --paper:      #f0f4f3;
+  --paper-2:    #e0eae8;
+  --rule:       rgba(30,80,80,0.15);
+  --gold:       #1a7a8c;
+  --gold-light: #7cc4d0;
+  --green:      #1a7a4a;
+  --red:        #a83232;
+  --r:          10px;
+  --r-sm:       6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: #0d1f1f;
+  color: #fff;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.container { max-width: 520px; width: 100%; }
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.4rem;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 32px; justify-content: center;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold-light); border-radius: 50%; }
+.card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r); padding: 32px;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; margin-bottom: 6px;
+}
+.card-sub { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
+.form-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+  margin-bottom: 8px; display: block;
+}
+.form-input {
+  width: 100%; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-sm); padding: 11px 14px;
+  color: #fff; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; outline: none; margin-bottom: 16px;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--gold-light); }
+.form-input::placeholder { color: rgba(255,255,255,0.25); }
+.btn {
+  width: 100%; background: var(--gold); color: #fff;
+  border: none; border-radius: var(--r-sm);
+  padding: 12px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s; margin-bottom: 12px;
+}
+.btn:hover { opacity: 0.88; }
+.btn-ghost {
+  width: 100%; background: transparent;
+  border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);
+  border-radius: var(--r-sm); padding: 11px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.85rem; cursor: pointer; transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+.drop-zone {
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: var(--r); padding: 40px 24px;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  margin-bottom: 16px;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--gold-light);
+  background: rgba(124,196,208,0.05);
+}
+.drop-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.drop-text { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.drop-text strong { color: var(--gold-light); }
+.feedback {
+  font-size: 0.8rem; padding: 10px 14px;
+  border-radius: var(--r-sm); margin-bottom: 16px;
+  display: none;
+}
+.feedback.success { background: rgba(26,122,74,0.2); color: #7ec89a; border: 1px solid rgba(26,122,74,0.3); }
+.feedback.error   { background: rgba(168,50,50,0.2); color: #e08080; border: 1px solid rgba(168,50,50,0.3); }
+.format-hint {
+  font-size: 0.72rem; color: rgba(255,255,255,0.3);
+  line-height: 1.7; margin-top: 8px;
+  padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.format-hint strong { color: rgba(255,255,255,0.5); }
+.status-bar {
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--r-sm); padding: 12px 14px;
+  font-size: 0.78rem; color: rgba(255,255,255,0.4);
+  margin-bottom: 20px; display: none;
+}
+.status-bar span { color: var(--gold-light); font-family: 'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a class="logo" href="/business/"><div class="logo-dot"></div>Tayla</a>
+
+  <!-- LOGIN -->
+  <div class="card" id="login-card">
+    <div class="card-title">P&L Upload</div>
+    <div class="card-sub">Owner access only — enter your password to continue</div>
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="pw-input" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')unlock()">
+    <button class="btn" onclick="unlock()">Continue →</button>
+    <div class="feedback error" id="pw-error">Incorrect password. Try again.</div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="card" id="upload-card" style="display:none">
+    <div class="card-title">Upload P&L Spreadsheet</div>
+    <div class="card-sub">Data will be published instantly to usetayla.com.au/business/</div>
+
+    <div class="status-bar" id="status-bar">
+      Current data: <span id="current-data-info">—</span>
+    </div>
+
+    <div class="drop-zone" id="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="handleDrop(event)"
+      onclick="document.getElementById('file-input').click()">
+      <div class="drop-icon">📊</div>
+      <div class="drop-text">
+        <strong>Click to upload</strong> or drag and drop<br>
+        Excel (.xlsx, .xls) or CSV
+      </div>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none"
+      onchange="handleFile(this.files[0])">
+
+    <div class="feedback" id="upload-feedback"></div>
+
+    <button class="btn-ghost" onclick="clearData()">🗑 Clear published data</button>
+
+    <div class="format-hint">
+      <strong>Sheet 1 — P&L:</strong> Month · Category · Item · Amount<br>
+      <strong>Sheet 2 — Users:</strong> Month · Free Users · Paid Users · Total Users<br><br>
+      Amount column: positive = income, negative = expense<br>
+      Month format: "March 2026", "Mar-26", or "2026-03"
+    </div>
+  </div>
+</div>
+
+<script>
+const UPLOAD_PASSWORD = 'tayla-business-2026';
+const STORAGE_KEY     = 'tayla_business_pl';
+
+function unlock() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === UPLOAD_PASSWORD) {
+    document.getElementById('login-card').style.display  = 'none';
+    document.getElementById('upload-card').style.display = 'block';
+    loadStatus();
+  } else {
+    const err = document.getElementById('pw-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function loadStatus() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const bar   = document.getElementById('status-bar');
+  const info  = document.getElementById('current-data-info');
+  if (saved) {
+    try {
+      const d = JSON.parse(saved);
+      const date = d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('en-AU') : 'unknown date';
+      info.textContent = (d.pl?.length || 0) + ' rows · ' + (d.months?.length || 0) + ' months · uploaded ' + date;
+      bar.style.display = 'block';
+    } catch {}
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragover');
+  handleFile(e.dataTransfer.files[0]);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  showFeedback('loading', '⏳ Processing ' + file.name + '...');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb     = XLSX.read(e.target.result, { type: 'array' });
+      const parsed = parseWorkbook(wb);
+      if (!parsed) {
+        showFeedback('error', '✗ Could not parse file. Check the column format below.');
+        return;
+      }
+      parsed.uploadedAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      loadStatus();
+      showFeedback('success',
+        '✓ Published successfully — ' + parsed.pl.length + ' P&L rows across ' +
+        parsed.months.length + ' month(s). ' +
+        (parsed.users.length > 0 ? parsed.users.length + ' user rows.' : '')
+      );
+    } catch(err) {
+      showFeedback('error', '✗ Error: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function showFeedback(type, msg) {
+  const el = document.getElementById('upload-feedback');
+  el.className = 'feedback ' + (type === 'loading' ? '' : type);
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+function clearData() {
+  if (!confirm('Clear all published P&L data? This will show the empty state on the public page.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  loadStatus();
+  showFeedback('success', '✓ Data cleared.');
+}
+
+function parseWorkbook(wb) {
+  const result = { pl: [], users: [], months: [] };
+
+  const plSheet = wb.SheetNames.find(n =>
+    n.toLowerCase().includes('p') || n.toLowerCase().includes('pl') ||
+    n.toLowerCase() === 'sheet1' || wb.SheetNames.indexOf(n) === 0
+  );
+  if (plSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[plSheet], { defval: '' });
+    result.pl = rows.map(r => ({
+      month:    String(r['Month']    || r['month']    || r['MONTH']    || '').trim(),
+      category: String(r['Category'] || r['category'] || r['CATEGORY'] || r['Type'] || '').trim(),
+      item:     String(r['Item']     || r['item']     || r['ITEM']     || r['Description'] || r['Name'] || '').trim(),
+      amount:   parseFloat(r['Amount'] || r['amount'] || r['AMOUNT'] || r['Value'] || 0),
+    })).filter(r => r.month && r.item);
+    result.months = [...new Set(result.pl.map(r => r.month))];
+  }
+
+  const usersSheet = wb.SheetNames.find(n =>
+    n.toLowerCase().includes('user') || n.toLowerCase() === 'sheet2'
+  );
+  if (usersSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[usersSheet], { defval: 0 });
+    result.users = rows.map(r => ({
+      month: String(r['Month'] || r['month'] || '').trim(),
+      free:  parseFloat(r['Free Users'] || r['Free'] || r['free'] || 0),
+      paid:  parseFloat(r['Paid Users'] || r['Paid'] || r['paid'] || 0),
+      total: parseFloat(r['Total Users'] || r['Total'] || r['total'] || 0),
+    })).filter(r => r.month);
+  }
+
+  return result.pl.length > 0 ? result : null;
+}
+</script>
+</body>
+</html>
