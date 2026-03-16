@@ -1852,6 +1852,10 @@ function refreshAccruedDebtOptions() {
 
 // Keyword map — name fragments → category value
 const ACCRUED_CAT_KEYWORDS = {
+  'Rent/Mortgage': [
+    'rent','mortgage','home loan','landlord','property','strata','body corporate',
+    'body corp','hoa','housing','accommodation','board',
+  ],
   Subscriptions: [
     'netflix','stan','disney','binge','paramount','apple tv','prime video','spotify',
     'youtube','adobe','microsoft 365','office 365','icloud','google one','dropbox',
@@ -1862,7 +1866,7 @@ const ACCRUED_CAT_KEYWORDS = {
   Utilities: [
     'phone','mobile','telstra','optus','vodafone','tpg','belong','boost',
     'electricity','electric','power','energy','gas','water','internet','broadband',
-    'nbn','wifi','wi-fi','foxtel','fetch','kayo','council','rates','strata','body corp',
+    'nbn','wifi','wi-fi','foxtel','fetch','kayo','council','rates',
     'bill','utility','utilities',
   ],
   Insurance: [
