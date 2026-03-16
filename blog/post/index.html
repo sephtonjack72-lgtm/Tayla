@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title id="page-title">Post — Tayla Blog</title>
+<meta name="description" id="page-desc" content="Tayla Blog">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#111e1e;--ink-2:#1e3535;--ink-3:#4a6868;
+  --paper:#f0f4f3;--paper-2:#e0eae8;
+  --rule:rgba(30,80,80,0.15);
+  --gold:#1a7a8c;--gold-light:#7cc4d0;--gold-dim:rgba(26,122,140,0.12);
+  --r:10px;--r-sm:6px;--shadow:0 4px 24px rgba(17,30,30,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6;}
+.nav{background:#000;padding:0 28px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:#fff;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;background:var(--gold-light);border-radius:50%;}
+.nav-cta{font-size:0.8rem;font-weight:600;padding:8px 18px;border-radius:var(--r-sm);background:var(--gold);color:#fff;text-decoration:none;}
+.back-bar{max-width:780px;margin:0 auto;padding:16px 24px;}
+.back-link{font-size:0.82rem;color:var(--ink-3);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color 0.15s;}
+.back-link:hover{color:var(--gold);}
+.hero{background:linear-gradient(145deg,#0d1f1f 0%,#0f2e30 60%,#0c2a38 100%);padding:44px 28px 40px;}
+.hero-inner{max-width:780px;margin:0 auto;}
+.post-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold-light);background:rgba(124,196,208,0.15);padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:14px;}
+.post-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;color:#fff;margin-bottom:16px;line-height:1.2;}
+.post-meta{display:flex;align-items:center;gap:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);}
+.post-meta span{display:flex;align-items:center;gap:5px;}
+.post-author-name{color:rgba(255,255,255,0.75);font-weight:600;}
+.main{max-width:780px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 240px;gap:48px;align-items:start;}
+/* Post content styling */
+.post-content{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:40px;box-shadow:var(--shadow);}
+.post-content h1,.post-content h2,.post-content h3{font-family:'Playfair Display',serif;margin:28px 0 12px;color:var(--ink);}
+.post-content h2{font-size:1.3rem;}
+.post-content h3{font-size:1.05rem;}
+.post-content p{margin-bottom:16px;color:var(--ink-2);line-height:1.8;}
+.post-content ul,.post-content ol{margin:0 0 16px 24px;color:var(--ink-2);}
+.post-content li{margin-bottom:6px;line-height:1.7;}
+.post-content strong{color:var(--ink);font-weight:600;}
+.post-content em{font-style:italic;}
+.post-content blockquote{border-left:3px solid var(--gold);padding:12px 20px;margin:20px 0;background:var(--paper);border-radius:0 var(--r-sm) var(--r-sm) 0;color:var(--ink-2);font-style:italic;}
+.post-content table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.88rem;}
+.post-content th{background:#f8f8f8;padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid #e8e8e8;}
+.post-content td{padding:9px 12px;border-bottom:1px solid var(--rule);}
+.post-content hr{border:none;border-top:1px solid var(--rule);margin:28px 0;}
+.post-content a{color:var(--gold);text-decoration:underline;}
+.post-content img{max-width:100%;border-radius:var(--r-sm);margin:16px 0;}
+/* Sidebar */
+.sidebar{position:sticky;top:80px;}
+.sidebar-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+.sidebar-card-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;margin-bottom:12px;}
+.cta-btn{display:block;background:var(--gold);color:#fff;padding:11px 16px;border-radius:var(--r-sm);font-weight:600;font-size:0.82rem;text-decoration:none;text-align:center;transition:opacity 0.15s;margin-top:12px;}
+.cta-btn:hover{opacity:0.88;}
+.related-link{display:block;font-size:0.82rem;color:var(--ink-2);text-decoration:none;padding:8px 0;border-bottom:1px solid var(--rule);line-height:1.4;}
+.related-link:last-child{border-bottom:none;}
+.related-link:hover{color:var(--gold);}
+footer{text-align:center;padding:32px 24px;font-size:0.75rem;color:var(--ink-3);border-top:1px solid var(--rule);max-width:780px;margin:0 auto;}
+footer a{color:var(--gold);text-decoration:none;}
+.not-found{text-align:center;padding:80px 24px;color:var(--ink-3);}
+.not-found h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:8px;color:var(--ink-2);}
+@media(max-width:640px){
+  .main{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .post-content{padding:24px;}
+  .hero{padding:32px 20px 28px;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/"><div class="logo-dot"></div>Tayla</a>
+    <a class="nav-cta" href="/">Try Free →</a>
+  </div>
+</nav>
+<div class="back-bar">
+  <a class="back-link" href="/blog/">← Back to Blog</a>
+</div>
+<div class="hero" id="post-hero" style="display:none">
+  <div class="hero-inner">
+    <div id="hero-tag"></div>
+    <div class="post-title" id="hero-title"></div>
+    <div class="post-meta">
+      <span>✍️ <span class="post-author-name" id="hero-author"></span></span>
+      <span>📅 <span id="hero-date"></span></span>
+    </div>
+  </div>
+</div>
+<div class="main" id="post-main" style="display:none">
+  <div class="post-content" id="post-body"></div>
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Track your finances</div>
+      <p style="font-size:0.8rem;color:var(--ink-3);line-height:1.6;margin-bottom:4px">Put this into practice with Tayla — Australia's personal finance app.</p>
+      <a class="cta-btn" href="/">Try Tayla Free →</a>
+    </div>
+    <div class="sidebar-card" id="related-posts" style="display:none">
+      <div class="sidebar-card-title">More Articles</div>
+      <div id="related-list"></div>
+    </div>
+  </div>
+</div>
+<div class="not-found" id="not-found" style="display:none">
+  <h2>Post not found</h2>
+  <p>This post may have been removed or the link is incorrect.</p>
+  <a href="/blog/" style="color:var(--gold);text-decoration:none;display:inline-block;margin-top:16px">← Back to Blog</a>
+</div>
+<footer>
+  <p><a href="/">App</a> · <a href="/tax/">Tax Calc</a> · <a href="/blog/">Blog</a> · <a href="/changelog/">Changelog</a></p>
+  <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance</p>
+</footer>
+<script>
+const STORAGE_KEY = 'tayla_blog_posts';
+
+function getPosts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('id');
+  const posts  = getPosts();
+  const post   = posts.find(p => p.id === id);
+
+  if (!post) {
+    document.getElementById('not-found').style.display = 'block';
+    return;
+  }
+
+  // Update meta
+  document.getElementById('page-title').textContent = post.title + ' — Tayla Blog';
+  document.getElementById('page-desc').content = post.excerpt || post.title;
+
+  // Hero
+  document.getElementById('post-hero').style.display = 'block';
+  if (post.tag) {
+    document.getElementById('hero-tag').innerHTML = `<span class="post-tag">${post.tag}</span>`;
+  }
+  document.getElementById('hero-title').textContent  = post.title;
+  document.getElementById('hero-author').textContent = post.author || 'Tayla Team';
+  document.getElementById('hero-date').textContent   = post.date || '';
+
+  // Body
+  document.getElementById('post-body').innerHTML = post.content || '';
+  document.getElementById('post-main').style.display = 'grid';
+
+  // Related posts
+  const related = posts.filter(p => p.id !== id && p.tag === post.tag).slice(0, 4);
+  if (related.length > 0) {
+    document.getElementById('related-posts').style.display = 'block';
+    document.getElementById('related-list').innerHTML = related.map(r =>
+      `<a class="related-link" href="/blog/post/?id=${r.id}">${r.title}</a>`
+    ).join('');
+  }
+});
+</script>
+</body>
+</html>
