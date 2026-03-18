@@ -87,12 +87,15 @@ footer a{color:var(--gold);text-decoration:none;}
   <p><a href="/">App</a> · <a href="/tax/">Tax Calc</a> · <a href="/budget/">Budget Planner</a> · <a href="/changelog/">Changelog</a></p>
   <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance</p>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const STORAGE_KEY = 'tayla_blog_posts';
+const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-function getPosts() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
+async function getPosts() {
+  const { data } = await sb.from('tayla_blog_posts').select('*').order('created_at', { ascending: false });
+  return data || [];
 }
 
 function filterPosts(tag, btn) {
@@ -101,16 +104,15 @@ function filterPosts(tag, btn) {
   renderGrid(tag);
 }
 
-function renderGrid(activeTag) {
-  const posts = getPosts();
-  const grid  = document.getElementById('posts-grid');
-  const filtered = activeTag === 'all' ? posts : posts.filter(p => p.tag === activeTag);
+let ALL_POSTS = [];
 
+function renderGrid(activeTag) {
+  const filtered = activeTag === 'all' ? ALL_POSTS : ALL_POSTS.filter(p => p.tag === activeTag);
+  const grid = document.getElementById('posts-grid');
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="empty-state"><h3>No posts yet</h3><p>Check back soon — articles are on the way.</p></div>`;
     return;
   }
-
   grid.innerHTML = filtered.map(p => `
     <a class="post-card" href="/blog/post/?id=${p.id}">
       <div class="post-card-body">
@@ -127,9 +129,8 @@ function renderGrid(activeTag) {
 }
 
 function buildFilters() {
-  const posts = getPosts();
-  const tags  = [...new Set(posts.map(p => p.tag).filter(Boolean))];
-  const bar   = document.getElementById('filter-bar');
+  const tags = [...new Set(ALL_POSTS.map(p => p.tag).filter(Boolean))];
+  const bar  = document.getElementById('filter-bar');
   bar.innerHTML = `<button class="filter-btn active" onclick="filterPosts('all',this)">All</button>`;
   tags.forEach(tag => {
     const btn = document.createElement('button');
@@ -140,7 +141,8 @@ function buildFilters() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  ALL_POSTS = await getPosts();
   buildFilters();
   renderGrid('all');
 });
