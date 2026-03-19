@@ -511,16 +511,38 @@ async function startCheckout() {
   try {
     const res = await fetch('https://anspwetxfykbmydrnkwh.supabase.co/functions/v1/smooth-responder', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU',
+      },
       body: JSON.stringify({ userId: CURRENT_USER.id, email: CURRENT_USER.email }),
     });
-    const { url, error } = await res.json();
-    if (error) throw new Error(error);
-    window.location.href = url;
+
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { 
+      alert('Server error: ' + text);
+      if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
+      return;
+    }
+
+    if (json.error) {
+      alert('Error: ' + json.error);
+      if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
+      return;
+    }
+
+    if (!json.url) {
+      alert('No checkout URL returned. Response: ' + text);
+      if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
+      return;
+    }
+
+    window.location.href = json.url;
   } catch (e) {
+    alert('Network error: ' + e.message);
     if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
-    alert('Something went wrong. Please try again.');
-    console.error('Checkout error:', e);
   }
 }
 
@@ -920,9 +942,9 @@ function buildPeriodRows() {
     row.innerHTML = `
       <div class="wc wc-label">${label}</div>
       <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-        id="wi${i}" value="${val1 ? val1 : ''}" oninput="onPeriodInput(${i})"></div>
+        id="wi${i}" value="${val1 ? val1 : ''}" oninput="onPeriodInput(${i})" onchange="onPeriodInput(${i})"></div>
       <div class="wc"><input class="wc-input" type="number" min="0" step="0.01" placeholder="0.00"
-        id="wi2${i}" value="${val2 ? val2 : ''}" oninput="onPeriodInput2(${i})"></div>
+        id="wi2${i}" value="${val2 ? val2 : ''}" oninput="onPeriodInput2(${i})" onchange="onPeriodInput2(${i})"></div>
       <div class="wc wc-net ${combined ? '' : 'wc-empty'}" id="wn${i}">${combined ? fmt(combined) : '—'}</div>`;
     container.appendChild(row);
   }
