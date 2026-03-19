@@ -509,8 +509,10 @@ async function startCheckout() {
   if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
 
   try {
+    const { data: { session } } = await sb.auth.getSession();
     const { data, error } = await sb.functions.invoke('smooth-responder', {
       body: { userId: CURRENT_USER.id, email: CURRENT_USER.email },
+      headers: session ? { Authorization: `Bearer ${session.access_token}` } : {},
     });
 
     if (error) {
