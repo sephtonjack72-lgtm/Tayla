@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:">
 <title>Tayla — Australian Personal Finance</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -372,7 +373,7 @@
                 <div style="margin-top:0">
                   <span class="annual-input-label" id="annual-input-label-calc">Enter annual gross income</span>
                   <input class="annual-big-input" type="number" id="annual-input" min="0" step="100"
-                    placeholder="e.g. 85,000" oninput="onTaxCalcInput()">
+                    placeholder="e.g. 85,000" oninput="onTaxCalcInput()" onchange="onTaxCalcInput()">
                   <div class="annual-result-row" id="annual-results" style="display:none">
                     <div class="annual-result-item">
                       <div class="annual-result-label">Tax Payable</div>
@@ -637,27 +638,27 @@
               <div class="health-inputs">
                 <div class="form-group">
                   <label class="form-label">Monthly Net Income ($)</label>
-                  <input class="form-input" type="number" id="h-income" placeholder="e.g. 5000" oninput="calcHealth()">
+                  <input class="form-input" type="number" id="h-income" placeholder="e.g. 5000" oninput="calcHealth()" onchange="calcHealth()">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Monthly Expenses ($)</label>
-                  <input class="form-input" type="number" id="h-expenses" placeholder="e.g. 3500" oninput="calcHealth()">
+                  <input class="form-input" type="number" id="h-expenses" placeholder="e.g. 3500" oninput="calcHealth()" onchange="calcHealth()">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Emergency Savings ($)</label>
-                  <input class="form-input" type="number" id="h-emergency" placeholder="e.g. 10000" oninput="calcHealth()">
+                  <input class="form-input" type="number" id="h-emergency" placeholder="e.g. 10000" oninput="calcHealth()" onchange="calcHealth()">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Total Debt ($) <span style="font-size:0.72rem;color:var(--ink-3)">(from debt register below)</span></label>
-                  <input class="form-input" type="number" id="h-debt" placeholder="e.g. 15000" oninput="calcHealth()" readonly style="background:var(--paper-2);cursor:default">
+                  <input class="form-input" type="number" id="h-debt" placeholder="e.g. 15000" oninput="calcHealth()" onchange="calcHealth()" readonly style="background:var(--paper-2);cursor:default">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Monthly Rent / Mortgage ($)</label>
-                  <input class="form-input" type="number" id="h-housing" placeholder="e.g. 1800" oninput="calcHealth()">
+                  <input class="form-input" type="number" id="h-housing" placeholder="e.g. 1800" oninput="calcHealth()" onchange="calcHealth()">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Monthly Savings ($)</label>
-                  <input class="form-input" type="number" id="h-savings" placeholder="e.g. 500" oninput="calcHealth()">
+                  <input class="form-input" type="number" id="h-savings" placeholder="e.g. 500" oninput="calcHealth()" onchange="calcHealth()">
                 </div>
               </div>
               <p style="font-size:0.72rem;color:var(--ink-3);margin-top:8px;line-height:1.6">These values are stored securely on Tayla's servers. Not financial advice.</p>
@@ -727,7 +728,7 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
                 <div style="grid-column:span 2">
                   <div class="form-label">Expense Name</div>
-                  <input class="form-input" type="text" id="ac-name" placeholder="e.g. Netflix, Phone bill" oninput="autoSuggestAccruedCat()">
+                  <input class="form-input" type="text" id="ac-name" placeholder="e.g. Netflix, Phone bill" oninput="autoSuggestAccruedCat()" onchange="autoSuggestAccruedCat()">
                 </div>
                 <div>
                   <div class="form-label">Amount ($)</div>
