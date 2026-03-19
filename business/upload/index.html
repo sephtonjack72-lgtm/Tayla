@@ -168,9 +168,13 @@ body {
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
 const UPLOAD_PASSWORD = 'tayla-business-2026';
-const STORAGE_KEY     = 'tayla_business_pl';
 
 function unlock() {
   const pw = document.getElementById('pw-input').value;
@@ -185,18 +189,17 @@ function unlock() {
   }
 }
 
-function loadStatus() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  const bar   = document.getElementById('status-bar');
-  const info  = document.getElementById('current-data-info');
-  if (saved) {
-    try {
-      const d = JSON.parse(saved);
-      const date = d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('en-AU') : 'unknown date';
-      info.textContent = (d.pl?.length || 0) + ' rows · ' + (d.months?.length || 0) + ' months · uploaded ' + date;
+async function loadStatus() {
+  const bar  = document.getElementById('status-bar');
+  const info = document.getElementById('current-data-info');
+  try {
+    const { data } = await sb.from('tayla_pl_data').select('data, uploaded_at').order('uploaded_at', { ascending: false }).limit(1).maybeSingle();
+    if (data) {
+      const date = new Date(data.uploaded_at).toLocaleDateString('en-AU');
+      info.textContent = (data.data.pl?.length || 0) + ' rows · ' + (data.data.months?.length || 0) + ' months · uploaded ' + date;
       bar.style.display = 'block';
-    } catch {}
-  }
+    }
+  } catch {}
 }
 
 function handleDrop(e) {
@@ -210,7 +213,7 @@ function handleFile(file) {
   showFeedback('loading', '⏳ Processing ' + file.name + '...');
 
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const wb     = XLSX.read(e.target.result, { type: 'array' });
       const parsed = parseWorkbook(wb);
@@ -218,11 +221,13 @@ function handleFile(file) {
         showFeedback('error', '✗ Could not parse file. Check the column format below.');
         return;
       }
-      parsed.uploadedAt = new Date().toISOString();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      // Delete old rows then insert new one
+      await sb.from('tayla_pl_data').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      const { error } = await sb.from('tayla_pl_data').insert({ data: parsed });
+      if (error) throw error;
       loadStatus();
       showFeedback('success',
-        '✓ Published successfully — ' + parsed.pl.length + ' P&L rows across ' +
+        '✓ Published to Supabase — ' + parsed.pl.length + ' P&L rows across ' +
         parsed.months.length + ' month(s). ' +
         (parsed.users.length > 0 ? parsed.users.length + ' user rows.' : '')
       );
@@ -240,9 +245,9 @@ function showFeedback(type, msg) {
   el.textContent = msg;
 }
 
-function clearData() {
+async function clearData() {
   if (!confirm('Clear all published P&L data? This will show the empty state on the public page.')) return;
-  localStorage.removeItem(STORAGE_KEY);
+  await sb.from('tayla_pl_data').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   loadStatus();
   showFeedback('success', '✓ Data cleared.');
 }
