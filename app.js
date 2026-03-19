@@ -275,6 +275,8 @@ async function enterApp(email, name, id) {
   buildWeekRows();
   renderBudget();
   document.getElementById('budget-month-select').value = BUDGET_MONTH;
+  // Handle Stripe checkout return
+  handleCheckoutReturn();
 }
 
 function enterGuest() {
@@ -493,8 +495,57 @@ async function confirmCancelSubscription() {
 }
 
 /* ═══════════════════════════════════════════════════
-   THEMES
+   STRIPE CHECKOUT
 ═══════════════════════════════════════════════════ */
+async function startCheckout() {
+  if (!CURRENT_USER) {
+    closeModal('plus-upgrade-modal');
+    showScreen('auth-screen');
+    switchAuthTab('register');
+    return;
+  }
+
+  const btn = document.getElementById('checkout-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+
+  try {
+    const res = await fetch('https://anspwetxfykbmydrnkwh.supabase.co/functions/v1/smooth-responder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: CURRENT_USER.id, email: CURRENT_USER.email }),
+    });
+    const { url, error } = await res.json();
+    if (error) throw new Error(error);
+    window.location.href = url;
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
+    alert('Something went wrong. Please try again.');
+    console.error('Checkout error:', e);
+  }
+}
+
+async function handleCheckoutReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('checkout');
+  if (!status) return;
+
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+
+  if (status === 'success') {
+    // Re-fetch tier — webhook may have already updated it
+    if (CURRENT_USER?.id) {
+      await fetchUserTier(CURRENT_USER.id);
+      applyTierGating();
+      syncSettingsAccountUI();
+    }
+    setTimeout(() => alert('🎉 Welcome to Tayla Plus! All features are now unlocked.'), 500);
+  } else if (status === 'cancelled') {
+    setTimeout(() => alert('Checkout cancelled — you\'re still on the Free plan.'), 300);
+  }
+}
+
+
 const THEME_LS_KEY = 'tayla_theme';
 
 function setTheme(theme) {
