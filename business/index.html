@@ -356,23 +356,31 @@ footer a { color: var(--gold); text-decoration: none; }
   <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance. All figures in AUD.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── Config ──
-const STORAGE_KEY = 'tayla_business_pl';
+const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ── State ──
 let DATA = null;
 let ACTIVE_MONTH = null;
 
 // ── Init ──
-document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      DATA = JSON.parse(saved);
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { data, error } = await sb
+      .from('tayla_pl_data')
+      .select('data, uploaded_at')
+      .order('uploaded_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!error && data) {
+      DATA = data.data;
+      DATA.uploadedAt = data.uploaded_at;
       renderAll();
-    } catch { /* ignore */ }
-  }
+    }
+  } catch (e) { console.error('Failed to load P&L:', e); }
 });
 
 // ── Formatting ──
