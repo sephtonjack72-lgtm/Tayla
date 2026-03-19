@@ -509,38 +509,23 @@ async function startCheckout() {
   if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
 
   try {
-    const res = await fetch('https://anspwetxfykbmydrnkwh.supabase.co/functions/v1/smooth-responder', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU',
-      },
-      body: JSON.stringify({ userId: CURRENT_USER.id, email: CURRENT_USER.email }),
+    const { data, error } = await sb.functions.invoke('smooth-responder', {
+      body: { userId: CURRENT_USER.id, email: CURRENT_USER.email },
     });
 
-    const text = await res.text();
-    console.log('Edge Function response:', text);
-    let json;
-    try { json = JSON.parse(text); } catch { 
-      alert('Server error: ' + text);
+    if (error) {
+      alert('Error: ' + error.message);
       if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
       return;
     }
 
-    if (json.error) {
-      alert('Error: ' + json.error);
+    if (!data?.url) {
+      alert('No checkout URL returned: ' + JSON.stringify(data));
       if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
       return;
     }
 
-    if (!json.url) {
-      alert('No checkout URL returned. Response: ' + text);
-      if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
-      return;
-    }
-
-    window.location.href = json.url;
+    window.location.href = data.url;
   } catch (e) {
     alert('Network error: ' + e.message);
     if (btn) { btn.disabled = false; btn.textContent = 'Upgrade to Plus — $3.99/month'; }
