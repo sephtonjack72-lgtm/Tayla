@@ -114,45 +114,38 @@ footer a{color:var(--gold);text-decoration:none;}
   <p><a href="/">App</a> · <a href="/tax/">Tax Calc</a> · <a href="/blog/">Blog</a> · <a href="/changelog/">Changelog</a></p>
   <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance</p>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const STORAGE_KEY = 'tayla_blog_posts';
+const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-function getPosts() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const id     = params.get('id');
-  const posts  = getPosts();
-  const post   = posts.find(p => p.id === id);
+  if (!id) { document.getElementById('not-found').style.display = 'block'; return; }
+
+  const { data: post } = await sb.from('tayla_blog_posts').select('*').eq('id', id).maybeSingle();
 
   if (!post) {
     document.getElementById('not-found').style.display = 'block';
     return;
   }
 
-  // Update meta
-  document.getElementById('page-title').textContent = post.title + ' — Tayla Blog';
-  document.getElementById('page-desc').content = post.excerpt || post.title;
-
-  // Hero
-  document.getElementById('post-hero').style.display = 'block';
-  if (post.tag) {
-    document.getElementById('hero-tag').innerHTML = `<span class="post-tag">${post.tag}</span>`;
-  }
-  document.getElementById('hero-title').textContent  = post.title;
-  document.getElementById('hero-author').textContent = post.author || 'Tayla Team';
-  document.getElementById('hero-date').textContent   = post.date || '';
-
-  // Body
-  document.getElementById('post-body').innerHTML = post.content || '';
-  document.getElementById('post-main').style.display = 'grid';
+  document.getElementById('page-title').textContent  = post.title + ' — Tayla Blog';
+  document.getElementById('page-desc').content        = post.excerpt || post.title;
+  document.getElementById('post-hero').style.display  = 'block';
+  if (post.tag) document.getElementById('hero-tag').innerHTML = `<span class="post-tag">${post.tag}</span>`;
+  document.getElementById('hero-title').textContent   = post.title;
+  document.getElementById('hero-author').textContent  = post.author || 'Tayla Team';
+  document.getElementById('hero-date').textContent    = post.date || '';
+  document.getElementById('post-body').innerHTML      = post.content || '';
+  document.getElementById('post-main').style.display  = 'grid';
 
   // Related posts
-  const related = posts.filter(p => p.id !== id && p.tag === post.tag).slice(0, 4);
-  if (related.length > 0) {
+  const { data: related } = await sb.from('tayla_blog_posts')
+    .select('id, title').eq('tag', post.tag).neq('id', id).limit(4);
+  if (related?.length > 0) {
     document.getElementById('related-posts').style.display = 'block';
     document.getElementById('related-list').innerHTML = related.map(r =>
       `<a class="related-link" href="/blog/post/?id=${r.id}">${r.title}</a>`
