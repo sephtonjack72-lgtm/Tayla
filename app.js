@@ -520,6 +520,7 @@ async function startCheckout() {
     });
 
     const text = await res.text();
+    console.log('Edge Function response:', text);
     let json;
     try { json = JSON.parse(text); } catch { 
       alert('Server error: ' + text);
