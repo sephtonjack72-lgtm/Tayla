@@ -474,20 +474,27 @@ function syncSettingsAccountUI() {
 }
 
 async function confirmCancelSubscription() {
-  if (!confirm('Are you sure you want to cancel Tayla Plus?\n\nYour plan will revert to Free immediately. Your data will not be deleted.')) return;
-
   try {
-    const { error } = await sb
+    const { data: profile, error } = await sb
       .from('profiles')
-      .update({ tier: 'free', stripe_subscription_id: null, updated_at: new Date().toISOString() })
-      .eq('id', CURRENT_USER.id);
+      .select('stripe_customer_id')
+      .eq('id', CURRENT_USER.id)
+      .single();
 
-    if (error) throw error;
+    if (error || !profile?.stripe_customer_id) throw new Error('No customer ID found');
 
-    CURRENT_TIER = 'free';
-    applyTierGating();
-    syncSettingsAccountUI();
-    alert('Your subscription has been cancelled. You\'re now on the Free plan.');
+    const res = await fetch('https://anspwetxfykbmydrnkwh.supabase.co/functions/v1/customer-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerId: profile.stripe_customer_id, returnUrl: window.location.href }),
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'No portal URL returned');
+    }
   } catch (e) {
     alert('Something went wrong. Please try again or contact support.');
     console.error('Cancel subscription error:', e);
