@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#080B0F">
+<title>Tayla — Product Strategy</title>
+<style>
+:root {
+  --bg: #080B0F;
+  --s1: #1A2030;
+  --s2: #232D3F;
+  --gold: #C4933F;
+  --gold-l: #DFB86A;
+  --gold-d: #7A5A20;
+  --cream: #EEE8D8;
+  --cm: rgba(238,232,216,0.65);
+  --cd: rgba(238,232,216,0.35);
+  --green: #2E7D52;
+  --green-l: #4EAF7A;
+  --red: #B83C1A;
+  --blue: #3A6EA8;
+  --blue-l: #6B9FD4;
+  --border: rgba(196,147,63,0.35);
+  --border-s: rgba(196,147,63,0.15);
+  --font-serif: 'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --font-sans: -apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-mono: 'Courier New',Courier,monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{background:#080B0F!important;color-scheme:dark!important}
+body{font-family:var(--font-sans);background:#080B0F!important;color:var(--cream);min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+@media(prefers-color-scheme:light){html,body{background:#080B0F!important;color:var(--cream)!important}}
+
+body::before{content:’’;position:fixed;inset:0;z-index:0;pointer-events:none;
+background:radial-gradient(ellipse 70% 50% at 10% 15%,rgba(196,147,63,0.05) 0%,transparent 60%),
+radial-gradient(ellipse 50% 40% at 90% 85%,rgba(46,125,82,0.04) 0%,transparent 60%);}
+body::after{content:’’;position:fixed;inset:0;z-index:0;pointer-events:none;
+background-image:linear-gradient(rgba(196,147,63,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(196,147,63,0.02) 1px,transparent 1px);
+background-size:60px 60px;}
+
+/* GATE */
+#gate{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;position:relative;z-index:10;}
+.gate-logo{font-family:var(–font-serif);font-size:3rem;font-weight:700;color:var(–cream);letter-spacing:-0.02em;line-height:1;margin-bottom:0.3rem;text-align:center;}
+.gate-logo em{color:var(–gold);font-style:normal;}
+.gate-sub{font-family:var(–font-serif);font-size:1rem;font-weight:300;font-style:italic;color:var(–cd);margin-bottom:3rem;text-align:center;}
+.gate-box{background:rgba(14,19,24,0.9);border:1px solid var(–border);border-radius:20px;padding:2.5rem;width:100%;max-width:380px;position:relative;}
+.gate-box::before{content:’’;position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(–gold),transparent);}
+.gate-title{font-family:var(–font-serif);font-size:1.2rem;font-weight:600;color:var(–cream);text-align:center;margin-bottom:0.4rem;}
+.gate-desc{font-size:0.78rem;color:var(–cd);text-align:center;margin-bottom:1.8rem;line-height:1.5;}
+.gate-wrap{position:relative;margin-bottom:1rem;}
+.gate-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:0.85rem;opacity:0.4;}
+.gate-input{width:100%;padding:0.85rem 1rem 0.85rem 2.5rem;font-family:var(–font-mono);font-size:0.85rem;letter-spacing:0.15em;background:rgba(8,11,15,0.8);border:1px solid rgba(196,147,63,0.25);border-radius:10px;color:var(–gold);outline:none;transition:border-color 0.2s;}
+.gate-input:focus{border-color:var(–gold);}
+.gate-input.shake{animation:shake 0.35s ease;}
+.gate-input.error{border-color:var(–red)!important;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.gate-btn{width:100%;padding:0.85rem;font-family:var(–font-mono);font-size:0.72rem;letter-spacing:0.16em;text-transform:uppercase;background:rgba(196,147,63,0.12);border:1px solid rgba(196,147,63,0.35);color:var(–gold);border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.gate-btn:hover{background:rgba(196,147,63,0.2);border-color:var(–gold);}
+.gate-err{font-family:var(–font-mono);font-size:0.65rem;color:var(–red);text-align:center;margin-top:0.8rem;min-height:1em;}
+
+/* APP */
+#app{display:none;position:relative;z-index:1;}
+
+/* HEADER */
+.hdr{padding:1.2rem 2rem;border-bottom:1px solid var(–border-s);background:rgba(8,11,15,0.92);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.hdr-logo{font-family:var(–font-serif);font-size:1.4rem;font-weight:700;color:var(–gold);}
+.hdr-sub{font-family:var(–font-mono);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(–cd);margin-left:0.5rem;}
+.hdr-pills{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.pill{font-family:var(–font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:999px;padding:0.28rem 0.75rem;}
+.pill-gold{background:rgba(196,147,63,0.1);border:1px solid var(–border);color:var(–gold);}
+.pill-red{background:rgba(184,60,26,0.1);border:1px solid rgba(184,60,26,0.3);color:#E07060;}
+
+/* CONTENT */
+.page{max-width:900px;margin:0 auto;padding:3rem 2rem 6rem;}
+
+/* HERO */
+.hero{margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid var(–border-s);}
+.hero-eyebrow{font-family:var(–font-mono);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(–gold-d);margin-bottom:0.8rem;}
+.hero-title{font-family:var(–font-serif);font-size:clamp(2.2rem,6vw,3.8rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;color:var(–cream);margin-bottom:1rem;}
+.hero-title em{color:var(–gold);font-style:normal;}
+.hero-body{font-size:1rem;color:var(–cm);line-height:1.8;max-width:620px;}
+
+/* PRODUCT BLOCKS */
+.product{margin-bottom:3.5rem;padding-bottom:3rem;border-bottom:1px solid var(–border-s);}
+.product:last-child{border-bottom:none;}
+.product-header{display:flex;align-items:flex-start;gap:1.2rem;margin-bottom:1.5rem;}
+.product-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;border:1px solid var(–border-s);}
+.product-meta{}
+.product-phase{font-family:var(–font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(–gold-d);margin-bottom:0.2rem;}
+.product-name{font-family:var(–font-serif);font-size:1.8rem;font-weight:700;color:var(–cream);line-height:1;letter-spacing:-0.01em;}
+.product-name em{color:var(–gold);font-style:normal;}
+.product-tagline{font-size:0.88rem;color:var(–cm);margin-top:0.3rem;font-style:italic;}
+
+.product-body{font-size:0.88rem;line-height:1.85;color:var(–cm);margin-bottom:1.5rem;}
+.product-body strong{color:var(–cream);}
+.product-body em{color:var(–gold);font-style:normal;}
+
+/* FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+.feat{background:var(–s1);border:1px solid var(–border-s);border-radius:12px;padding:1.2rem;}
+.feat-title{font-weight:600;font-size:0.88rem;color:var(–cream);margin-bottom:0.4rem;}
+.feat-body{font-size:0.78rem;color:var(–cm);line-height:1.6;}
+
+/* PRICING */
+.pricing-row{display:flex;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.5rem;}
+.price-box{background:var(–s1);border:1px solid var(–border-s);border-radius:12px;padding:1.2rem;flex:1;min-width:160px;}
+.price-box.highlight{border-color:var(–gold);background:#201E10;}
+.price-tier{font-family:var(–font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(–cd);margin-bottom:0.4rem;}
+.price-amount{font-family:var(–font-serif);font-size:1.6rem;font-weight:700;color:var(–gold);line-height:1;margin-bottom:0.3rem;}
+.price-amount span{font-size:0.75rem;color:var(–cd);font-family:var(–font-sans);}
+.price-desc{font-size:0.75rem;color:var(–cm);line-height:1.5;}
+
+/* CALLOUT */
+.callout{border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;}
+.callout-gold{background:#1C1A0F;border:1px solid rgba(196,147,63,0.45);}
+.callout-green{background:#0F1C15;border:1px solid rgba(46,125,82,0.45);}
+.callout-blue{background:#0F1520;border:1px solid rgba(58,110,168,0.45);}
+.callout-red{background:#1C0F0F;border:1px solid rgba(184,60,26,0.4);}
+.callout-label{font-family:var(–font-mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.5rem;}
+.callout-gold .callout-label{color:var(–gold);}
+.callout-green .callout-label{color:var(–green-l);}
+.callout-blue .callout-label{color:var(–blue-l);}
+.callout-red .callout-label{color:#E07060;}
+.callout p{font-size:0.85rem;color:var(–cm);line-height:1.75;}
+.callout p strong{color:var(–cream);}
+
+/* DIVIDER TITLE */
+.dtitle{font-family:var(–font-serif);font-size:1rem;font-weight:600;color:var(–cream);margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(196,147,63,0.2);display:flex;align-items:center;gap:0.6rem;}
+.dtag{font-family:var(–font-mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.15rem 0.5rem;border-radius:4px;}
+.dtag-gold{background:rgba(196,147,63,0.12);color:var(–gold);border:1px solid var(–border-s);}
+.dtag-green{background:rgba(46,125,82,0.12);color:var(–green-l);border:1px solid rgba(46,125,82,0.2);}
+.dtag-blue{background:rgba(58,110,168,0.12);color:var(–blue-l);border:1px solid rgba(58,110,168,0.2);}
+.dtag-red{background:rgba(184,60,26,0.12);color:#E07060;border:1px solid rgba(184,60,26,0.2);}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;margin-bottom:2rem;}
+.tl-item{display:grid;grid-template-columns:110px 1fr;gap:0;}
+.tl-left{padding:1.2rem 1rem 1.2rem 0;display:flex;flex-direction:column;align-items:flex-end;gap:0.2rem;position:relative;}
+.tl-left::after{content:’’;position:absolute;right:-1px;top:0;bottom:0;width:2px;background:rgba(196,147,63,0.25);}
+.tl-dot{width:12px;height:12px;border-radius:50%;position:absolute;right:-6px;top:1.3rem;z-index:1;border:2px solid #080B0F;}
+.tl-dot-live{background:var(–green-l);}
+.tl-dot-gold{background:var(–gold);}
+.tl-dot-blue{background:var(–blue-l);}
+.tl-dot-dim{background:rgba(238,232,216,0.25);}
+.tl-phase{font-family:var(–font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(238,232,216,0.35);}
+.tl-when{font-family:var(–font-serif);font-size:0.85rem;font-weight:600;color:var(–cm);}
+.tl-right{padding:1.2rem 0 1.2rem 1.5rem;border-bottom:1px solid rgba(196,147,63,0.1);}
+.tl-item:last-child .tl-right{border-bottom:none;}
+.tl-title{font-weight:600;font-size:0.95rem;color:var(–cream);margin-bottom:0.3rem;}
+.tl-body{font-size:0.82rem;color:var(–cm);line-height:1.65;}
+.tl-body strong{color:var(–gold);}
+
+@media(max-width:640px){.page{padding:2rem 1.2rem 4rem;}.hdr{padding:1rem 1.2rem;}.tl-item{grid-template-columns:80px 1fr;}.feat-grid{grid-template-columns:1fr;}}
+</style>
+
+</head>
+<body>
+
+<!-- GATE -->
+
+<div id="gate">
+  <div class="gate-logo">Tayla <em>Strategy</em></div>
+  <div class="gate-sub">Full product ecosystem · Build order · Competitive positioning</div>
+  <div class="gate-box">
+    <div class="gate-box::before"></div>
+    <div class="gate-title">Restricted Access</div>
+    <div class="gate-desc">Confidential product strategy for the Tayla ecosystem. Internal use only.</div>
+    <div class="gate-wrap">
+      <span class="gate-icon">🔑</span>
+      <input class="gate-input" type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')unlock()">
+    </div>
+    <button class="gate-btn" onclick="unlock()">Access Strategy →</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+
+<div id="app">
+<header class="hdr">
+  <div><span class="hdr-logo">Tayla</span><span class="hdr-sub">Product Strategy</span></div>
+  <div class="hdr-pills">
+    <div class="pill pill-gold">Confidential</div>
+    <div class="pill pill-red">Internal Only</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+
+  <div class="hero">
+    <div class="hero-eyebrow">Full Ecosystem Strategy — March 2026</div>
+    <div class="hero-title">Building Australia's <em>Financial Operating System</em></div>
+    <div class="hero-body">Seven products. One flywheel. From the moment an Australian worker clocks in for their shift, to the moment they check their financial health score at home — Tayla is there. No competitor has attempted to connect these dots. This is the strategy for how we build it.</div>
+  </div>
+
+  <!-- PRODUCT 1: PERSONAL -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(196,147,63,0.08)">💰</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 1 · Live Now</div>
+        <div class="product-name">Tayla <em>Personal</em></div>
+        <div class="product-tagline">The foundation. Australia's most affordable, ATO-aware personal finance PWA.</div>
+      </div>
+    </div>
+    <div class="product-body">Tayla Personal is the beachhead — the product that builds the user base, proves the brand, and creates the distribution network that every subsequent product benefits from. Every person who uses Tayla Personal is a potential employee whose employer we can sell Tayla Payroll to. Every sole trader is a potential Tayla Business customer. The personal finance product isn't just a product — it's the acquisition engine for everything else.</div>
+
+```
+<div class="dtitle">Pricing <span class="dtag dtag-gold">Current</span></div>
+<div class="pricing-row">
+  <div class="price-box"><div class="price-tier">Guest</div><div class="price-amount">Free</div><div class="price-desc">No account. localStorage only. No data shared.</div></div>
+  <div class="price-box"><div class="price-tier">Free</div><div class="price-amount">Free</div><div class="price-desc">Supabase account. Cross-device sync.</div></div>
+  <div class="price-box highlight"><div class="price-tier">Plus</div><div class="price-amount">$3.99<span>/mo</span></div><div class="price-desc">Full features. ATO calc, health score, themes.</div></div>
+  <div class="price-box"><div class="price-tier">Pro</div><div class="price-amount">$9.99<span>/mo</span></div><div class="price-desc">Bank sync (CDR) + investment view. Coming soon.</div></div>
+</div>
+
+<div class="callout callout-gold">
+  <div class="callout-label">🏆 Founding Member LTD Strategy</div>
+  <p>First 75 users: <strong>Plus lifetime at $59 AUD</strong> or <strong>Pro lifetime at $99 AUD</strong>. All Plus LTD holders will receive <strong>Pro access free for life</strong> when bank sync launches — rewarding early believers and generating powerful word of mouth. "I paid $59 once and they gave me everything." Launch via Product Hunt + r/AusFinance simultaneously.</p>
+</div>
+```
+
+  </div>
+
+  <!-- PRODUCT 2: PAYROLL -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(46,125,82,0.08)">🏢</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 2 · 6–12 Months</div>
+        <div class="product-name">Tayla <em>Payroll</em></div>
+        <div class="product-tagline">STP Phase 2 compliant payroll — with payslips delivered directly into employee Tayla accounts.</div>
+      </div>
+    </div>
+    <div class="product-body">Tayla Payroll is where the flywheel starts spinning. Every business that signs up brings their entire workforce as Tayla Plus users — at zero additional marketing cost. A 10-person café paying $40/month for payroll delivers 10 personal finance users. At 100 businesses, that's 1,000 new Tayla users who never saw a single ad. <strong>The payslip-to-personal integration is the moat no competitor can easily copy</strong> — it requires owning both the payroll product and the personal finance product simultaneously.</div>
+
+```
+<div class="dtitle">Key Technical Requirement <span class="dtag dtag-blue">ATO DSP Registration</span></div>
+<div class="callout callout-blue">
+  <div class="callout-label">🏛️ STP Phase 2 Compliance Path</div>
+  <p>Must register as an ATO <strong>Digital Service Provider (DSP)</strong>. Use a <strong>Sending Service Provider (SSP)</strong> like Beam to handle ATO data transmission — dramatically reduces technical burden. STP Phase 2 requires disaggregated reporting: ordinary earnings, overtime, bonuses, allowances, employment type, leave, termination details reported separately. <strong>Budget 3–6 months for compliance work before public launch.</strong></p>
+</div>
+
+<div class="dtitle">Pricing <span class="dtag dtag-gold">Proposed</span></div>
+<div class="pricing-row">
+  <div class="price-box"><div class="price-tier">Micro</div><div class="price-amount">Free<span> up to 3</span></div><div class="price-desc">STP Phase 2, payslips to Tayla, basic super. Beachhead acquisition for micro-businesses.</div></div>
+  <div class="price-box highlight"><div class="price-tier">Small</div><div class="price-amount">$4<span>/emp/mo</span></div><div class="price-desc">4–20 staff. Leave management, PAYG reporting, full employee portal.</div></div>
+  <div class="price-box"><div class="price-tier">Growing</div><div class="price-amount">$7<span>/emp/mo</span></div><div class="price-desc">Award interpretation, multi-pay schedules, BAS prep integration.</div></div>
+</div>
+
+<div class="dtitle">Employee Benefit Tiers <span class="dtag dtag-green">Employer Choice</span></div>
+<div class="callout callout-gold">
+  <div class="callout-label">💡 The Financial Wellbeing Upsell</div>
+  <p>At signup, businesses choose what level of Tayla access to provide their employees. <strong>For $2–5 more per employee per month, the entire team gets full personal finance tools — including bank sync.</strong> A café with 8 staff pays $16/month extra to give every employee a health score, ATO calculator, and bank sync. Goes in job ads. Costs less than a round of coffees. Tells staff the business genuinely cares.</p>
+</div>
+<div class="pricing-row">
+  <div class="price-box"><div class="price-tier">Essential</div><div class="price-amount">$4<span>/emp/mo</span></div><div class="price-desc">Payroll only. Payslips → Tayla Free. Employees self-upgrade if they want more.</div></div>
+  <div class="price-box highlight"><div class="price-tier">Staff Plus</div><div class="price-amount">$6<span>/emp/mo</span></div><div class="price-desc">Payroll + full Tayla Plus for all staff. ATO calc, health score, themes. Marketable HR benefit.</div></div>
+  <div class="price-box"><div class="price-tier">Staff Pro</div><div class="price-amount">$9<span>/emp/mo</span></div><div class="price-desc">Payroll + Tayla Pro for all staff. Bank sync + investment view. Maximum retention tool.</div></div>
+</div>
+
+<div class="dtitle">Tayla Carry — Offboarding Retention <span class="dtag dtag-green">Key Strategy</span></div>
+<div class="callout callout-green">
+  <div class="callout-label">🎯 Turning Every Departure Into a Conversion</div>
+  <p>When an employer removes an employee from Tayla Payroll, a retention window triggers automatically. The employee receives: <em>"Looks like you've left [Business]. Your Tayla account stays with you — we've got your first month covered, on us."</em><br><br>
+  <strong>Month 1: Free · Month 2: 50% off ($1.99 Plus / $4.99 Pro) · Month 3+: Full price.</strong><br><br>
+  By month 3, bank sync is set up, financial history is deep, and the health score trend is visible. Switching cost is enormous. Even if the new employer doesn't use Tayla Payroll, <strong>CDR bank sync replaces the income feed seamlessly</strong> — the experience is identical. The employee has no reason to leave.</p>
+</div>
+```
+
+  </div>
+
+  <!-- PRODUCT 3: WORKFORCE -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(58,110,168,0.08)">🕐</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 3 · 12–18 Months</div>
+        <div class="product-name">Tayla <em>Workforce</em></div>
+        <div class="product-tagline">Clock in/out and roster builder built for Australian retail and hospitality.</div>
+      </div>
+    </div>
+    <div class="product-body">Tayla Workforce is the companion app to Tayla Payroll, purpose-built for the industries that need it most — retail and hospitality. These are shift-based, Award-governed, high-turnover environments where rostering and timekeeping are daily operational challenges. Deputy charges $5–9/user/month and is American. Tanda charges $6/user/month and has documented support complaints and opaque pricing. <strong>Tayla Workforce enters at $3/user/month with the unique advantage of being natively connected to both Payroll and the employee's personal Tayla account.</strong> No other product does this.</div>
+
+```
+<div class="feat-grid">
+  <div class="feat"><div class="feat-title">📍 GPS Clock In/Out</div><div class="feat-body">Verified clock in/out via GPS or PIN on shared kiosk or personal phone. Auto-generates timesheets that flow directly into Tayla Payroll. Zero manual entry.</div></div>
+  <div class="feat"><div class="feat-title">📅 Drag-and-Drop Roster</div><div class="feat-body">Build rosters with Award rate awareness. System flags penalty rates in real time — Saturday, Sunday, public holiday loadings calculated as you schedule.</div></div>
+  <div class="feat"><div class="feat-title">⚖️ Award Interpretation</div><div class="feat-body">Built-in templates for Restaurant Industry Award, General Retail Industry Award, and Hospitality Industry Award. Overtime, casual loadings, split shifts auto-calculated.</div></div>
+  <div class="feat"><div class="feat-title">📱 No Extra App Download</div><div class="feat-body">Employees already have Tayla on their phone for personal finance. Their roster, payslips, and shifts all appear in the same app. No separate workforce app to download.</div></div>
+</div>
+
+<div class="dtitle">Pricing <span class="dtag dtag-gold">Proposed</span></div>
+<div class="pricing-row">
+  <div class="price-box"><div class="price-tier">Bundled</div><div class="price-amount">$3<span>/user/mo</span></div><div class="price-desc">Included with Tayla Payroll Small and Growing tiers. Standalone available.</div></div>
+  <div class="price-box highlight"><div class="price-tier">vs Deputy</div><div class="price-amount">$5–9<span>/user/mo</span></div><div class="price-desc">Deputy Core–Pro. US-owned, modular pricing, no personal finance integration.</div></div>
+  <div class="price-box"><div class="price-tier">vs Tanda</div><div class="price-amount">$6<span>/user/mo</span></div><div class="price-desc">AU-built but poor cancellation experience and opaque add-on costs.</div></div>
+</div>
+```
+
+  </div>
+
+  <!-- PRODUCT 4: STOCKTAKE -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(196,147,63,0.08)">📦</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 3 · 12–18 Months</div>
+        <div class="product-name">Tayla <em>Stocktake</em></div>
+        <div class="product-tagline">Phone-based inventory management for retail and hospitality. Connects directly to Tayla Business P&L.</div>
+      </div>
+    </div>
+    <div class="product-body">43% of Australian small businesses don't track inventory at all. For hospitality venues with no stock control, shrinkage runs at 10–20% — potentially tens of thousands of dollars lost annually. Tayla Stocktake enters a fragmented market dominated by either expensive outsourced services or tools bolted awkwardly onto POS systems like Square and Lightspeed. <strong>The differentiator is the native Tayla Business connection</strong> — stock value flows directly into P&L and BAS preparation. No manual export, no CSV upload, no reconciliation headache.</div>
+
+```
+<div class="feat-grid">
+  <div class="feat"><div class="feat-title">📱 Phone Camera Scanning</div><div class="feat-body">No dedicated hardware required. Use the phone camera to scan barcodes. Works offline and syncs on reconnection. Lowers the barrier to entry significantly.</div></div>
+  <div class="feat"><div class="feat-title">📊 Variance Reporting</div><div class="feat-body">Expected vs actual comparison after every count. Identifies shrinkage, theft, over-pouring in hospitality. Venues with tight systems run under 2% shrinkage.</div></div>
+  <div class="feat"><div class="feat-title">🍺 Hospitality Recipe Tracking</div><div class="feat-body">Recipe-based usage calculation — 100 cocktails = 4.5L gin consumed. Perishables management for daily fresh produce counts. Liquor licence compliance tracking.</div></div>
+  <div class="feat"><div class="feat-title">🔗 Tayla Business Native Link</div><div class="feat-body">Stock value auto-populates cost of goods in Tayla Business P&L. BAS preparation includes inventory valuations automatically. No other affordable tool does this.</div></div>
+</div>
+
+<div class="callout callout-green">
+  <div class="callout-label">📋 ATO Legal Requirement</div>
+  <p>Australian businesses are legally required to produce evidence of at least one stocktake as close to EOFY as possible for tax purposes. This creates a <strong>guaranteed annual demand signal</strong> — every retail and hospitality business in Australia needs to do this. Tayla Stocktake makes it a 30-minute phone-based job instead of a day-long manual process.</p>
+</div>
+```
+
+  </div>
+
+  <!-- PRODUCT 5: BUSINESS -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(58,110,168,0.08)">📊</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 4 · 18–24 Months</div>
+        <div class="product-name">Tayla <em>Business</em></div>
+        <div class="product-tagline">Business finance tracking powered by Payroll and Stocktake data. $19/mo — Xero at a fraction of the price.</div>
+      </div>
+    </div>
+    <div class="product-body">By the time Tayla Business launches, it already has data. Payroll feeds wages. Stocktake feeds cost of goods. The business owner just needs to add their revenue transactions and Tayla Business builds their P&L automatically. <strong>This is the product that makes Tayla irreplaceable for a small business owner.</strong> They cannot leave without losing the integrated view of their entire financial life — payroll, stock, revenue, personal finances — all connected.</div>
+
+```
+<div class="feat-grid">
+  <div class="feat"><div class="feat-title">💵 Cash Flow Dashboard</div><div class="feat-body">Real-time income vs expenses vs payroll. Auto-populated from Tayla Payroll. Instant view of business financial position at any moment.</div></div>
+  <div class="feat"><div class="feat-title">🧾 BAS Preparation</div><div class="feat-body">GST auto-calculated from transactions. Pre-fills Business Activity Statement every quarter. Biggest pain point for AU small businesses — Tayla solves it natively.</div></div>
+  <div class="feat"><div class="feat-title">📈 Profit & Loss</div><div class="feat-body">Monthly and annual P&L. Wages auto-pulled from Payroll. Stock costs from Stocktake. Revenue from income entries. Exportable for accountants.</div></div>
+  <div class="feat"><div class="feat-title">🔗 Sole Trader Bridge</div><div class="feat-body">For sole traders — see business and personal finances unified in one Tayla ecosystem. No other product offers this. Unique and sticky.</div></div>
+</div>
+
+<div class="dtitle">Pricing <span class="dtag dtag-gold">Proposed</span></div>
+<div class="pricing-row">
+  <div class="price-box highlight"><div class="price-tier">Tayla Business</div><div class="price-amount">$19<span>/mo</span></div><div class="price-desc">Full BAS prep, P&L, cash flow, Payroll + Stocktake integration.</div></div>
+  <div class="price-box"><div class="price-tier">vs Xero</div><div class="price-amount">$35<span>/mo</span></div><div class="price-desc">Entry tier. Complex, no payslip integration, no personal finance bridge.</div></div>
+  <div class="price-box"><div class="price-tier">vs MYOB</div><div class="price-amount">$27<span>/mo</span></div><div class="price-desc">Entry tier. Separate HR/payroll modules, not designed for micro-business.</div></div>
+</div>
+```
+
+  </div>
+
+  <!-- PRODUCT 6: BANK -->
+
+  <div class="product">
+    <div class="product-header">
+      <div class="product-icon" style="background:rgba(196,147,63,0.15)">🏦</div>
+      <div class="product-meta">
+        <div class="product-phase">Phase 5 · 3–8 Years</div>
+        <div class="product-name">Tayla <em>Bank</em></div>
+        <div class="product-tagline">The ultimate destination. A neobank where every transaction is natively connected to the budget tracker — because they're the same product.</div>
+      </div>
+    </div>
+    <div class="product-body">This is the long game. When Tayla Bank launches, it completes the loop: money earned via Tayla Payroll lands in a Tayla account, gets categorised in real time by Tayla's budget engine, updates the financial health score instantly, contributes to the ATO tax estimate, and flows into Tayla Business for the owner-operators. <strong>There is no gap between money moving and money understood.</strong> This is what Up Bank tried to be — but couldn't, because they don't own the finance management layer. Tayla will.</div>
+
+```
+<div class="dtitle">Licensing Strategy <span class="dtag dtag-red">Critical</span></div>
+<div class="callout callout-gold">
+  <div class="callout-label">🚀 Recommended Path: Banking-as-a-Service First</div>
+  <p>Partner with an existing ADI via a BaaS provider for the initial launch. Offer "Tayla Accounts" (not "Tayla Bank" — APRA restricts the word "bank" to licensed ADIs). Build transaction volume, user trust, and product-market fit. Use this phase to accumulate the capital and regulatory relationship needed for a full ADI application. <strong>Timeline: 2–3 years to BaaS launch. 5–8 years to full ADI.</strong></p>
+</div>
+<div class="callout callout-red">
+  <div class="callout-label">⚠️ APRA Naming Restriction</div>
+  <p>APRA prohibits using "bank", "banker", "banking", and even "neobank" without ADI licensing. This applies to product names, marketing, and app store listings. <strong>During the BaaS phase, the product must be called something like "Tayla Accounts" or "Tayla Money"</strong> — plan this into brand strategy well before launch. Violating this is an offence under the Banking Act 1959.</p>
+</div>
+<div class="callout callout-blue">
+  <div class="callout-label">📋 Full ADI Requirements</div>
+  <p>Minimum <strong>$50M Tier 1 capital</strong> for full ADI licence. APRA's new 2025 framework proposes a 12-month assessment + 3-month decision window. The Restricted ADI (RADI) pathway used by Up Bank and others is <strong>currently under APRA review and may be discontinued</strong> — do not plan around it. The direct pathway requires a majority-independent board, full risk management framework, IT systems compliant with APRA prudential standards, and external audit arrangements from day one.</p>
+</div>
+```
+
+  </div>
+
+  <!-- TIMELINE -->
+
+  <div class="dtitle" style="margin-bottom:1.5rem">Master Build Roadmap <span class="dtag dtag-gold">Full Ecosystem</span></div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-live"></div><div class="tl-phase">Phase 1</div><div class="tl-when">Now</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Personal — Launch & LTD</div><div class="tl-body">Product Hunt launch. 75 founding member LTD ($59/$99). <strong>Founding Plus holders get Pro free for life.</strong> Build organic user base. Target: 500+ users before Payroll build begins.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-gold"></div><div class="tl-phase">Phase 2</div><div class="tl-when">3–6 mo</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Pro — Bank Sync & Investment View</div><div class="tl-body">CDR bank sync via Basiq. Investment aggregation via Sharesight. <strong>$9.99/mo Pro tier live.</strong> Founding LTD members upgraded to Pro free.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-gold"></div><div class="tl-phase">Phase 3</div><div class="tl-when">6–12 mo</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Payroll — ATO DSP Registration & Beta</div><div class="tl-body">Register as ATO DSP. Partner with SSP for STP transmission. STP Phase 2 compliant engine. <strong>Beta with 10–20 small businesses.</strong> Payslips begin flowing into employee Tayla accounts.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-gold"></div><div class="tl-phase">Phase 4</div><div class="tl-when">12–18 mo</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Payroll Public + Tayla Workforce Launch</div><div class="tl-body"><strong>Free up to 3 employees, $4/emp/mo beyond.</strong> Tayla Workforce companion app for retail/hospitality — $3/user/mo. Clock in/out, roster builder, Award interpretation. <strong>Flywheel activates fully.</strong></div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-blue"></div><div class="tl-phase">Phase 5</div><div class="tl-when">18–24 mo</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Stocktake + Tayla Business</div><div class="tl-body">Phone-based inventory management for retail/hospitality. <strong>Tayla Business at $19/mo</strong> powered by Payroll + Stocktake data feeds. BAS prep, P&L, cash flow, sole trader personal/business bridge.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot tl-dot-dim"></div><div class="tl-phase">Phase 6</div><div class="tl-when">3–8 yrs</div></div>
+      <div class="tl-right"><div class="tl-title">Tayla Bank (Tayla Accounts — BaaS Phase)</div><div class="tl-body">BaaS partnership for "Tayla Accounts" (not "Tayla Bank" — APRA naming restriction). Transactions natively connected to budget tracker. <strong>Full ADI application when user scale and capital justify it.</strong></div></div>
+    </div>
+  </div>
+
+</div><!-- end page -->
+</div><!-- end app -->
+
+<script>
+function unlock() {
+  const val = document.getElementById('pwInput').value;
+  const inp = document.getElementById('pwInput');
+  const err = document.getElementById('gateErr');
+  if(val === 'TaylaStrategy2026') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    inp.classList.add('shake','error');
+    err.textContent = 'Incorrect password.';
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('shake','error'), 500);
+  }
+}
+</script>
+
+</body>
+</html>
