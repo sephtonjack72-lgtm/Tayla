@@ -18,6 +18,10 @@
 <meta name="apple-mobile-web-app-title" content="Tayla">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+.week-row-hidden { display: none !important; }
+#head-combined-col { white-space: nowrap; }
+</style>
 </head>
 <body>
 <div class="page">
@@ -43,6 +47,12 @@
 <!-- ═══════════════ PRIVACY BANNER ═══════════════ -->
 <div class="privacy-banner" id="privacy-banner" style="display:none">
   🔒 <strong>Your financial data is encrypted and stored securely.</strong> We never share your personal financial details with third parties. <a onclick="openModal('privacy-modal')">View our Privacy Policy</a> · <a onclick="openTab('settings')">Manage your data preferences</a>
+</div>
+
+<!-- Renewal notice banner -->
+<div id="renewal-banner" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:var(--gold-light, #fffbea);border-bottom:1px solid var(--gold, #d4a017);font-size:0.82rem;color:var(--ink-1)">
+  <span>💳 <strong>Your Tayla Plus subscription renews on <span id="renewal-banner-date"></span>.</strong> If you no longer wish to continue, you can cancel before this date.</span>
+  <button onclick="confirmCancelSubscription()" style="white-space:nowrap;padding:4px 12px;border:1px solid var(--gold);border-radius:20px;background:transparent;cursor:pointer;font-size:0.78rem;color:var(--ink-1)">Manage subscription</button>
 </div>
 
 <!-- ═══════════════════════════════════════
