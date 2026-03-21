@@ -41,13 +41,15 @@ async function fetchUserTier(userId) {
   try {
     const { data, error } = await sb
       .from('profiles')
-      .select('tier, theme')
+      .select('tier, theme, upcoming_invoice_at')
       .eq('id', userId)
       .maybeSingle();
     if (!error && data) {
       CURRENT_TIER = data.tier || 'free';
       // Apply saved theme
       loadTheme(data.theme || localStorage.getItem(THEME_LS_KEY) || 'default');
+      // Check for upcoming renewal notice
+      checkRenewalNotice(data.upcoming_invoice_at);
     } else {
       CURRENT_TIER = 'free';
       loadTheme(localStorage.getItem(THEME_LS_KEY) || 'default');
@@ -55,6 +57,22 @@ async function fetchUserTier(userId) {
   } catch {
     CURRENT_TIER = 'free';
     loadTheme(localStorage.getItem(THEME_LS_KEY) || 'default');
+  }
+}
+
+function checkRenewalNotice(upcomingInvoiceAt) {
+  const banner = document.getElementById('renewal-banner');
+  if (!banner) return;
+  if (!upcomingInvoiceAt) { banner.style.display = 'none'; return; }
+  const renewalDate = new Date(upcomingInvoiceAt);
+  const now = new Date();
+  const daysUntil = Math.ceil((renewalDate - now) / (1000 * 60 * 60 * 24));
+  if (daysUntil <= 7 && daysUntil >= 0) {
+    const dateStr = renewalDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('renewal-banner-date').textContent = dateStr;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
   }
 }
 
@@ -923,15 +941,35 @@ function buildPeriodRows() {
   if (headInput) headInput.textContent = 'Income 1 ($)';
   if (headRight) headRight.textContent = 'Income 2 ($)';
   const headCombined = document.getElementById('head-combined-col');
-  if (headCombined) headCombined.textContent = 'Combined ($)';
+  if (headCombined) headCombined.textContent = 'Combined';
 
   const data2 = TAX_MODE === 'weekly' ? APP_DATA.weeks2 : APP_DATA.months2;
+
+  // Check if any data exists
+  const hasAnyData = data.some((v, i) => v || data2[i]);
+
+  // Empty state
+  if (!hasAnyData) {
+    const empty = document.createElement('div');
+    empty.id = 'income-empty-state';
+    empty.style.cssText = 'text-align:center;padding:48px 24px;color:var(--ink-3)';
+    empty.innerHTML = `
+      <div style="font-size:2rem;margin-bottom:12px">💰</div>
+      <div style="font-size:1rem;font-weight:600;color:var(--ink-1);margin-bottom:8px">Add your first pay to get started</div>
+      <div style="font-size:0.82rem;margin-bottom:20px;line-height:1.5">Enter your gross pay for any week below.<br>Tayla will calculate your take-home automatically.</div>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('income-empty-state').remove();document.getElementById('wi0').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('wi0').focus()">Enter first pay →</button>
+    `;
+    container.appendChild(empty);
+  }
+
   for (let i = 0; i < cfg.count; i++) {
     const label    = TAX_MODE === 'monthly' ? MONTH_NAMES[i] : getWeekLabel(i);
     const val1     = data[i]  || 0;
     const val2     = data2[i] || 0;
     const row = document.createElement('div');
-    row.className = 'week-row' + ((val1 || val2) ? ' has-value' : '');
+    // Collapse empty rows by default — show rows with data, first 4 rows, or if expanded
+    const hasValue = val1 || val2;
+    row.className = 'week-row' + (hasValue ? ' has-value' : '') + (!hasValue && i >= 4 && !window._incomeExpanded ? ' week-row-hidden' : '');
     row.id = 'wr' + i;
     const combined = val1 + val2;
     row.innerHTML = `
@@ -943,7 +981,23 @@ function buildPeriodRows() {
       <div class="wc wc-net ${combined ? '' : 'wc-empty'}" id="wn${i}">${combined ? fmt(combined) : '—'}</div>`;
     container.appendChild(row);
   }
+
+  // Add expand/collapse toggle
+  const existingToggle = document.getElementById('income-expand-toggle');
+  if (existingToggle) existingToggle.remove();
+  const toggle = document.createElement('div');
+  toggle.id = 'income-expand-toggle';
+  toggle.style.cssText = 'text-align:center;padding:10px;font-size:0.78rem;color:var(--ink-3);cursor:pointer;border-top:1px solid var(--rule)';
+  toggle.onclick = toggleIncomeExpand;
+  toggle.textContent = window._incomeExpanded ? '▲ Show less' : '▼ Show all ' + cfg.count + (TAX_MODE === 'weekly' ? ' weeks' : ' months');
+  container.appendChild(toggle);
+
   refreshPeriodSummary();
+}
+
+function toggleIncomeExpand() {
+  window._incomeExpanded = !window._incomeExpanded;
+  buildPeriodRows();
 }
 
 // FY_START is set dynamically from CURRENT_FY
