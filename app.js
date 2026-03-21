@@ -968,7 +968,7 @@ function buildPeriodRows() {
     const val2     = data2[i] || 0;
     const row = document.createElement('div');
     // Collapse empty rows by default — show rows with data, first 4 rows, or if expanded
-    const hasValue = val1 || val2;
+    const hasValue = (data[i] !== null && data[i] !== undefined && data[i] !== 0) || (data2[i] !== null && data2[i] !== undefined && data2[i] !== 0);
     // Calculate current week index relative to FY_START
     const today = new Date();
     const msPerWeek = 7 * 24 * 60 * 60 * 1000;
