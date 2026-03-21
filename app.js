@@ -957,7 +957,7 @@ function buildPeriodRows() {
       <div style="font-size:2rem;margin-bottom:12px">💰</div>
       <div style="font-size:1rem;font-weight:600;color:var(--ink-1);margin-bottom:8px">Add your first pay to get started</div>
       <div style="font-size:0.82rem;margin-bottom:20px;line-height:1.5">Enter your gross pay for any week below.<br>Tayla will calculate your take-home automatically.</div>
-      <button class="btn btn-primary btn-sm" onclick="document.getElementById('income-empty-state').remove();document.getElementById('wi0').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('wi0').focus()">Enter first pay →</button>
+      <button class="btn btn-primary btn-sm" onclick="(function(){ document.getElementById('income-empty-state').remove(); const today=new Date(); const idx=Math.max(0,Math.floor((today-FY_START)/(7*24*60*60*1000))); const el=document.getElementById('wi'+idx)||document.getElementById('wi0'); if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();} })()">Enter first pay →</button>
     `;
     container.appendChild(empty);
   }
@@ -969,7 +969,14 @@ function buildPeriodRows() {
     const row = document.createElement('div');
     // Collapse empty rows by default — show rows with data, first 4 rows, or if expanded
     const hasValue = val1 || val2;
-    row.className = 'week-row' + (hasValue ? ' has-value' : '') + (!hasValue && i >= 4 && !window._incomeExpanded ? ' week-row-hidden' : '');
+    // Calculate current week index relative to FY_START
+    const today = new Date();
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const currentWeekIndex = Math.floor((today - FY_START) / msPerWeek);
+    const showFrom = Math.max(0, currentWeekIndex - 3); // 4 weeks ending at current week
+    const showTo = Math.min(cfg.count - 1, currentWeekIndex);
+    const inDefaultRange = i >= showFrom && i <= showTo;
+    row.className = 'week-row' + (hasValue ? ' has-value' : '') + (!hasValue && !inDefaultRange && !window._incomeExpanded ? ' week-row-hidden' : '');
     row.id = 'wr' + i;
     const combined = val1 + val2;
     row.innerHTML = `
