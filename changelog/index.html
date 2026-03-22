@@ -278,6 +278,49 @@ footer a { color: var(--gold); text-decoration: none; }
 // Types: 'new', 'improved', 'fixed'
 const RELEASES = [
   {
+    version:  'March 2026 — Week 2',
+    date:     '22 March 2026',
+    badge:    'feature',
+    badgeLabel: 'v Improvements',
+    summary:  'A big week of infrastructure, UX, and monetisation improvements. Stripe subscription management is now fully wired, the income table got a major usability overhaul, and the internal team portal launched.',
+    changes: [
+      {
+        group: 'New Features',
+        type:  'new',
+        items: [
+          'Team portal — internal staff dashboard at usetayla.com.au/info/portal/ with Supabase auth and role-based access.',
+          'Marketing Hub — internal marketing resource centre with employee, research, and strategy sections, protected behind the team portal.',
+          'Stripe Customer Portal — Plus subscribers can now manage and cancel their subscription directly from Settings.',
+          'Renewal notice banner — users are notified 7 days before their subscription renews, with a link to manage.',
+          'Promo code support — 2FREE2MONTH promo code added, giving the first 50 users 2 months of Tayla Plus free.',
+        ]
+      },
+      {
+        group: 'Improvements',
+        type:  'improved',
+        items: [
+          'Income table now collapses empty weeks by default — only shows weeks with data and the 4 weeks leading up to today.',
+          'Empty state added to income tab — new users see a clear prompt to add their first pay instead of 52 blank rows.',
+          'FY dropdown no longer truncates — fixed width so FY2025-26 displays in full.',
+          'Combined column header fixed — no longer wraps onto two lines.',
+          'Settings modal now correctly shows guest, free, and plus states on all entry points.',
+          'Supabase webhook updated to handle subscription cancellations, reactivations, and upcoming invoice events.',
+          'Blog post written and published — How to calculate your take-home pay in Australia (2025-26).',
+        ]
+      },
+      {
+        group: 'Fixes',
+        type:  'fixed',
+        items: [
+          'Cancel Plan button now correctly redirects to Stripe Customer Portal instead of directly modifying Supabase.',
+          'Service worker unicode encoding issue fixed — app was serving a blank page due to corrupted characters.',
+          'Sidebar Settings link now calls syncSettingsAccountUI() before opening, fixing incorrect plan display.',
+          'App layout structure fixed — sidebar and main content were swapped due to stray backtick characters in HTML.',
+        ]
+      }
+    ]
+  },
+  {
     version:  'March 2026',
     date:     '16 March 2026',
     badge:    'launch',
