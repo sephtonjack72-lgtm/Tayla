@@ -1306,7 +1306,7 @@
 
       let reg;
       try {
-        reg = await navigator.serviceWorker.register('/Tayla/service-worker.js');
+        reg = await navigator.serviceWorker.register('/service-worker.js');
         console.log('Tayla SW registered:', reg.scope);
       } catch (err) {
         console.log('SW registration failed:', err);
