@@ -9,7 +9,7 @@
      the browser to detect a new SW version.
 =========================================================== */
 
-const BUILD = '2026-03-15T10:00:00'; // ← update this string on every deploy
+const BUILD = '2026-03-15T10:00:00'; //  update this string on every deploy
 const CACHE_NAME = 'tayla-v22-' + BUILD;
 
 const PRECACHE_ASSETS = [
@@ -30,7 +30,7 @@ const NETWORK_ONLY = [
   'jsdelivr.net',
 ];
 
-// ── INSTALL ──────────────────────────────────────────────
+//  INSTALL 
 // Pre-cache all core assets. skipWaiting() so the new SW
 // takes over immediately rather than waiting for all tabs to close.
 self.addEventListener('install', event => {
@@ -41,7 +41,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// ── ACTIVATE ─────────────────────────────────────────────
+//  ACTIVATE 
 // Delete any old caches, then claim all open clients so the
 // new SW controls them without requiring a page reload.
 // After claiming, post an UPDATE_READY message so the app
@@ -64,7 +64,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── FETCH ─────────────────────────────────────────────────
+//  FETCH 
 // Network-only for external services.
 // Stale-while-revalidate for all app shell assets:
 //   1. Respond from cache immediately if available
@@ -99,7 +99,7 @@ async function staleWhileRevalidate(request) {
   return cached || networkFetch || caches.match('/Tayla/index.html');
 }
 
-// ── MESSAGE ──────────────────────────────────────────────
+//  MESSAGE 
 // Allow the page to trigger skipWaiting via the "Refresh" toast button.
 self.addEventListener('message', event => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
