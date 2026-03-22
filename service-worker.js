@@ -1,4 +1,4 @@
-## /* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
 TAYLA — SERVICE WORKER
 
 Strategy: Stale-While-Revalidate for app shell assets.
