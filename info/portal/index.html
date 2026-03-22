@@ -184,19 +184,19 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   // Allowed email domains / addresses for portal access
-  const ALLOWED_EMAILS = ['sephtonjack72@gmail.com']; // add team emails here
+  async function isStaff(userId) {
+    const { data } = await sb.from('profiles').select('is_staff').eq('id', userId).single();
+    return data?.is_staff === true;
+  }
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session && isAllowed(session.user.email)) {
+    if (session && await isStaff(session.user.id)) {
       showPortal(session.user.email);
     } else {
+      if (session) await sb.auth.signOut();
       document.getElementById('login-screen').style.display = 'flex';
     }
-  }
-
-  function isAllowed(email) {
-    return ALLOWED_EMAILS.includes(email.toLowerCase());
   }
 
   async function doPortalLogin() {
@@ -210,7 +210,7 @@
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
     if (error) { showError(error.message); return; }
 
-    if (!isAllowed(data.user.email)) {
+    if (!await isStaff(data.user.id)) {
       await sb.auth.signOut();
       showError('You do not have access to the team portal.');
       return;
