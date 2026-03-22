@@ -187,11 +187,14 @@
   const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  const ALLOWED = ['sephtonjack72@gmail.com'];
+  async function isStaff(userId) {
+    const { data } = await sb.from('profiles').select('is_staff').eq('id', userId).single();
+    return data?.is_staff === true;
+  }
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session && ALLOWED.includes(session.user.email.toLowerCase())) {
+    if (session && await isStaff(session.user.id)) {
       document.getElementById('user-email').textContent = session.user.email;
       document.getElementById('auth-gate').style.display = 'none';
       document.getElementById('main-content').style.display = 'block';
