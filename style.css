@@ -1329,3 +1329,164 @@ h3 { font-size: 1.1rem; font-weight: 700; }
   font-size: 1.1rem; color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
+
+/* ══════════════════════════════════════════════════════
+   Tools + Workforce tabs
+══════════════════════════════════════════════════════ */
+
+/* Sub-tabs (shared by Tools and Workforce) */
+.tools-subtabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--rule, #e2ddd6);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tools-subtabs::-webkit-scrollbar { display: none; }
+
+.tools-subtab {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .12s, border-color .12s;
+  font-family: inherit;
+  margin-bottom: -2px;
+}
+.tools-subtab:hover { color: var(--ink); }
+.tools-subtab.active { color: var(--ink); border-bottom-color: var(--gold, #d4a017); }
+
+/* Workforce employer card */
+.workforce-employer-card {
+  background: var(--paper-2, #f0ede8);
+  border: 1px solid var(--rule, #e2ddd6);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.badge-connected {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(56,161,105,.15);
+  color: #276749;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+/* Workforce empty state */
+.workforce-empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-2);
+}
+
+.workforce-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Shift cards */
+.wf-shift-card {
+  background: var(--paper, #fff);
+  border: 1px solid var(--rule, #e2ddd6);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.wf-shift-date  { font-weight: 700; font-size: 14px; min-width: 140px; }
+.wf-shift-times { font-size: 13px; color: var(--ink-2); font-family: 'IBM Plex Mono', monospace; }
+.wf-shift-notes { font-size: 12px; color: var(--ink-2); flex: 1; }
+.wf-status-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 99px; text-transform: uppercase; letter-spacing: .4px;
+  margin-left: auto;
+}
+.wf-status-upcoming  { background: rgba(79,142,247,.12); color: #2b6cb0; }
+.wf-status-completed { background: rgba(56,161,105,.12); color: #276749; }
+.wf-status-cancelled { background: rgba(229,62,62,.10);  color: #9b2c2c; }
+
+/* Payslip cards */
+.wf-payslip-card {
+  background: var(--paper, #fff);
+  border: 1px solid var(--rule, #e2ddd6);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background .1s;
+}
+.wf-payslip-card:hover { background: var(--paper-2, #f0ede8); }
+
+/* Availability grid */
+.wf-avail-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 200px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule, #e2ddd6);
+}
+.wf-avail-row:last-child { border-bottom: none; }
+.wf-avail-row.unavailable .wf-avail-day-name { color: var(--ink-2); text-decoration: line-through; }
+
+.wf-avail-day { display: flex; align-items: center; gap: 10px; }
+.wf-avail-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.wf-avail-day-name { font-weight: 600; font-size: 13px; }
+.wf-avail-times { display: flex; align-items: center; gap: 8px; }
+.wf-time-input {
+  padding: 7px 10px; border: 1.5px solid var(--rule, #e2ddd6);
+  border-radius: 7px; font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+  background: var(--paper-2, #f0ede8); color: var(--ink); width: 110px;
+}
+.wf-time-input:focus { outline: none; border-color: var(--gold, #d4a017); }
+.wf-notes-input {
+  padding: 7px 10px; border: 1.5px solid var(--rule, #e2ddd6);
+  border-radius: 7px; font-size: 12px; font-family: inherit;
+  background: var(--paper-2, #f0ede8); color: var(--ink); width: 100%;
+}
+.wf-notes-input:focus { outline: none; border-color: var(--gold, #d4a017); }
+
+@media (max-width: 600px) {
+  .wf-avail-row { grid-template-columns: 1fr; gap: 8px; }
+}
+
+/* Leave cards */
+.wf-leave-card {
+  background: var(--paper, #fff);
+  border: 1px solid var(--rule, #e2ddd6);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Empty state */
+.wf-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--paper-2, #f0ede8);
+  border-radius: 10px;
+}
