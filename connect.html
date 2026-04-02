@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect to Tayla Workforce</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ── Design tokens matching Tayla ── */
+  :root {
+    --ink:     #111e1e;
+    --ink-2:   #4a5568;
+    --paper:   #ffffff;
+    --paper-2: #f7f5f2;
+    --rule:    #e2ddd6;
+    --gold:    #d4a017;
+    --gold-lt: #fffbea;
+    --green:   #38a169;
+    --red:     #e53e3e;
+    --r:       12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  .card {
+    background: var(--paper);
+    border-radius: 20px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.4);
+  }
+
+  .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: -.5px;
+  }
+  .logo span { color: var(--gold); }
+  .tagline { font-size: 12px; color: var(--ink-2); margin-bottom: 28px; }
+
+  /* States */
+  .state { display: none; }
+  .state.active { display: block; }
+
+  /* Loading */
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--rule);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 24px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Employer info box */
+  .employer-box {
+    background: var(--gold-lt);
+    border: 1px solid var(--gold);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .employer-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--gold); display: flex; align-items: center;
+    justify-content: center; font-size: 20px; flex-shrink: 0;
+  }
+  .employer-name { font-weight: 700; font-size: 15px; }
+  .employer-sub  { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+
+  /* Auth tabs */
+  .auth-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--rule);
+    margin-bottom: 20px;
+  }
+  .auth-tab {
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color .12s, border-color .12s;
+  }
+  .auth-tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+
+  /* Form */
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--ink-2);
+    margin-bottom: 5px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--paper-2);
+    color: var(--ink);
+    transition: border-color .15s;
+  }
+  .form-input:focus { outline: none; border-color: var(--gold); background: #fff; }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: var(--gold); color: var(--ink); }
+  .btn-primary:hover:not(:disabled) { opacity: .9; }
+  .btn-ghost {
+    background: var(--paper-2);
+    color: var(--ink);
+    border: 1.5px solid var(--rule);
+    margin-top: 8px;
+  }
+
+  /* Alert */
+  .alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .alert.show { display: block; }
+  .alert-error   { background: #fde2e2; color: #742a2a; }
+  .alert-success { background: #d4edda; color: #155724; }
+
+  /* Success state */
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(56,161,105,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+  }
+  .success-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  .success-sub   { font-size: 13px; color: var(--ink-2); text-align: center; line-height: 1.6; margin-bottom: 24px; }
+
+  /* Error state */
+  .error-icon {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .error-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  .error-sub   { font-size: 13px; color: var(--ink-2); text-align: center; line-height: 1.6; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">Tayla <span>Workforce</span></div>
+  <div class="tagline">Connect your account to your employer</div>
+
+  <!-- ── LOADING ── -->
+  <div class="state active" id="state-loading">
+    <div class="spinner"></div>
+    <p style="text-align:center;font-size:13px;color:var(--ink-2);">Validating your invite…</p>
+  </div>
+
+  <!-- ── INVALID TOKEN ── -->
+  <div class="state" id="state-invalid">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title">Invalid or Expired Invite</div>
+    <div class="error-sub">This invite link is no longer valid. It may have expired (links are valid for 7 days) or already been used. Ask your employer to send a new invite.</div>
+    <a href="/" class="btn btn-ghost" style="display:block;text-align:center;text-decoration:none;">← Back to Tayla</a>
+  </div>
+
+  <!-- ── AUTH (login or register) ── -->
+  <div class="state" id="state-auth">
+    <div class="employer-box" id="employer-box">
+      <div class="employer-icon">🏢</div>
+      <div>
+        <div class="employer-name" id="employer-name">Your Employer</div>
+        <div class="employer-sub">has invited you to connect via Tayla Workforce</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="ctab-login"    onclick="switchConnectTab('login')">Sign In</div>
+      <div class="auth-tab"        id="ctab-register" onclick="switchConnectTab('register')">Create Account</div>
+    </div>
+
+    <!-- Login form -->
+    <div id="connect-login-form">
+      <div class="alert alert-error" id="login-err"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="c-email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="c-pw" class="form-input" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')connectLogin()">
+      </div>
+      <button class="btn btn-primary" id="login-btn" onclick="connectLogin()">Sign In & Connect</button>
+    </div>
+
+    <!-- Register form -->
+    <div id="connect-register-form" style="display:none;">
+      <div class="alert alert-error"   id="reg-err"></div>
+      <div class="alert alert-success" id="reg-ok"></div>
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" id="c-name" class="form-input" placeholder="Jane Smith" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="c-reg-email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="c-reg-pw" class="form-input" placeholder="Create a password (min 6 chars)" autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" id="reg-btn" onclick="connectRegister()">Create Account & Connect</button>
+    </div>
+  </div>
+
+  <!-- ── CONNECTING (after auth) ── -->
+  <div class="state" id="state-connecting">
+    <div class="spinner"></div>
+    <p style="text-align:center;font-size:13px;color:var(--ink-2);">Setting up your connection…</p>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div class="state" id="state-success">
+    <div class="success-icon">✓</div>
+    <div class="success-title">You're Connected!</div>
+    <div class="success-sub">
+      Your account is now linked to <strong id="success-biz-name">your employer</strong>.
+      You can now view shifts, receive payslips, set your availability and request leave — all from the Tayla app.
+    </div>
+    <a href="/" class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;">Open Tayla →</a>
+  </div>
+</div>
+
+<script>
+/* ── Supabase (Tayla project) ── */
+const TAYLA_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const TAYLA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+
+/* ── Workforce Edge Function base URL ── */
+const WF_EDGE_BASE = 'https://whedwekxzjfqwjuoarid.supabase.co/functions/v1';
+
+const sb = supabase.createClient(TAYLA_URL, TAYLA_ANON);
+
+let _token       = null;
+let _inviteData  = null; // { business_name, employee_name, employee_id, business_id, email }
+
+/* ── Init ── */
+(async function init() {
+  const params = new URLSearchParams(window.location.search);
+  _token = params.get('token');
+
+  if (!_token) { showState('invalid'); return; }
+
+  // Validate token via Workforce Edge Function
+  try {
+    const res  = await fetch(`${WF_EDGE_BASE}/validate-invite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: _token }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) { showState('invalid'); return; }
+    _inviteData = data;
+  } catch (e) {
+    console.error('Validate invite failed:', e);
+    showState('invalid');
+    return;
+  }
+
+  // Pre-fill email if provided
+  const emailInput = document.getElementById('c-email');
+  const regEmail   = document.getElementById('c-reg-email');
+  if (_inviteData.email && emailInput) emailInput.value = _inviteData.email;
+  if (_inviteData.email && regEmail)   regEmail.value   = _inviteData.email;
+
+  // Show employer name
+  const nameEl = document.getElementById('employer-name');
+  if (nameEl) nameEl.textContent = _inviteData.business_name || 'Your Employer';
+
+  // Check if already logged into Tayla
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    // Already logged in — go straight to connect
+    await acceptInvite(session.user.id, session.user.email);
+    return;
+  }
+
+  showState('auth');
+})();
+
+/* ── Auth tab switch ── */
+function switchConnectTab(tab) {
+  document.getElementById('connect-login-form').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('connect-register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('ctab-login').classList.toggle('active',    tab === 'login');
+  document.getElementById('ctab-register').classList.toggle('active', tab === 'register');
+}
+
+/* ── Login ── */
+async function connectLogin() {
+  const email  = document.getElementById('c-email').value.trim();
+  const pw     = document.getElementById('c-pw').value;
+  const errEl  = document.getElementById('login-err');
+  const btn    = document.getElementById('login-btn');
+  errEl.classList.remove('show');
+  if (!email || !pw) { errEl.textContent = 'Please enter your email and password.'; errEl.classList.add('show'); return; }
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.classList.add('show');
+    btn.textContent = 'Sign In & Connect'; btn.disabled = false;
+    return;
+  }
+  await acceptInvite(data.user.id, data.user.email);
+}
+
+/* ── Register ── */
+async function connectRegister() {
+  const name   = document.getElementById('c-name').value.trim();
+  const email  = document.getElementById('c-reg-email').value.trim();
+  const pw     = document.getElementById('c-reg-pw').value;
+  const errEl  = document.getElementById('reg-err');
+  const okEl   = document.getElementById('reg-ok');
+  const btn    = document.getElementById('reg-btn');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+  if (!name || !email || !pw) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+  if (pw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.add('show'); return; }
+  btn.textContent = 'Creating account…'; btn.disabled = true;
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pw,
+    options: { data: { name } },
+  });
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.classList.add('show');
+    btn.textContent = 'Create Account & Connect'; btn.disabled = false;
+    return;
+  }
+  // Email confirmation may be required — if session exists, proceed
+  if (data.session) {
+    await acceptInvite(data.session.user.id, email);
+  } else {
+    okEl.textContent = 'Account created! Check your email to confirm, then return to this link to connect.';
+    okEl.classList.add('show');
+    btn.textContent = 'Create Account & Connect'; btn.disabled = false;
+  }
+}
+
+/* ── Accept invite ── */
+async function acceptInvite(taylaUserId, taylaEmail) {
+  showState('connecting');
+  try {
+    const res  = await fetch(`${WF_EDGE_BASE}/accept-invite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token:          _token,
+        tayla_user_id:  taylaUserId,
+        tayla_email:    taylaEmail,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Connection failed');
+
+    // Create connection record on Tayla side
+    await sb.from('workforce_connections').upsert({
+      user_id:               taylaUserId,
+      workforce_business_id: _inviteData.business_id,
+      workforce_employee_id: _inviteData.employee_id,
+      business_name:         _inviteData.business_name,
+      status:                'active',
+    }, { onConflict: 'user_id,workforce_employee_id' });
+
+    const bizEl = document.getElementById('success-biz-name');
+    if (bizEl) bizEl.textContent = _inviteData.business_name || 'your employer';
+    showState('success');
+  } catch (e) {
+    console.error('Accept invite failed:', e);
+    // Show error in auth state
+    showState('auth');
+    const errEl = document.getElementById('login-err');
+    errEl.textContent = 'Connection failed: ' + e.message + '. Please try again.';
+    errEl.classList.add('show');
+  }
+}
+
+function showState(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+  document.getElementById('state-' + id)?.classList.add('active');
+}
+</script>
+</body>
+</html>
