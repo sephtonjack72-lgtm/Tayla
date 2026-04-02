@@ -252,11 +252,11 @@
       <button class="mobile-nav-item" id="mnav-budget" onclick="openTab('budget');setMobileNav(this)">
         <span class="mn-icon">💳</span>Budget
       </button>
-      <button class="mobile-nav-item" id="mnav-health" onclick="openTab('health');setMobileNav(this)">
-        <span class="mn-icon">📊</span>Health
+      <button class="mobile-nav-item" id="mnav-tools" onclick="openTab('tools');setMobileNav(this)">
+        <span class="mn-icon">🧰</span>Tools
       </button>
-      <button class="mobile-nav-item" id="mnav-goals" onclick="openTab('goals');setMobileNav(this)">
-        <span class="mn-icon">📈</span>Portfolio
+      <button class="mobile-nav-item" id="mnav-workforce" onclick="openTab('workforce');setMobileNav(this)">
+        <span class="mn-icon">👷</span>Workforce<span class="nav-lock-badge" style="display:none">🔒</span>
       </button>
       <button class="mobile-nav-item" id="mnav-settings" onclick="syncSettingsAccountUI();openModal('settings-modal')">
         <span class="mn-icon">⚙️</span>Settings
@@ -269,19 +269,25 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-section">
-    <span class="sidebar-label">Tools</span>
+    <span class="sidebar-label">Finance</span>
     <div class="sidebar-item active" id="nav-tax"    onclick="openTab('tax')">    <span class="icon">💵</span> Income</div>
     <div class="sidebar-item"        id="nav-budget" onclick="openTab('budget')"> <span class="icon">💳</span> Budget Tracker</div>
-    <div class="sidebar-item"        id="nav-health" onclick="openTab('health')"> <span class="icon">📊</span> Financial Health<span class="nav-lock-badge" style="display:none">🔒</span></div>
-    <div class="sidebar-item"        id="nav-goals"  onclick="openTab('goals')">  <span class="icon">📈</span> Portfolio<span class="nav-lock-badge" style="display:none">🔒</span></div>
+  </div>
+  <div class="sidebar-section">
+    <span class="sidebar-label">Tools</span>
+    <div class="sidebar-item" id="nav-tools" onclick="openTab('tools')"><span class="icon">🧰</span> Tools<span class="nav-lock-badge" style="display:none">🔒</span></div>
+  </div>
+  <div class="sidebar-section">
+    <span class="sidebar-label">Workforce</span>
+    <div class="sidebar-item" id="nav-workforce" onclick="openTab('workforce')"><span class="icon">👷</span> My Workforce<span class="nav-lock-badge workforce-lock-badge" style="display:none">🔒</span></div>
   </div>
   <!-- Guest upgrade nudge -->
   <div id="sidebar-guest-cta" style="display:none;margin:12px 16px 0;padding:12px;background:var(--paper-2);border:1px dashed var(--rule);border-radius:var(--r-sm)">
     <div style="font-size:0.72rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px">Free Account Unlocks</div>
-    <div style="font-size:0.76rem;color:var(--ink-2);line-height:1.6">📊 Financial Health<br>📈 Portfolio &amp; Goals<br>☁️ Cloud sync</div>
+    <div style="font-size:0.76rem;color:var(--ink-2);line-height:1.6">🧰 Financial Health & Portfolio<br>👷 Workforce Connect<br>☁️ Cloud sync</div>
     <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;font-size:0.75rem" onclick="doLogout();switchAuthTab('register')">Create Free Account</button>
   </div>
-  <!-- Plus upgrade nudge — shown for free users -->
+  <!-- Plus upgrade nudge -->
   <div id="sidebar-plus-cta" style="display:none;margin:12px 16px 0;padding:12px;background:var(--paper-2);border:1px solid var(--gold);border-radius:var(--r-sm)">
     <div style="font-size:0.72rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px">✦ Tayla Plus</div>
     <div style="font-size:0.76rem;color:var(--ink-2);line-height:1.6">📈 Portfolio &amp; Goals<br>📊 Auto Health Score<br>💳 Debt Register<br>🔁 Recurring Expenses</div>
@@ -811,6 +817,87 @@
     </div>
   </div>
 
+  <!-- ═══ TOOLS (Health + Portfolio combined) ═══ -->
+  <div class="tab-panel" id="panel-tools">
+    <div class="page-header-row">
+      <div class="page-header">
+        <h2>Tools</h2>
+        <p>Financial Health score and Portfolio goals in one place.</p>
+      </div>
+    </div>
+    <!-- Sub-tabs -->
+    <div class="tools-subtabs" id="tools-subtabs">
+      <button class="tools-subtab active" id="stab-health" onclick="openToolsSubtab('health')">📊 Financial Health</button>
+      <button class="tools-subtab" id="stab-goals"  onclick="openToolsSubtab('goals')">📈 Portfolio</button>
+    </div>
+    <!-- Health content (moved here) -->
+    <div id="tools-health-content"></div>
+    <!-- Goals content (moved here) -->
+    <div id="tools-goals-content" style="display:none"></div>
+  </div>
+
+  <!-- ═══ WORKFORCE ═══ -->
+  <div class="tab-panel" id="panel-workforce">
+    <div class="page-header-row">
+      <div class="page-header">
+        <h2>My Workforce</h2>
+        <p>View your shifts, payslips, set availability and request leave.</p>
+      </div>
+    </div>
+    <div id="workforce-connect-prompt" style="display:none">
+      <div class="workforce-empty-state">
+        <div style="font-size:48px;margin-bottom:16px;">👷</div>
+        <div style="font-weight:700;font-size:18px;margin-bottom:8px;">Not connected yet</div>
+        <div style="font-size:13px;color:var(--ink-2);max-width:320px;line-height:1.6;">
+          Ask your employer to send you a Tayla Workforce invite. You'll receive an email with a link to connect your account.
+        </div>
+      </div>
+    </div>
+    <div id="workforce-content" style="display:none">
+      <!-- Employer card -->
+      <div class="workforce-employer-card" id="wf-employer-card"></div>
+
+      <!-- Sub-tabs -->
+      <div class="tools-subtabs" style="margin-top:20px;">
+        <button class="tools-subtab active" id="wstab-shifts"       onclick="openWfSubtab('shifts')">📅 Shifts</button>
+        <button class="tools-subtab"        id="wstab-payslips"     onclick="openWfSubtab('payslips')">💰 Payslips</button>
+        <button class="tools-subtab"        id="wstab-availability" onclick="openWfSubtab('availability')">🗓 Availability</button>
+        <button class="tools-subtab"        id="wstab-leave"        onclick="openWfSubtab('leave')">🏖 Leave</button>
+      </div>
+
+      <!-- Shifts -->
+      <div id="wf-shifts-content">
+        <div id="wf-shifts-list" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- Payslips -->
+      <div id="wf-payslips-content" style="display:none;">
+        <div id="wf-payslips-list" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- Availability -->
+      <div id="wf-availability-content" style="display:none;">
+        <div class="workforce-section-header">
+          <div>
+            <div style="font-weight:700;font-size:15px;">Weekly Availability</div>
+            <div style="font-size:12px;color:var(--ink-2);">Set your recurring weekly schedule. Changes sync to your employer automatically.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveAvailability()">Save Changes</button>
+        </div>
+        <div id="wf-availability-grid" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- Leave -->
+      <div id="wf-leave-content" style="display:none;">
+        <div class="workforce-section-header">
+          <div style="font-weight:700;font-size:15px;">Leave Requests</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('leave-request-modal')">+ Request Leave</button>
+        </div>
+        <div id="wf-leave-list" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
   </div>
@@ -1102,13 +1189,13 @@
   <p><strong>Correction (APP 13):</strong> You can update your account details or request correction of inaccurate information.</p>
   <p><strong>Deletion:</strong> You can delete your account and all associated data via Settings → Danger Zone.</p>
   <p><strong>Withdraw consent:</strong> At any time, via Settings → Category Data Sharing toggle.</p>
-  <p><strong>Complaints:</strong> Contact us at support@usetayla.com.au . If unresolved, you may complain to the OAIC at oaic.gov.au.</p>
+  <p><strong>Complaints:</strong> Contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b585e5b5b44595f6b5e584e5f4a52474a05484446054a5e">[email&#160;protected]</a> . If unresolved, you may complain to the OAIC at oaic.gov.au.</p>
 
   <h4>7. Automated Decision-Making (2024 Amendments)</h4>
   <p>The Financial Health Score is calculated automatically from inputs you provide. No automated decisions are made about you by third parties based on your Tayla data. We disclose this in compliance with the new transparency obligations under the 2024 amendments (effective December 2026).</p>
 
   <h4>8. Contact</h4>
-  <p>Privacy enquiries: support@usetayla.com.au<br>
+  <p>Privacy enquiries: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10636560607f6264506563756471697c713e737f7d3e7165">[email&#160;protected]</a><br>
   Postal: [2 24 Hillcrest Avenue Chadstone, VIC, 3148, Australia]</p>
 </div>
 <div class="modal-footer">
@@ -1284,7 +1371,43 @@
   ">×</button>
 </div>
 
-<script src="app.js?v=20260321b"></script>
+<!-- Leave Request Modal -->
+<div class="modal-overlay" id="leave-request-modal">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <h3>Request Leave</h3>
+      <button class="modal-close" onclick="closeModal('leave-request-modal')">✕</button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Leave Type</label>
+        <select id="leave-type" class="form-input">
+          <option value="annual">Annual Leave</option>
+          <option value="sick">Sick Leave</option>
+          <option value="personal">Personal Leave</option>
+          <option value="unpaid">Unpaid Leave</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <input type="date" id="leave-start" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Date</label>
+        <input type="date" id="leave-end" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes (optional)</label>
+        <textarea id="leave-notes" class="form-input" rows="3" placeholder="Any additional details for your employer…" style="resize:vertical;"></textarea>
+      </div>
+      <div id="leave-error" style="display:none;color:var(--red,#e53e3e);font-size:12px;"></div>
+      <button class="btn btn-primary" onclick="submitLeaveRequest()">Submit Request</button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="app.js?v=20260321b"></script>
 
 <script>
   if ('serviceWorker' in navigator) {
@@ -1343,15 +1466,4 @@
   function applyUpdate() {
     document.getElementById('update-toast').style.display = 'none';
     // Tell the waiting SW to skip waiting and take over
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    }
-    // Once it takes over, controllerchange fires — then we reload
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    }, { once: true }); // once:true prevents double-reload
-  }
-</script>
-
-</body>
-</html>
+    if (navigator.serviceWorker.contr
