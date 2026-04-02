@@ -226,7 +226,7 @@ async function doLogout() {
   document.getElementById('privacy-banner').style.display = 'none';
   document.getElementById('mobile-nav').style.display = 'none';
   // Reset locked tab styles
-  ['health','goals'].forEach(t => {
+  ['tools','workforce'].forEach(t => {
     const s = document.getElementById('nav-' + t);
     const m = document.getElementById('mnav-' + t);
     if (s) s.classList.remove('nav-locked');
@@ -266,7 +266,7 @@ async function enterApp(email, name, id) {
   GUEST_MODE   = false;
 
   // Show the shell immediately -- don't wait for data
-  ['health','goals'].forEach(t => {
+  ['tools','workforce'].forEach(t => {
     const s = document.getElementById('nav-' + t);
     const m = document.getElementById('mnav-' + t);
     if (s) s.classList.remove('nav-locked');
@@ -309,7 +309,7 @@ function enterGuest() {
   document.getElementById('mobile-nav').style.display = 'block';
 
   // Lock tabs in sidebar and mobile nav
-  ['health','goals'].forEach(t => {
+  ['tools','workforce'].forEach(t => {
     const s = document.getElementById('nav-' + t);
     const m = document.getElementById('mnav-' + t);
     if (s) s.classList.add('nav-locked');
@@ -333,20 +333,19 @@ function enterGuest() {
 function applyTierGating() {
   const plus = isPlus();
 
-  // -- Portfolio tab --
-  const navGoals  = document.getElementById('nav-goals');
-  const mnavGoals = document.getElementById('mnav-goals');
-  if (!plus) {
-    if (navGoals)  navGoals.classList.add('nav-locked');
-    if (mnavGoals) mnavGoals.classList.add('nav-locked');
-    // Show lock badge on portfolio nav item only
-    navGoals?.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'inline');
-    mnavGoals?.classList.add('nav-locked');
+  // Tools tab — lock for guests, unlock for all accounts
+  const navTools  = document.getElementById('nav-tools');
+  const mnavTools = document.getElementById('mnav-tools');
+  if (isGuest()) {
+    navTools?.classList.add('nav-locked');
+    mnavTools?.classList.add('nav-locked');
   } else {
-    if (navGoals)  navGoals.classList.remove('nav-locked');
-    if (mnavGoals) mnavGoals.classList.remove('nav-locked');
-    navGoals?.querySelectorAll('.nav-lock-badge').forEach(b => b.style.display = 'none');
+    navTools?.classList.remove('nav-locked');
+    mnavTools?.classList.remove('nav-locked');
   }
+
+  // Workforce tab — locked until invite accepted
+  refreshWorkforceLock();
 
   // -- Auto health toggle --
   const autoBtn = document.getElementById('health-btn-auto');
@@ -413,17 +412,32 @@ function openTab(t) {
     openModal('guest-upgrade-modal');
     return;
   }
-  // Free: no Portfolio
+  // Free: no Portfolio (inside tools)
   if (!isGuest() && !isPlus() && t === 'goals') {
     openModal('plus-upgrade-modal');
     return;
   }
+  // Workforce: requires account (not guest) + active connection
+  if (t === 'workforce') {
+    if (isGuest()) { openModal('guest-upgrade-modal'); return; }
+    // Allow through — panel handles the connected/not-connected state
+  }
+  // Legacy direct health/goals tabs still work (redirect to tools)
+  if (t === 'health' || t === 'goals') {
+    openTab('tools');
+    openToolsSubtab(t);
+    return;
+  }
+
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item[id^=nav-]').forEach(i => i.classList.remove('active'));
-  document.getElementById('panel-' + t).classList.add('active');
-  if (document.getElementById('nav-' + t)) document.getElementById('nav-' + t).classList.add('active');
-  if (t === 'goals')  renderGoals();
-  if (t === 'health') { renderDebts(); renderAccrued(); refreshAccruedDebtOptions(); applyAccruedExpenses(); if (isPlus()) { setHealthMode(HEALTH_MODE); } else { setHealthMode('manual'); } }
+  document.querySelectorAll('.mobile-nav-item[id^=mnav-]').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + t)?.classList.add('active');
+  document.getElementById('nav-' + t)?.classList.add('active');
+  document.getElementById('mnav-' + t)?.classList.add('active');
+
+  if (t === 'tools')      renderToolsTab();
+  if (t === 'workforce')  renderWorkforceTab();
 }
 
 /* ===================================================
@@ -2349,3 +2363,381 @@ const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
     showScreen('auth-screen');
   }
 })();
+
+/* ===================================================
+   TOOLS TAB (Health + Portfolio combined)
+=================================================== */
+
+let _toolsSubtab = 'health';
+
+function renderToolsTab() {
+  openToolsSubtab(_toolsSubtab);
+}
+
+function openToolsSubtab(sub) {
+  _toolsSubtab = sub;
+  document.querySelectorAll('.tools-subtab').forEach(b => b.classList.remove('active'));
+  document.getElementById('stab-' + sub)?.classList.add('active');
+
+  const healthContent = document.getElementById('tools-health-content');
+  const goalsContent  = document.getElementById('tools-goals-content');
+  if (!healthContent || !goalsContent) return;
+
+  if (sub === 'health') {
+    healthContent.style.display = 'block';
+    goalsContent.style.display  = 'none';
+    // Move health panel content in if not already there
+    const healthPanel = document.getElementById('panel-health');
+    if (healthPanel && !healthContent.hasChildNodes()) {
+      while (healthPanel.firstChild) healthContent.appendChild(healthPanel.firstChild);
+    }
+    renderDebts();
+    renderAccrued();
+    refreshAccruedDebtOptions();
+    applyAccruedExpenses();
+    if (isPlus()) setHealthMode(HEALTH_MODE); else setHealthMode('manual');
+  } else {
+    healthContent.style.display = 'none';
+    goalsContent.style.display  = 'block';
+    const goalsPanel = document.getElementById('panel-goals');
+    if (goalsPanel && !goalsContent.hasChildNodes()) {
+      while (goalsPanel.firstChild) goalsContent.appendChild(goalsPanel.firstChild);
+    }
+    renderGoals();
+  }
+}
+
+/* ===================================================
+   WORKFORCE TAB
+=================================================== */
+
+const WORKFORCE_URL  = 'https://whedwekxzjfqwjuoarid.supabase.co';
+const WORKFORCE_SYNC_SECRET = ''; // Set after Edge Functions deployed
+
+let _wfConnection     = null; // { workforce_business_id, workforce_employee_id, business_name }
+let _wfSubtab         = 'shifts';
+let _wfAvailability   = {}; // { 0..6: { available, start_time, end_time, notes } }
+let _wfAvailabilityDirty = false;
+
+function refreshWorkforceLock() {
+  const hasConnection = !!_wfConnection;
+  const lockBadge     = document.querySelector('.workforce-lock-badge');
+  const mnavWf        = document.getElementById('mnav-workforce');
+  const navWf         = document.getElementById('nav-workforce');
+  if (lockBadge) lockBadge.style.display = hasConnection ? 'none' : 'inline';
+  // Don't hard-lock — let the panel explain the connect flow
+}
+
+async function renderWorkforceTab() {
+  if (!CURRENT_USER) return;
+
+  // Load connection from Tayla DB
+  const { data, error } = await sb
+    .from('workforce_connections')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  _wfConnection = data || null;
+
+  const promptEl  = document.getElementById('workforce-connect-prompt');
+  const contentEl = document.getElementById('workforce-content');
+  if (!promptEl || !contentEl) return;
+
+  if (!_wfConnection) {
+    promptEl.style.display  = 'block';
+    contentEl.style.display = 'none';
+    refreshWorkforceLock();
+    return;
+  }
+
+  promptEl.style.display  = 'none';
+  contentEl.style.display = 'block';
+  refreshWorkforceLock();
+
+  // Render employer card
+  const empCard = document.getElementById('wf-employer-card');
+  if (empCard) {
+    empCard.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--gold,#d4a017);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏢</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">${_wfConnection.business_name || 'Your Employer'}</div>
+          <div style="font-size:12px;color:var(--ink-2);">Connected · ${new Date(_wfConnection.connected_at).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</div>
+        </div>
+        <span style="margin-left:auto;" class="badge-connected">✓ Connected</span>
+      </div>
+    `;
+  }
+
+  openWfSubtab(_wfSubtab);
+}
+
+function openWfSubtab(sub) {
+  _wfSubtab = sub;
+  ['shifts','payslips','availability','leave'].forEach(s => {
+    document.getElementById(`wf-${s}-content`)?.style && (document.getElementById(`wf-${s}-content`).style.display = s === sub ? 'block' : 'none');
+    document.getElementById(`wstab-${s}`)?.classList.toggle('active', s === sub);
+  });
+  if (sub === 'shifts')       renderWfShifts();
+  if (sub === 'payslips')     renderWfPayslips();
+  if (sub === 'availability') renderWfAvailability();
+  if (sub === 'leave')        renderWfLeave();
+}
+
+// ── Shifts ──────────────────────────────────────────
+
+async function renderWfShifts() {
+  const el = document.getElementById('wf-shifts-list');
+  if (!el || !CURRENT_USER) return;
+  el.innerHTML = '<div style="color:var(--ink-2);font-size:13px;padding:16px 0;">Loading shifts…</div>';
+
+  const today = new Date().toISOString().split('T')[0];
+  const { data, error } = await sb
+    .from('shift_notifications')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id)
+    .gte('shift_date', today)
+    .order('shift_date', { ascending: true })
+    .limit(20);
+
+  if (!data?.length) {
+    el.innerHTML = '<div class="wf-empty">No upcoming shifts. Your roster will appear here once your employer publishes it.</div>';
+    return;
+  }
+
+  el.innerHTML = data.map(s => `
+    <div class="wf-shift-card">
+      <div class="wf-shift-date">${new Date(s.shift_date).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'short'})}</div>
+      <div class="wf-shift-times">${fmtWfTime(s.start_time)} – ${fmtWfTime(s.end_time)}</div>
+      ${s.notes ? `<div class="wf-shift-notes">${s.notes}</div>` : ''}
+      <span class="wf-status-badge wf-status-${s.status}">${s.status}</span>
+    </div>
+  `).join('');
+}
+
+// ── Payslips ─────────────────────────────────────────
+
+async function renderWfPayslips() {
+  const el = document.getElementById('wf-payslips-list');
+  if (!el || !CURRENT_USER) return;
+  el.innerHTML = '<div style="color:var(--ink-2);font-size:13px;padding:16px 0;">Loading payslips…</div>';
+
+  const { data } = await sb
+    .from('payslips')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id)
+    .order('pay_period_end', { ascending: false })
+    .limit(24);
+
+  if (!data?.length) {
+    el.innerHTML = '<div class="wf-empty">No payslips yet. They will appear here once your employer processes your pay.</div>';
+    return;
+  }
+
+  el.innerHTML = data.map(p => `
+    <div class="wf-payslip-card" onclick="openPayslipDetail('${p.id}')">
+      <div>
+        <div style="font-weight:700;font-size:14px;">${fmtPayPeriod(p.pay_period_start, p.pay_period_end)}</div>
+        <div style="font-size:12px;color:var(--ink-2);">${p.business_name || 'Employer'} · ${p.hours_worked ? p.hours_worked + 'h' : ''}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:700;font-size:16px;color:var(--green,#38a169);">$${Number(p.net_pay).toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--ink-2);">net pay</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPayslipDetail(id) {
+  // Full payslip detail modal — built in next phase
+  console.log('Payslip detail:', id);
+}
+
+// ── Availability ─────────────────────────────────────
+
+const DAY_NAMES_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+async function renderWfAvailability() {
+  const el = document.getElementById('wf-availability-grid');
+  if (!el || !CURRENT_USER) return;
+
+  // Load from DB
+  const { data } = await sb
+    .from('availability')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id);
+
+  _wfAvailability = {};
+  (data || []).forEach(row => {
+    _wfAvailability[row.day_of_week] = {
+      available:  row.available,
+      start_time: row.start_time || '',
+      end_time:   row.end_time   || '',
+      notes:      row.notes      || '',
+    };
+  });
+
+  renderAvailabilityGrid();
+}
+
+function renderAvailabilityGrid() {
+  const el = document.getElementById('wf-availability-grid');
+  if (!el) return;
+
+  // Mon–Sun order (1–6, then 0)
+  const days = [1,2,3,4,5,6,0];
+
+  el.innerHTML = days.map(dow => {
+    const avail = _wfAvailability[dow] || { available: true, start_time: '09:00', end_time: '17:00', notes: '' };
+    return `
+      <div class="wf-avail-row ${avail.available ? '' : 'unavailable'}" id="avail-row-${dow}">
+        <div class="wf-avail-day">
+          <label class="wf-avail-toggle">
+            <input type="checkbox" ${avail.available ? 'checked' : ''}
+              onchange="toggleAvailDay(${dow}, this.checked)">
+            <span class="wf-avail-day-name">${DAY_NAMES_FULL[dow]}</span>
+          </label>
+        </div>
+        <div class="wf-avail-times" id="avail-times-${dow}" style="${avail.available ? '' : 'opacity:.35;pointer-events:none;'}">
+          <input type="time" value="${avail.start_time || '09:00'}" class="wf-time-input"
+            onchange="updateAvailTime(${dow},'start_time',this.value)">
+          <span style="color:var(--ink-2);font-size:13px;">to</span>
+          <input type="time" value="${avail.end_time || '17:00'}" class="wf-time-input"
+            onchange="updateAvailTime(${dow},'end_time',this.value)">
+        </div>
+        <div class="wf-avail-notes">
+          <input type="text" placeholder="Notes (optional)" value="${avail.notes || ''}" class="wf-notes-input"
+            onchange="updateAvailTime(${dow},'notes',this.value)">
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAvailDay(dow, available) {
+  if (!_wfAvailability[dow]) _wfAvailability[dow] = { available: true, start_time: '09:00', end_time: '17:00', notes: '' };
+  _wfAvailability[dow].available = available;
+  _wfAvailabilityDirty = true;
+  const row   = document.getElementById(`avail-row-${dow}`);
+  const times = document.getElementById(`avail-times-${dow}`);
+  if (row)   row.classList.toggle('unavailable', !available);
+  if (times) { times.style.opacity = available ? '' : '.35'; times.style.pointerEvents = available ? '' : 'none'; }
+}
+
+function updateAvailTime(dow, field, value) {
+  if (!_wfAvailability[dow]) _wfAvailability[dow] = { available: true, start_time: '09:00', end_time: '17:00', notes: '' };
+  _wfAvailability[dow][field] = value;
+  _wfAvailabilityDirty = true;
+}
+
+async function saveAvailability() {
+  if (!CURRENT_USER) return;
+  const btn = document.querySelector('[onclick="saveAvailability()"]');
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+
+  const rows = Object.entries(_wfAvailability).map(([dow, v]) => ({
+    user_id:    CURRENT_USER.id,
+    day_of_week: parseInt(dow),
+    available:  v.available,
+    start_time: v.start_time || null,
+    end_time:   v.end_time   || null,
+    notes:      v.notes      || null,
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error } = await sb.from('availability').upsert(rows, { onConflict: 'user_id,day_of_week' });
+
+  if (btn) { btn.textContent = error ? '⚠ Error' : '✓ Saved'; btn.disabled = false; }
+  setTimeout(() => { if (btn) { btn.textContent = 'Save Changes'; } }, 2000);
+
+  if (!error) {
+    _wfAvailabilityDirty = false;
+    // Sync to Workforce — will be wired to Edge Function in next phase
+    syncAvailabilityToWorkforce();
+  }
+}
+
+async function syncAvailabilityToWorkforce() {
+  if (!_wfConnection) return;
+  // Placeholder — wired to Edge Function in next build phase
+  console.log('Syncing availability to Workforce for employee:', _wfConnection.workforce_employee_id);
+}
+
+// ── Leave ────────────────────────────────────────────
+
+async function renderWfLeave() {
+  const el = document.getElementById('wf-leave-list');
+  if (!el || !CURRENT_USER) return;
+
+  const { data } = await sb
+    .from('leave_requests')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id)
+    .order('submitted_at', { ascending: false });
+
+  if (!data?.length) {
+    el.innerHTML = '<div class="wf-empty">No leave requests yet. Use the button above to submit one.</div>';
+    return;
+  }
+
+  const statusColour = { pending:'var(--gold,#d4a017)', approved:'var(--green,#38a169)', declined:'var(--red,#e53e3e)', syncing:'var(--ink-2)', sync_failed:'var(--red,#e53e3e)' };
+  el.innerHTML = data.map(r => `
+    <div class="wf-leave-card">
+      <div>
+        <div style="font-weight:700;font-size:14px;">${r.leave_type.charAt(0).toUpperCase()+r.leave_type.slice(1)} Leave</div>
+        <div style="font-size:12px;color:var(--ink-2);">${fmtDate(r.start_date)} – ${fmtDate(r.end_date)}</div>
+        ${r.notes ? `<div style="font-size:11px;color:var(--ink-2);margin-top:3px;">${r.notes}</div>` : ''}
+      </div>
+      <span style="font-size:11px;font-weight:700;color:${statusColour[r.status]||'var(--ink-2)'};">${r.status.toUpperCase()}</span>
+    </div>
+  `).join('');
+}
+
+async function submitLeaveRequest() {
+  if (!CURRENT_USER || !_wfConnection) return;
+  const type  = document.getElementById('leave-type').value;
+  const start = document.getElementById('leave-start').value;
+  const end   = document.getElementById('leave-end').value;
+  const notes = document.getElementById('leave-notes').value.trim();
+  const errEl = document.getElementById('leave-error');
+  errEl.style.display = 'none';
+
+  if (!start || !end) { errEl.textContent = 'Please select start and end dates.'; errEl.style.display = 'block'; return; }
+  if (end < start)    { errEl.textContent = 'End date must be after start date.'; errEl.style.display = 'block'; return; }
+
+  const { error } = await sb.from('leave_requests').insert({
+    user_id:               CURRENT_USER.id,
+    workforce_employee_id: _wfConnection.workforce_employee_id,
+    leave_type:            type,
+    start_date:            start,
+    end_date:              end,
+    notes,
+    status:                'syncing',
+  });
+
+  if (error) { errEl.textContent = 'Failed to submit. Please try again.'; errEl.style.display = 'block'; return; }
+
+  closeModal('leave-request-modal');
+  openWfSubtab('leave');
+  // Sync to Workforce — wired in next phase
+}
+
+// ── Helpers ──────────────────────────────────────────
+
+function fmtWfTime(t) {
+  if (!t) return '—';
+  const [h, m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'pm' : 'am';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')}${period}`;
+}
+
+function fmtPayPeriod(start, end) {
+  const s = new Date(start), e = new Date(end);
+  return `${s.toLocaleDateString('en-AU',{day:'numeric',month:'short'})} – ${e.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})}`;
+}
+
+function fmtDate(d) {
+  return d ? new Date(d).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}) : '—';
+}
