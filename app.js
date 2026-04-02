@@ -1463,6 +1463,20 @@ function getCurrentBudget() {
   return APP_DATA.budget[BUDGET_MONTH];
 }
 
+// Returns the cumulative net balance up to (but not including) the given FY month index.
+// This is the "opening balance" rolled into the current month view.
+function getRolloverBalance(upToMonthIndex) {
+  let balance = 0;
+  for (let m = 0; m < upToMonthIndex; m++) {
+    const entries = APP_DATA.budget[m] || [];
+    entries.forEach(e => {
+      if (e.type === 'income' || e.type === 'savings draw') balance += e.amount;
+      if (e.type === 'expense' || e.type === 'debt repayment') balance -= e.amount;
+    });
+  }
+  return balance;
+}
+
 let BUDGET_ENTRIES_SHOWN = 5;
 
 function showMoreEntries() {
@@ -1534,16 +1548,49 @@ function renderBudget() {
   const expenses = entries.filter(e => e.type === 'expense' || e.type === 'debt repayment');
   const totalInc = incomes.reduce((s,e) => s+e.amount, 0);
   const totalExp = expenses.reduce((s,e) => s+e.amount, 0);
-  const balance  = totalInc - totalExp;
-  const saveRate = totalInc > 0 ? (balance / totalInc * 100) : 0;
+  const thisMonthBalance = totalInc - totalExp;
+
+  // Rollover: cumulative net from all prior months in this FY
+  const rollover = getRolloverBalance(BUDGET_MONTH);
+  const netBalance = rollover + thisMonthBalance;
+  const saveRate = totalInc > 0 ? (thisMonthBalance / totalInc * 100) : 0;
 
   document.getElementById('bm-income').textContent      = fmtK(totalInc);
   document.getElementById('bm-income-count').textContent = incomes.length + ' entr' + (incomes.length===1?'y':'ies');
   document.getElementById('bm-expenses').textContent    = fmtK(totalExp);
   document.getElementById('bm-exp-count').textContent   = expenses.length + ' entr' + (expenses.length===1?'y':'ies');
-  document.getElementById('bm-balance').textContent     = fmtK(Math.abs(balance));
-  document.getElementById('bm-balance').style.color     = balance >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('bm-balance').textContent     = fmtK(Math.abs(netBalance));
+  document.getElementById('bm-balance').style.color     = netBalance >= 0 ? 'var(--green)' : 'var(--red)';
   document.getElementById('bm-savings-rate').textContent = 'Savings rate: ' + (totalInc>0 ? saveRate.toFixed(1)+'%' : '--');
+
+  // Show/hide opening balance rollover banner
+  let rolloverBanner = document.getElementById('bm-rollover-banner');
+  if (!rolloverBanner) {
+    // Create it once and insert before the entry list
+    rolloverBanner = document.createElement('div');
+    rolloverBanner.id = 'bm-rollover-banner';
+    rolloverBanner.style.cssText = [
+      'display:flex', 'justify-content:space-between', 'align-items:center',
+      'padding:8px 14px', 'margin-bottom:8px',
+      'background:var(--paper-2)', 'border:1px solid var(--rule)',
+      'border-radius:var(--r-sm)', 'font-size:0.78rem', 'color:var(--ink-3)',
+    ].join(';');
+    const entryList = document.getElementById('entry-list');
+    if (entryList && entryList.parentNode) {
+      entryList.parentNode.insertBefore(rolloverBanner, entryList);
+    }
+  }
+  if (rollover !== 0) {
+    const sign = rollover >= 0 ? '+' : '-';
+    rolloverBanner.innerHTML =
+      '<span>Opening balance (carried forward)</span>' +
+      '<span style="font-family:\'IBM Plex Mono\',monospace;font-weight:600;color:' +
+      (rollover >= 0 ? 'var(--green)' : 'var(--red)') + '">' +
+      sign + fmtK(Math.abs(rollover)) + '</span>';
+    rolloverBanner.style.display = 'flex';
+  } else {
+    rolloverBanner.style.display = 'none';
+  }
 
   // Entry list
   const list = document.getElementById('entry-list');
