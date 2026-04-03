@@ -2460,14 +2460,17 @@ async function renderWorkforceTab() {
   const empCard = document.getElementById('wf-employer-card');
   if (empCard) {
     empCard.innerHTML = `
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:44px;height:44px;border-radius:50%;background:var(--gold,#d4a017);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏢</div>
-        <div>
-          <div style="font-weight:700;font-size:15px;">${_wfConnection.business_name || 'Your Employer'}</div>
-          <div style="font-size:12px;color:var(--ink-2);">Connected · ${new Date(_wfConnection.connected_at).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</div>
-        </div>
-        <span style="margin-left:auto;" class="badge-connected">✓ Connected</span>
+      <div class="employer-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18M3 7l9-4 9 4M4 7v14M20 7v14M9 21v-4a3 3 0 016 0v4"/>
+          <rect x="9" y="10" width="2" height="3" rx="0.5"/><rect x="13" y="10" width="2" height="3" rx="0.5"/>
+        </svg>
       </div>
+      <div class="employer-info">
+        <div class="employer-name">${_wfConnection.business_name || 'Your Employer'}</div>
+        <div class="employer-date">Connected · ${new Date(_wfConnection.connected_at).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <span class="badge-connected">✓ Connected</span>
     `;
   }
 
@@ -2475,15 +2478,45 @@ async function renderWorkforceTab() {
 }
 
 function openWfSubtab(sub) {
-  _wfSubtab = sub;
-  ['shifts','payslips','availability','leave'].forEach(s => {
-    document.getElementById(`wf-${s}-content`)?.style && (document.getElementById(`wf-${s}-content`).style.display = s === sub ? 'block' : 'none');
-    document.getElementById(`wstab-${s}`)?.classList.toggle('active', s === sub);
+  // 'leave' is now inside the 'availability' tab — redirect
+  const mappedSub = sub === 'leave' ? 'availability' : sub;
+  _wfSubtab = mappedSub;
+
+  ['shifts','payslips','availability'].forEach(s => {
+    const el = document.getElementById(`wf-${s}-content`);
+    if (el) el.style.display = s === mappedSub ? 'block' : 'none';
+    document.getElementById(`wstab-${s}`)?.classList.toggle('active', s === mappedSub);
   });
-  if (sub === 'shifts')       renderWfShifts();
-  if (sub === 'payslips')     renderWfPayslips();
-  if (sub === 'availability') renderWfAvailability();
-  if (sub === 'leave')        renderWfLeave();
+
+  if (mappedSub === 'shifts')       renderWfShifts();
+  if (mappedSub === 'payslips')     renderWfPayslips();
+  if (mappedSub === 'availability') {
+    // If originally navigating to leave, open the leave sub-panel
+    if (sub === 'leave') {
+      openWfAvailSubtab('leave');
+    } else {
+      openWfAvailSubtab('availability');
+    }
+  }
+}
+
+function openWfAvailSubtab(sub) {
+  // Toggle between My Availability and Leave Requests inside the Availability tab
+  const availPanel = document.getElementById('wf-avail-panel');
+  const leavePanel = document.getElementById('wf-leave-panel');
+  const availBtn   = document.getElementById('wf-avsubnav-avail');
+  const leaveBtn   = document.getElementById('wf-avsubnav-leave');
+
+  if (!availPanel || !leavePanel) return;
+
+  const showAvail = sub === 'availability';
+  availPanel.style.display = showAvail ? 'block' : 'none';
+  leavePanel.style.display = showAvail ? 'none' : 'block';
+  availBtn?.classList.toggle('active', showAvail);
+  leaveBtn?.classList.toggle('active', !showAvail);
+
+  if (showAvail) renderWfAvailability();
+  else           renderWfLeave();
 }
 
 // ── Shifts ──────────────────────────────────────────
