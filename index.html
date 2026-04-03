@@ -7,7 +7,7 @@
 <meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:">
 <title>Tayla — Australian Personal Finance</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="style.css">
 
@@ -247,19 +247,19 @@
   <nav class="mobile-nav" id="mobile-nav" style="display:none">
     <div class="mobile-nav-inner">
       <button class="mobile-nav-item active" id="mnav-tax" onclick="openTab('tax');setMobileNav(this)">
-        <span class="mn-icon">💵</span>Income
+        <span class="mn-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>Income
       </button>
       <button class="mobile-nav-item" id="mnav-budget" onclick="openTab('budget');setMobileNav(this)">
-        <span class="mn-icon">💳</span>Budget
+        <span class="mn-icon"><svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span>Budget
       </button>
       <button class="mobile-nav-item" id="mnav-tools" onclick="openTab('tools');setMobileNav(this)">
-        <span class="mn-icon">🧰</span>Tools
+        <span class="mn-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3-3a6 6 0 01-7.4 7.4l-6.7 6.7a2.12 2.12 0 01-3-3l6.7-6.7a6 6 0 017.4-7.4l-3 3z"/></svg></span>Tools
       </button>
       <button class="mobile-nav-item" id="mnav-workforce" onclick="openTab('workforce');setMobileNav(this)">
-        <span class="mn-icon">👷</span>Workforce<span class="nav-lock-badge" style="display:none">🔒</span>
+        <span class="mn-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>Workforce<span class="nav-lock-badge" style="display:none">🔒</span>
       </button>
       <button class="mobile-nav-item" id="mnav-settings" onclick="syncSettingsAccountUI();openModal('settings-modal')">
-        <span class="mn-icon">⚙️</span>Settings
+        <span class="mn-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Settings
       </button>
     </div>
   </nav>
@@ -827,8 +827,8 @@
     </div>
     <!-- Sub-tabs -->
     <div class="tools-subtabs" id="tools-subtabs">
-      <button class="tools-subtab active" id="stab-health" onclick="openToolsSubtab('health')">📊 Financial Health</button>
-      <button class="tools-subtab" id="stab-goals"  onclick="openToolsSubtab('goals')">📈 Portfolio</button>
+      <button class="tools-subtab active" id="stab-health" onclick="openToolsSubtab('health')">Financial Health</button>
+      <button class="tools-subtab" id="stab-goals"  onclick="openToolsSubtab('goals')">Portfolio</button>
     </div>
     <!-- Health content (moved here) -->
     <div id="tools-health-content"></div>
@@ -846,9 +846,14 @@
     </div>
     <div id="workforce-connect-prompt" style="display:none">
       <div class="workforce-empty-state">
-        <div style="font-size:48px;margin-bottom:16px;">👷</div>
+        <div style="margin-bottom:16px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
         <div style="font-weight:700;font-size:18px;margin-bottom:8px;">Not connected yet</div>
-        <div style="font-size:13px;color:var(--ink-2);max-width:320px;line-height:1.6;">
+        <div style="font-size:13px;color:var(--ink-3);max-width:320px;line-height:1.6;">
           Ask your employer to send you a Tayla Workforce invite. You'll receive an email with a link to connect your account.
         </div>
       </div>
@@ -859,10 +864,9 @@
 
       <!-- Sub-tabs -->
       <div class="tools-subtabs" style="margin-top:20px;">
-        <button class="tools-subtab active" id="wstab-shifts"       onclick="openWfSubtab('shifts')">📅 Shifts</button>
-        <button class="tools-subtab"        id="wstab-payslips"     onclick="openWfSubtab('payslips')">💰 Payslips</button>
-        <button class="tools-subtab"        id="wstab-availability" onclick="openWfSubtab('availability')">🗓 Availability</button>
-        <button class="tools-subtab"        id="wstab-leave"        onclick="openWfSubtab('leave')">🏖 Leave</button>
+        <button class="tools-subtab active" id="wstab-shifts"       onclick="openWfSubtab('shifts')">Shifts</button>
+        <button class="tools-subtab"        id="wstab-payslips"     onclick="openWfSubtab('payslips')">Payslips</button>
+        <button class="tools-subtab"        id="wstab-availability" onclick="openWfSubtab('availability')">Availability</button>
       </div>
 
       <!-- Shifts -->
@@ -875,25 +879,34 @@
         <div id="wf-payslips-list" style="margin-top:16px;"></div>
       </div>
 
-      <!-- Availability -->
+      <!-- Availability (now contains Leave sub-nav) -->
       <div id="wf-availability-content" style="display:none;">
-        <div class="workforce-section-header">
-          <div>
-            <div style="font-weight:700;font-size:15px;">Weekly Availability</div>
-            <div style="font-size:12px;color:var(--ink-2);">Set your recurring weekly schedule. Changes sync to your employer automatically.</div>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="saveAvailability()">Save Changes</button>
+        <!-- Sub-nav: My Availability / Leave Requests -->
+        <div class="wf-avail-subnav">
+          <button class="wf-avail-subnav-btn active" id="wf-avsubnav-avail" onclick="openWfAvailSubtab('availability')">My Availability</button>
+          <button class="wf-avail-subnav-btn" id="wf-avsubnav-leave" onclick="openWfAvailSubtab('leave')">Leave Requests</button>
         </div>
-        <div id="wf-availability-grid" style="margin-top:16px;"></div>
-      </div>
 
-      <!-- Leave -->
-      <div id="wf-leave-content" style="display:none;">
-        <div class="workforce-section-header">
-          <div style="font-weight:700;font-size:15px;">Leave Requests</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('leave-request-modal')">+ Request Leave</button>
+        <!-- Availability panel -->
+        <div id="wf-avail-panel">
+          <div class="workforce-section-header">
+            <div>
+              <div style="font-weight:700;font-size:15px;">Weekly Availability</div>
+              <div style="font-size:12px;color:var(--ink-3);">Set your recurring weekly schedule. Changes sync to your employer automatically.</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveAvailability()">Save Changes</button>
+          </div>
+          <div id="wf-availability-grid" style="margin-top:16px;"></div>
         </div>
-        <div id="wf-leave-list" style="margin-top:16px;"></div>
+
+        <!-- Leave panel -->
+        <div id="wf-leave-panel" style="display:none;">
+          <div class="workforce-section-header">
+            <div style="font-weight:700;font-size:15px;">Leave Requests</div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('leave-request-modal')">+ Request Leave</button>
+          </div>
+          <div id="wf-leave-list" style="margin-top:16px;"></div>
+        </div>
       </div>
     </div>
   </div>
