@@ -2693,9 +2693,34 @@ async function saveAvailability() {
 }
 
 async function syncAvailabilityToWorkforce() {
-  if (!_wfConnection) return;
-  // Placeholder — wired to Edge Function in next build phase
-  console.log('Syncing availability to Workforce for employee:', _wfConnection.workforce_employee_id);
+  if (!_wfConnection || !CURRENT_USER) return;
+
+  const availability = Object.entries(_wfAvailability).map(([dow, v]) => ({
+    day_of_week: parseInt(dow),
+    available:   v.available,
+    start_time:  v.start_time || null,
+    end_time:    v.end_time   || null,
+    notes:       v.notes      || null,
+  }));
+
+  try {
+    const res = await fetch(
+      'https://whedwekxzjfqwjuoarid.supabase.co/functions/v1/receive-availability',
+      {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tayla_user_id: CURRENT_USER.id,
+          availability,
+        }),
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) console.error('Availability sync failed:', data.error);
+    else console.log('Availability synced to Workforce ✓', data.days_synced, 'days');
+  } catch (err) {
+    console.error('Availability sync error:', err);
+  }
 }
 
 // ── Leave ────────────────────────────────────────────
