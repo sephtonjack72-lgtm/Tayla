@@ -53,24 +53,11 @@ function getOrCreateGuestSessionId() {
 
 async function trackGuestSession() {
   const sessionId = getOrCreateGuestSessionId();
-  const now = new Date().toISOString();
   try {
-    const { data } = await sb
+    await sb
       .from('guest_sessions')
-      .select('id')
-      .eq('session_id', sessionId)
-      .maybeSingle();
-
-    if (data) {
-      await sb
-        .from('guest_sessions')
-        .update({ last_seen: now })
-        .eq('session_id', sessionId);
-    } else {
-      await sb
-        .from('guest_sessions')
-        .insert({ session_id: sessionId, created_at: now, last_seen: now });
-    }
+      .upsert({ session_id: sessionId, last_seen: new Date().toISOString() },
+               { onConflict: 'session_id' });
   } catch (e) {
     console.warn('Guest tracking failed:', e);
   }
