@@ -1495,4 +1495,12 @@
   function applyUpdate() {
     document.getElementById('update-toast').style.display = 'none';
     // Tell the waiting SW to skip waiting and take over
-    if (navigator.serviceWorker.contr
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+    window.location.reload();
+  }
+</script>
+
+</body>
+</html>
