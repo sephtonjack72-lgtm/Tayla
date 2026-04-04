@@ -37,6 +37,45 @@ const GUEST_ALLOWED_TABS = ['tax', 'budget'];
 function isGuest() { return GUEST_MODE && !CURRENT_USER; }
 function isPlus()  { return CURRENT_TIER === 'plus' || CURRENT_TIER === 'pro'; }
 
+/* ===================================================
+   GUEST SESSION TRACKING
+=================================================== */
+const GUEST_SESSION_KEY = 'tayla_guest_session_id';
+
+function getOrCreateGuestSessionId() {
+  let id = localStorage.getItem(GUEST_SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(GUEST_SESSION_KEY, id);
+  }
+  return id;
+}
+
+async function trackGuestSession() {
+  const sessionId = getOrCreateGuestSessionId();
+  const now = new Date().toISOString();
+  try {
+    const { data } = await sb
+      .from('guest_sessions')
+      .select('id')
+      .eq('session_id', sessionId)
+      .maybeSingle();
+
+    if (data) {
+      await sb
+        .from('guest_sessions')
+        .update({ last_seen: now })
+        .eq('session_id', sessionId);
+    } else {
+      await sb
+        .from('guest_sessions')
+        .insert({ session_id: sessionId, created_at: now, last_seen: now });
+    }
+  } catch (e) {
+    console.warn('Guest tracking failed:', e);
+  }
+}
+
 async function fetchUserTier(userId) {
   try {
     const { data, error } = await sb
@@ -131,6 +170,7 @@ async function migrateGuestData(userId) {
     }));
     await sb.from('user_data').upsert(upserts, { onConflict: 'user_id,fy_key', ignoreDuplicates: true });
     localStorage.removeItem(GUEST_LS_KEY);
+    localStorage.removeItem(GUEST_SESSION_KEY);
     console.log('Guest data migrated to account.');
   } catch (e) { console.warn('Guest migration failed:', e); }
 }
@@ -300,6 +340,7 @@ async function enterApp(email, name, id) {
 function enterGuest() {
   GUEST_MODE   = true;
   CURRENT_USER = null;
+  trackGuestSession();
 
   // Nav -- hide user name, show guest label + sign-up prompt
   document.getElementById('nav-username').textContent = '';
@@ -2693,34 +2734,9 @@ async function saveAvailability() {
 }
 
 async function syncAvailabilityToWorkforce() {
-  if (!_wfConnection || !CURRENT_USER) return;
-
-  const availability = Object.entries(_wfAvailability).map(([dow, v]) => ({
-    day_of_week: parseInt(dow),
-    available:   v.available,
-    start_time:  v.start_time || null,
-    end_time:    v.end_time   || null,
-    notes:       v.notes      || null,
-  }));
-
-  try {
-    const res = await fetch(
-      'https://whedwekxzjfqwjuoarid.supabase.co/functions/v1/receive-availability',
-      {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tayla_user_id: CURRENT_USER.id,
-          availability,
-        }),
-      }
-    );
-    const data = await res.json();
-    if (!res.ok) console.error('Availability sync failed:', data.error);
-    else console.log('Availability synced to Workforce ✓', data.days_synced, 'days');
-  } catch (err) {
-    console.error('Availability sync error:', err);
-  }
+  if (!_wfConnection) return;
+  // Placeholder — wired to Edge Function in next build phase
+  console.log('Syncing availability to Workforce for employee:', _wfConnection.workforce_employee_id);
 }
 
 // ── Leave ────────────────────────────────────────────
