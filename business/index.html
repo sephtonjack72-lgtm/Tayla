@@ -351,12 +351,12 @@ footer a { color: var(--gold); text-decoration: none; }
   <p>
     <a href="/">Tayla App</a> ·
     <a href="/tax/">Tax Calculator</a> ·
-    <a href="mailto:hello@usetayla.com.au">Contact</a>
+    <a href="/cdn-cgi/l/email-protection#452d2029292a0530362031243c29246b262a286b2430">Contact</a>
   </p>
   <p style="margin-top:8px">© 2026 Tayla — Australian Personal Finance. All figures in AUD.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
@@ -470,46 +470,94 @@ function renderAll() {
   renderUsers();
 }
 
+// ── Account type helpers ──
+// Account codes: 1xxx = asset, 2xxx = liability, 3xxx = equity, 4xxx = revenue, 5xxx = expense
+function getAccountType(accountStr) {
+  const match = accountStr.match(/(\d{4})/);
+  if (!match) return 'other';
+  const code = parseInt(match[1]);
+  if (code >= 4000 && code < 5000) return 'revenue';
+  if (code >= 5000 && code < 6000) return 'expense';
+  if (code >= 3000 && code < 4000) return 'equity';
+  if (code >= 2000 && code < 3000) return 'liability';
+  if (code >= 1000 && code < 2000) return 'asset';
+  return 'other';
+}
+
+function getAccountName(accountStr) {
+  // Strip leading account code e.g. "5030 Hosting & Infrastructure"
+  return accountStr.replace(/^\d{4}\s+/, '').trim();
+}
+
 // ── Render P&L ──
 function renderPL(month) {
-  const rows = DATA.pl.filter(r => r.month === month);
-  if (rows.length === 0) {
+  // Use incomeStatement if available, otherwise fall back to transactions
+  const is = DATA.incomeStatement || {};
+
+  // Filter transactions to this month
+  const monthTxs = (DATA.transactions || []).filter(tx => {
+    if (!tx.date) return false;
+    const d = new Date(tx.date);
+    return d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }) === month;
+  });
+
+  if (!monthTxs.length && !is.netProfit && is.netProfit !== 0) {
     document.getElementById('pl-content').innerHTML =
       '<div class="empty-state"><p>No data for this month.</p></div>';
     return;
   }
 
-  // Group by category
-  const categories = {};
-  rows.forEach(r => {
-    if (!categories[r.category]) categories[r.category] = [];
-    categories[r.category].push(r);
+  // Build expense and revenue buckets from journal lines
+  const expenseItems = {};
+  const revenueItems = {};
+
+  monthTxs.forEach(tx => {
+    (tx.lines || []).forEach(line => {
+      const type = getAccountType(line.account);
+      const name = getAccountName(line.account);
+      if (type === 'expense') {
+        if (!expenseItems[name]) expenseItems[name] = 0;
+        expenseItems[name] += line.debit || 0;
+      } else if (type === 'revenue') {
+        if (!revenueItems[name]) revenueItems[name] = 0;
+        revenueItems[name] += line.credit || 0;
+      }
+    });
   });
+
+  const totalRevenue  = Object.values(revenueItems).reduce((s, v) => s + v, 0);
+  const totalExpenses = Object.values(expenseItems).reduce((s, v) => s + v, 0);
+  // Prefer income statement net profit if available
+  const netProfit = (is.netProfit !== undefined) ? is.netProfit : (totalRevenue - totalExpenses);
 
   let html = '<table class="pl-table"><thead><tr><th>Item</th><th>Amount (AUD)</th></tr></thead><tbody>';
-  let grandTotal = 0;
 
-  Object.entries(categories).forEach(([cat, items]) => {
-    html += `<tr class="section-header"><td colspan="2">${cat}</td></tr>`;
-    let catTotal = 0;
-    items.forEach(r => {
-      const isNeg = r.amount < 0 || cat.toLowerCase().includes('expense') || cat.toLowerCase().includes('cost');
-      html += `<tr>
-        <td>${r.item}</td>
-        <td class="mono ${r.amount < 0 ? 'red' : ''}">${fmtAUD(r.amount)}</td>
-      </tr>`;
-      catTotal += r.amount;
+  // REVENUE section
+  html += '<tr class="section-header"><td colspan="2">Revenue</td></tr>';
+  if (Object.keys(revenueItems).length) {
+    Object.entries(revenueItems).forEach(([name, amt]) => {
+      html += `<tr><td>${name}</td><td class="mono green">${fmtAUD(amt)}</td></tr>`;
     });
-    grandTotal += catTotal;
-    html += `<tr class="total-row">
-      <td>${cat} Total</td>
-      <td class="mono ${catTotal < 0 ? 'red' : 'green'}">${fmtAUD(catTotal)}</td>
-    </tr>`;
-  });
+  } else {
+    html += `<tr><td colspan="2" style="color:var(--ink-3);font-size:0.8rem;padding:8px 14px;">No revenue recorded</td></tr>`;
+  }
+  html += `<tr class="total-row"><td>Total Revenue</td><td class="mono ${totalRevenue >= 0 ? 'green' : 'red'}">${fmtAUD(totalRevenue)}</td></tr>`;
 
+  // EXPENSES section
+  html += '<tr class="section-header"><td colspan="2">Expenses</td></tr>';
+  if (Object.keys(expenseItems).length) {
+    Object.entries(expenseItems).forEach(([name, amt]) => {
+      html += `<tr><td>${name}</td><td class="mono red">${fmtAUD(amt)}</td></tr>`;
+    });
+  } else {
+    html += `<tr><td colspan="2" style="color:var(--ink-3);font-size:0.8rem;padding:8px 14px;">No expenses recorded</td></tr>`;
+  }
+  html += `<tr class="total-row"><td>Total Expenses</td><td class="mono red">${fmtAUD(totalExpenses)}</td></tr>`;
+
+  // NET
   html += `<tr class="total-row" style="font-size:1rem">
     <td>NET PROFIT / LOSS</td>
-    <td class="mono ${grandTotal < 0 ? 'red' : 'green'}" style="font-size:1rem">${fmtAUD(grandTotal)}</td>
+    <td class="mono ${netProfit >= 0 ? 'green' : 'red'}" style="font-size:1rem">${fmtAUD(netProfit)}</td>
   </tr>`;
   html += '</tbody></table>';
 
@@ -518,30 +566,36 @@ function renderPL(month) {
 
 // ── Render KPIs ──
 function renderKPIs(month) {
-  const rows = DATA.pl.filter(r => r.month === month);
-  if (rows.length === 0) return;
+  const is = DATA.incomeStatement || {};
+  const bs = DATA.balanceSheet || {};
 
-  const revenue  = rows.filter(r =>
-    r.category.toLowerCase().includes('revenue') ||
-    r.category.toLowerCase().includes('income') ||
-    r.amount > 0
-  ).reduce((s, r) => s + Math.max(0, r.amount), 0);
+  const monthTxs = (DATA.transactions || []).filter(tx => {
+    if (!tx.date) return false;
+    const d = new Date(tx.date);
+    return d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }) === month;
+  });
 
-  const expenses = rows.filter(r =>
-    r.category.toLowerCase().includes('expense') ||
-    r.category.toLowerCase().includes('cost') ||
-    r.amount < 0
-  ).reduce((s, r) => s + Math.abs(Math.min(0, r.amount)), 0);
+  // Sum revenue and expense from journal lines
+  let totalRevenue = 0, totalExpenses = 0;
+  monthTxs.forEach(tx => {
+    (tx.lines || []).forEach(line => {
+      const type = getAccountType(line.account);
+      if (type === 'revenue') totalRevenue  += line.credit || 0;
+      if (type === 'expense') totalExpenses += line.debit  || 0;
+    });
+  });
 
-  const net = rows.reduce((s, r) => s + r.amount, 0);
+  // Prefer income statement figures if present
+  if (is.totalRevenue  !== undefined) totalRevenue  = is.totalRevenue;
+  if (is.totalExpenses !== undefined) totalExpenses = is.totalExpenses;
+  const net = (is.netProfit !== undefined) ? is.netProfit : (totalRevenue - totalExpenses);
 
-  // Latest user count
-  const userRow = DATA.users.find(u => u.month === month) ||
-                  DATA.users[DATA.users.length - 1];
-  const totalUsers = userRow ? userRow.total || (userRow.free + userRow.paid) : 0;
+  const userRow = (DATA.users || []).find(u => u.month === month) ||
+                  (DATA.users || [])[DATA.users?.length - 1];
+  const totalUsers = userRow ? (userRow.total || userRow.free + userRow.paid) : 0;
 
-  document.getElementById('kpi-mrr').textContent      = fmtAUD(revenue);
-  document.getElementById('kpi-expenses').textContent = fmtAUD(expenses);
+  document.getElementById('kpi-mrr').textContent      = fmtAUD(totalRevenue);
+  document.getElementById('kpi-expenses').textContent = fmtAUD(totalExpenses);
   document.getElementById('kpi-net').textContent      = fmtAUD(net);
   document.getElementById('kpi-net').className        = 'kpi-value ' + (net >= 0 ? 'green' : 'red');
   document.getElementById('kpi-users').textContent    = totalUsers > 0 ? fmtInt(totalUsers) : '—';
@@ -562,9 +616,4 @@ function renderUsers() {
     </tr>`;
   });
   html += '</tbody></table>';
-  document.getElementById('users-content').innerHTML = html;
-  document.getElementById('users-section').style.display = 'block';
-}
-</script>
-</body>
-</html>
+  doc
