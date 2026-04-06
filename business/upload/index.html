@@ -160,10 +160,10 @@ body {
     <button class="btn-ghost" onclick="clearData()">🗑 Clear published data</button>
 
     <div class="format-hint">
-      <strong>Sheet 1 — P&L:</strong> Month · Category · Item · Amount<br>
-      <strong>Sheet 2 — Users:</strong> Month · Free Users · Paid Users · Total Users<br><br>
-      Amount column: positive = income, negative = expense<br>
-      Month format: "March 2026", "Mar-26", or "2026-03"
+      <strong>Transactions:</strong> Date · Reference · Description · Type · Category · Amount (AUD) · Method<br>
+      <strong>Bills:</strong> Bill # · Supplier · Bill Date · Due Date · Status · Subtotal · GST · Total<br>
+      <strong>Chart of Accounts:</strong> Account Code · Account Name · Type · Balance DR · Balance CR<br>
+      <strong>Also parsed:</strong> Income Statement · Balance Sheet · GST · Contacts
     </div>
   </div>
 </div>
@@ -196,7 +196,13 @@ async function loadStatus() {
     const { data } = await sb.from('tayla_pl_data').select('data, uploaded_at').order('uploaded_at', { ascending: false }).limit(1).maybeSingle();
     if (data) {
       const date = new Date(data.uploaded_at).toLocaleDateString('en-AU');
-      info.textContent = (data.data.pl?.length || 0) + ' rows · ' + (data.data.months?.length || 0) + ' months · uploaded ' + date;
+      const d = data.data;
+      const parts = [];
+      if (d.transactions?.length) parts.push(d.transactions.length + ' transactions');
+      if (d.bills?.length)        parts.push(d.bills.length + ' bills');
+      if (d.chartOfAccounts?.length) parts.push(d.chartOfAccounts.length + ' accounts');
+      if (d.months?.length)       parts.push(d.months.length + ' month(s)');
+      info.textContent = parts.join(' · ') + ' · uploaded ' + date;
       bar.style.display = 'block';
     }
   } catch {}
@@ -226,11 +232,13 @@ function handleFile(file) {
       const { error } = await sb.from('tayla_pl_data').insert({ data: parsed });
       if (error) throw error;
       loadStatus();
-      showFeedback('success',
-        '✓ Published to Supabase — ' + parsed.pl.length + ' P&L rows across ' +
-        parsed.months.length + ' month(s). ' +
-        (parsed.users.length > 0 ? parsed.users.length + ' user rows.' : '')
-      );
+      const parts = [];
+      if (parsed.transactions.length) parts.push(parsed.transactions.length + ' transactions');
+      if (parsed.bills.length)        parts.push(parsed.bills.length + ' bills');
+      if (parsed.chartOfAccounts.length) parts.push(parsed.chartOfAccounts.length + ' accounts');
+      if (parsed.contacts.length)     parts.push(parsed.contacts.length + ' contacts');
+      if (parsed.months.length)       parts.push(parsed.months.length + ' month(s)');
+      showFeedback('success', '✓ Published — ' + parts.join(' · '));
     } catch(err) {
       showFeedback('error', '✗ Error: ' + err.message);
     }
@@ -253,37 +261,170 @@ async function clearData() {
 }
 
 function parseWorkbook(wb) {
-  const result = { pl: [], users: [], months: [] };
+  const result = {
+    transactions: [], bills: [], chartOfAccounts: [],
+    incomeStatement: {}, balanceSheet: {}, gst: {}, contacts: [],
+    months: [], pl: [], users: [],
+  };
 
-  const plSheet = wb.SheetNames.find(n =>
-    n.toLowerCase().includes('p') || n.toLowerCase().includes('pl') ||
-    n.toLowerCase() === 'sheet1' || wb.SheetNames.indexOf(n) === 0
-  );
-  if (plSheet) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[plSheet], { defval: '' });
-    result.pl = rows.map(r => ({
-      month:    String(r['Month']    || r['month']    || r['MONTH']    || '').trim(),
-      category: String(r['Category'] || r['category'] || r['CATEGORY'] || r['Type'] || '').trim(),
-      item:     String(r['Item']     || r['item']     || r['ITEM']     || r['Description'] || r['Name'] || '').trim(),
-      amount:   parseFloat(r['Amount'] || r['amount'] || r['AMOUNT'] || r['Value'] || 0),
-    })).filter(r => r.month && r.item);
-    result.months = [...new Set(result.pl.map(r => r.month))];
+  // ── TRANSACTIONS ──────────────────────────────────────────────
+  const txSheet = wb.SheetNames.find(n => /transaction/i.test(n));
+  if (txSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[txSheet], { defval: null });
+    let currentTx = null;
+    rows.forEach(r => {
+      const date = r['Date'] || r['date'];
+      const ref  = r['Reference'] || r['reference'];
+      const desc = String(r['Description'] || r['description'] || '').trim();
+      const amt  = parseFloat(r['Amount (AUD)'] || r['Amount'] || r['amount'] || 0);
+      const type = String(r['Type'] || r['type'] || '').trim();
+      const cat  = String(r['Category'] || r['category'] || '').trim();
+      const method = String(r['Method'] || r['method'] || '').trim();
+
+      if (date && ref) {
+        // Parse Excel serial date if needed
+        let dateStr = date;
+        if (typeof date === 'number') {
+          const d = new Date(Math.round((date - 25569) * 86400 * 1000));
+          dateStr = d.toISOString().split('T')[0];
+        } else {
+          dateStr = String(date).trim();
+        }
+        currentTx = { date: dateStr, reference: String(ref).trim(), description: desc, type, category: cat, amount: amt, method, lines: [] };
+        result.transactions.push(currentTx);
+      } else if (currentTx && desc) {
+        const isDebit  = /^DR:/i.test(desc);
+        const isCredit = /^CR:/i.test(desc);
+        currentTx.lines.push({
+          account: desc.replace(/^(DR|CR):\s*/i, '').trim(),
+          debit:   isDebit  ? amt : 0,
+          credit:  isCredit ? amt : 0,
+        });
+      }
+    });
+    const monthSet = new Set();
+    result.transactions.forEach(tx => {
+      if (tx.date) {
+        const d = new Date(tx.date);
+        if (!isNaN(d)) monthSet.add(d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }));
+      }
+    });
+    result.months = [...monthSet].sort();
   }
 
-  const usersSheet = wb.SheetNames.find(n =>
-    n.toLowerCase().includes('user') || n.toLowerCase() === 'sheet2'
-  );
-  if (usersSheet) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[usersSheet], { defval: 0 });
-    result.users = rows.map(r => ({
-      month: String(r['Month'] || r['month'] || '').trim(),
-      free:  parseFloat(r['Free Users'] || r['Free'] || r['free'] || 0),
-      paid:  parseFloat(r['Paid Users'] || r['Paid'] || r['paid'] || 0),
-      total: parseFloat(r['Total Users'] || r['Total'] || r['total'] || 0),
-    })).filter(r => r.month);
+  // ── BILLS ─────────────────────────────────────────────────────
+  const billSheet = wb.SheetNames.find(n => /bill/i.test(n));
+  if (billSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[billSheet], { defval: null });
+    let currentBill = null;
+    rows.forEach(r => {
+      const billNum = r['Bill #'] || r['Bill#'] || r['bill'];
+      if (billNum) {
+        currentBill = {
+          billNumber: String(billNum).trim(),
+          supplier:   String(r['Supplier'] || '').trim(),
+          billDate:   r['Bill Date'] ? String(r['Bill Date']).trim() : null,
+          dueDate:    r['Due Date']  ? String(r['Due Date']).trim()  : null,
+          status:     String(r['Status'] || '').trim(),
+          subtotal:   parseFloat(r['Subtotal'] || 0),
+          gst:        parseFloat(r['GST'] || 0),
+          total:      parseFloat(r['Total'] || 0),
+          lines: [],
+        };
+        result.bills.push(currentBill);
+      } else if (currentBill && r['Supplier']) {
+        currentBill.lines.push({
+          description: String(r['Supplier']).trim(),
+          subtotal: parseFloat(r['Subtotal'] || 0),
+          gst:      parseFloat(r['GST'] || 0),
+          total:    parseFloat(r['Total'] || 0),
+        });
+      }
+    });
   }
 
-  return result.pl.length > 0 ? result : null;
+  // ── CHART OF ACCOUNTS ─────────────────────────────────────────
+  const coaSheet = wb.SheetNames.find(n => /chart|account/i.test(n));
+  if (coaSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[coaSheet], { defval: null });
+    result.chartOfAccounts = rows
+      .filter(r => r['Account Code'] || r['Account Name'])
+      .map(r => ({
+        code:      r['Account Code'] ? String(r['Account Code']).trim() : '',
+        name:      String(r['Account Name'] || '').trim(),
+        type:      String(r['Type'] || '').trim(),
+        balanceDR: parseFloat(r['Balance DR'] || 0) || 0,
+        balanceCR: parseFloat(r['Balance CR'] || 0) || 0,
+      }));
+  }
+
+  // ── INCOME STATEMENT ──────────────────────────────────────────
+  const isSheet = wb.SheetNames.find(n => /income|p&l|profit/i.test(n));
+  if (isSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[isSheet], { defval: null, header: 1 });
+    result.incomeStatement = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim().toUpperCase();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (label === 'TOTAL REVENUE')  result.incomeStatement.totalRevenue  = val;
+      if (label === 'TOTAL EXPENSES') result.incomeStatement.totalExpenses = val;
+      if (/NET PROFIT/.test(label))   result.incomeStatement.netProfit     = val;
+      if (/PERIOD ENDING/.test(label)) result.incomeStatement.period       = String(r[0]).replace(/Period ending\s*/i,'').trim();
+    });
+  }
+
+  // ── BALANCE SHEET ─────────────────────────────────────────────
+  const bsSheet = wb.SheetNames.find(n => /balance/i.test(n));
+  if (bsSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[bsSheet], { defval: null, header: 1 });
+    result.balanceSheet = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim().toUpperCase();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (/NET EQUITY/.test(label))            result.balanceSheet.netEquity = val;
+      if (/BANK.*CASH|CASH.*BANK/.test(label)) result.balanceSheet.cash      = val;
+      if (/AS AT/.test(label))                 result.balanceSheet.asAt      = String(r[0]).replace(/As at\s*/i,'').trim();
+    });
+  }
+
+  // ── GST ───────────────────────────────────────────────────────
+  const gstSheet = wb.SheetNames.find(n => /^gst$/i.test(n));
+  if (gstSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[gstSheet], { defval: null, header: 1 });
+    result.gst = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (/collected|output/i.test(label)) result.gst.collected = val;
+      if (/paid|input/i.test(label))       result.gst.paid      = val;
+      if (/net gst/i.test(label))          result.gst.net       = val;
+    });
+  }
+
+  // ── CONTACTS ──────────────────────────────────────────────────
+  const contactSheet = wb.SheetNames.find(n => /contact/i.test(n));
+  if (contactSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[contactSheet], { defval: null });
+    result.contacts = rows
+      .filter(r => r['Name'])
+      .map(r => ({
+        name:  String(r['Name']).trim(),
+        type:  String(r['Type'] || '').trim(),
+        abn:   r['ABN']   ? String(r['ABN']).trim()   : null,
+        email: r['Email'] ? String(r['Email']).trim()  : null,
+        phone: r['Phone'] ? String(r['Phone']).trim()  : null,
+      }));
+  }
+
+  // ── LEGACY pl[] for backwards compat ──────────────────────────
+  result.pl = result.transactions.map(tx => ({
+    month:    tx.date ? new Date(tx.date).toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }) : '',
+    category: tx.category || tx.type || 'Uncategorised',
+    item:     tx.description,
+    amount:   tx.amount,
+  })).filter(r => r.month && r.item);
+
+  return (result.transactions.length > 0 || result.bills.length > 0) ? result : null;
 }
 </script>
 </body>
