@@ -683,7 +683,7 @@ const FY_OPTIONS = [
   { label: 'FY2025-26', key: 'fy2025', start: new Date(2025, 6, 1) }, // 1 Jul 2025
   { label: 'FY2026-27', key: 'fy2026', start: new Date(2026, 6, 1) }, // 1 Jul 2026
 ];
-let CURRENT_FY = FY_OPTIONS[1]; // default FY2025-26
+let CURRENT_FY = FY_OPTIONS[0]; // default FY2025-26
 let FY_START   = CURRENT_FY.start;
 
 
@@ -1344,7 +1344,7 @@ function toggleTaxCalc() {
 async function changeFY(sourceId) {
   const id = sourceId || 'fy-select-tax';
   const el = document.getElementById(id);
-  const key = el ? el.value : FY_OPTIONS[1].key;
+  const key = el ? el.value : FY_OPTIONS[0].key;
   CURRENT_FY = FY_OPTIONS.find(f => f.key === key) || FY_OPTIONS[1];
   FY_START   = CURRENT_FY.start;
   // Sync both dropdowns
