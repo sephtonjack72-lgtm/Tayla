@@ -10,7 +10,7 @@
 =========================================================== */
 
 const BUILD = '2026-04-07T10:00:00'; //  update this string on every deploy
-const CACHE_NAME = 'tayla-v28-' + BUILD;
+const CACHE_NAME = 'tayla-v29-' + BUILD;
 
 const PRECACHE_ASSETS = [
   '/',
