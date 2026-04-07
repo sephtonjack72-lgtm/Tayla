@@ -727,6 +727,30 @@ async function loadAllUserData() {
 }
 
 async function persist() {
+  // Safety guard: never overwrite real data with an empty dataset.
+  // If weeks/months are all null and no other meaningful data exists,
+  // the app likely hasn't loaded properly yet -- abort to prevent data loss.
+  const hasWeekData   = (APP_DATA.weeks  || []).some(v => v !== null);
+  const hasMonthData  = (APP_DATA.months || []).some(v => v !== null);
+  const hasIncome     = (APP_DATA.annualIncome || 0) > 0;
+  const hasGoalData   = (APP_DATA.goals  || []).some(g => (g.saved || 0) > 0 || (g.target || 0) > 0);
+  const hasDebtData   = (APP_DATA.debts  || []).length > 0;
+  const hasHealthData = Object.values(APP_DATA.health || {}).some(v => v > 0);
+  const hasAnyData    = hasWeekData || hasMonthData || hasIncome || hasGoalData || hasDebtData || hasHealthData;
+
+  if (!hasAnyData && CURRENT_USER && CURRENT_USER.id) {
+    const { data: existing } = await sb.from('user_data').select('data')
+      .eq('user_id', CURRENT_USER.id).eq('fy_key', CURRENT_FY.key).maybeSingle();
+    if (existing && existing.data) {
+      const exHasData = (existing.data.weeks  || []).some(v => v !== null) ||
+                        (existing.data.months || []).some(v => v !== null);
+      if (exHasData) {
+        console.warn('persist() aborted: APP_DATA empty but Supabase has real data. Skipping to prevent data loss.');
+        return;
+      }
+    }
+  }
+
   if (CURRENT_USER && CURRENT_USER.id) {
     // Authenticated -- save to Supabase
     await sb.from('user_data').upsert({
