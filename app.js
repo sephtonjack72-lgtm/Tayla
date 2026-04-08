@@ -2386,18 +2386,30 @@ const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
    INIT
 =================================================== */
 (async function init() {
-  // Apply saved theme immediately to avoid flash of default
-  const savedTheme = localStorage.getItem(THEME_LS_KEY);
-  if (savedTheme && savedTheme !== 'default') {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    const email = session.user.email;
-    const name  = session.user.user_metadata?.name || email.split('@')[0];
-    enterApp(email, name, session.user.id);
-  } else {
+  // Hard timeout: if anything goes wrong, dismiss the splash after 6s max
+  const splashTimeout = setTimeout(() => hideSplash(), 6000);
+
+  try {
+    // Apply saved theme immediately to avoid flash of default
+    const savedTheme = localStorage.getItem(THEME_LS_KEY);
+    if (savedTheme && savedTheme !== 'default') {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const email = session.user.email;
+      const name  = session.user.user_metadata?.name || email.split('@')[0];
+      await enterApp(email, name, session.user.id);
+    } else {
+      showScreen('auth-screen');
+      hideSplash();
+    }
+  } catch (err) {
+    console.error('Init error:', err);
+    hideSplash();
     showScreen('auth-screen');
+  } finally {
+    clearTimeout(splashTimeout);
   }
 })();
 
