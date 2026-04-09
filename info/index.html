@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="google-site-verification" content="MAbL-GACcN-lmD88Hryby5e1ss7o-jW0hfK4UFcT1Bg" />
-<title>Tayla — Australian Personal Finance App</title>
-<meta name="description" content="Tayla is the personal finance app built for Australians. Track income, manage budgets, automate recurring expenses, and monitor your financial health — all in one place.">
+<title>Tayla Financial — Australian SaaS for Finance, Business & Hospitality</title>
+<meta name="description" content="Tayla Financial builds practical software for Australians — personal finance, small business accounting, and workforce management for hospitality operators.">
 <link rel="canonical" href="https://usetayla.com.au/info/">
-<meta property="og:title" content="Tayla — Australian Personal Finance">
-<meta property="og:description" content="Budget, track and automate your finances. Built for Australians.">
+<meta property="og:title" content="Tayla Financial — Australian SaaS Suite">
+<meta property="og:description" content="Personal finance, business accounting and hospitality workforce management. Built in Melbourne for Australians.
 <meta property="og:url" content="https://usetayla.com.au/info/">
 <meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -372,6 +372,76 @@ body {
 .footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; }
 .footer-bottom a:hover { color: var(--gold-light); }
 
+/* ── PRODUCTS SUITE ── */
+.suite-section { background: #0a1a1a; }
+.suite-section .section-h2 { color: #fff; }
+.suite-section .section-sub { color: rgba(255,255,255,0.45); }
+.suite-section .section-label { color: var(--gold-light); }
+.suite-section .section-label::before { background: var(--gold-light); }
+.suite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.suite-card {
+  border-radius: var(--r); padding: 32px 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; flex-direction: column;
+}
+.suite-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+.suite-card.live {
+  background: linear-gradient(135deg, rgba(26,122,140,0.15), rgba(26,122,140,0.05));
+  border-color: var(--gold);
+}
+.suite-card-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 10px; margin-bottom: 20px;
+  width: fit-content;
+}
+.badge-live { background: rgba(26,122,74,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
+.badge-soon { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.1); }
+.badge-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #2ecc71; animation: pulse 2s ease-in-out infinite; }
+.suite-card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 900; color: #fff;
+  margin-bottom: 8px;
+}
+.suite-card-tagline {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem; color: var(--gold-light);
+  margin-bottom: 16px; letter-spacing: 0.04em;
+}
+.suite-card-desc {
+  font-size: 0.82rem; color: rgba(255,255,255,0.45);
+  line-height: 1.7; flex: 1; margin-bottom: 24px;
+}
+.suite-card-features {
+  list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px;
+}
+.suite-card-features li {
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+}
+.suite-card-features li::before { content: '—'; color: var(--gold-light); flex-shrink: 0; }
+.suite-card-cta {
+  display: block; text-align: center; text-decoration: none;
+  padding: 11px 16px; border-radius: var(--r-sm);
+  font-size: 0.82rem; font-weight: 600;
+  transition: all 0.15s;
+}
+.cta-live {
+  background: var(--gold); color: #fff;
+}
+.cta-live:hover { opacity: 0.88; }
+.cta-soon {
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.1); cursor: default;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .features-grid { grid-template-columns: 1fr 1fr; }
@@ -379,6 +449,7 @@ body {
   .pages-grid    { grid-template-columns: 1fr 1fr; }
   .footer-top    { grid-template-columns: 1fr 1fr; gap: 32px; }
   .nav-links     { display: none; }
+  .suite-grid    { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
 }
 @media (max-width: 600px) {
   .features-grid { grid-template-columns: 1fr; }
@@ -397,11 +468,11 @@ body {
   <div class="nav-inner">
     <a class="logo" href="/info/"><div class="logo-dot"></div>Tayla</a>
     <div class="nav-links">
+      <a class="nav-link" href="#products">Products</a>
       <a class="nav-link" href="#features">Features</a>
       <a class="nav-link" href="#pricing">Pricing</a>
       <a class="nav-link" href="#tools">Free Tools</a>
       <a class="nav-link" href="/blog/">Blog</a>
-      <a class="nav-link" href="/changelog/">Changelog</a>
     </div>
     <a class="nav-cta" href="/">Open App →</a>
   </div>
@@ -411,21 +482,78 @@ body {
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
-  <div class="hero-eyebrow">Australian Personal Finance</div>
+  <div class="hero-eyebrow">Tayla Financial — Built in Melbourne</div>
   <h1 class="hero-h1">
-    Budget your way.<br>
-    <em>Know where you stand.</em>
+    Australian software,<br>
+    <em>built for operators.</em>
   </h1>
-  <p class="hero-sub">Tayla tracks your income, automates recurring expenses, and gives you a live financial health score — built specifically for Australians.</p>
+  <p class="hero-sub">Tayla Financial builds practical tools for everyday Australians, small business owners, and hospitality operators — by someone who's been on the floor.</p>
   <div class="hero-actions">
-    <a class="btn-hero-primary" href="/">Start for Free →</a>
-    <a class="btn-hero-ghost" href="#features">See Features</a>
+    <a class="btn-hero-primary" href="#products">See the Suite →</a>
+    <a class="btn-hero-ghost" href="/">Open Tayla Personal</a>
   </div>
   <div class="hero-stats">
-    <div class="stat-pill">✓ <strong>Free</strong> to get started</div>
-    <div class="stat-pill">✓ No credit card required</div>
-    <div class="stat-pill">✓ ATO <strong>2025–26</strong> tax brackets</div>
-    <div class="stat-pill">✓ Works on <strong>iPhone, Android & desktop</strong></div>
+    <div class="stat-pill">✓ <strong>Tayla Personal</strong> — live now</div>
+    <div class="stat-pill">✓ <strong>Tayla Workforce</strong> — coming soon</div>
+    <div class="stat-pill">✓ <strong>Tayla Business</strong> — coming soon</div>
+    <div class="stat-pill">✓ Built for <strong>Australians</strong></div>
+  </div>
+</div>
+
+<!-- PRODUCTS SUITE -->
+<div class="section suite-section" id="products">
+  <div class="section-inner">
+    <div class="section-label">The Tayla Suite</div>
+    <h2 class="section-h2">Three products. One ecosystem.</h2>
+    <p class="section-sub">Tayla Financial is building a connected suite of Australian software — starting with personal finance, expanding into business accounting and hospitality workforce management.</p>
+    <div class="suite-grid">
+
+      <div class="suite-card live">
+        <div class="suite-card-badge badge-live">Live now</div>
+        <div class="suite-card-name">Tayla Personal</div>
+        <div class="suite-card-tagline">usetayla.com.au</div>
+        <div class="suite-card-desc">A privacy-first personal finance app built for Australians. Track income, manage budgets, automate recurring expenses and monitor your financial health — all in one place.</div>
+        <ul class="suite-card-features">
+          <li>Income & budget tracker</li>
+          <li>Financial Health Score</li>
+          <li>Recurring expenses</li>
+          <li>Australian tax brackets built in</li>
+          <li>Free to start — no credit card</li>
+        </ul>
+        <a class="suite-card-cta cta-live" href="/">Open App →</a>
+      </div>
+
+      <div class="suite-card">
+        <div class="suite-card-badge badge-soon">Coming soon</div>
+        <div class="suite-card-name">Tayla Workforce</div>
+        <div class="suite-card-tagline">workforce.usetayla.com.au</div>
+        <div class="suite-card-desc">Rostering, payroll and workforce management built for Australian hospitality operators. STP Phase 2 compliant, award-aware, and designed by someone who's actually run a venue.</div>
+        <ul class="suite-card-features">
+          <li>Roster & shift management</li>
+          <li>STP Phase 2 payroll export</li>
+          <li>Leave & availability management</li>
+          <li>Award rate calculations</li>
+          <li>Multi-venue & franchise support</li>
+        </ul>
+        <a class="suite-card-cta cta-soon" href="#">Register Interest</a>
+      </div>
+
+      <div class="suite-card">
+        <div class="suite-card-badge badge-soon">Coming soon</div>
+        <div class="suite-card-name">Tayla Business</div>
+        <div class="suite-card-tagline">Accounting & bookkeeping</div>
+        <div class="suite-card-desc">Small business accounting and bookkeeping built for the Australian market. GST, BAS, invoicing and bank reconciliation — without the complexity of enterprise software.</div>
+        <ul class="suite-card-features">
+          <li>Invoicing & payments</li>
+          <li>GST & BAS reporting</li>
+          <li>Bank reconciliation</li>
+          <li>P&L and cash flow tracking</li>
+          <li>Built for sole traders & SMEs</li>
+        </ul>
+        <a class="suite-card-cta cta-soon" href="#">Register Interest</a>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -625,23 +753,24 @@ body {
     <div class="footer-top">
       <div class="footer-brand">
         <div class="footer-logo"><div class="logo-dot"></div>Tayla</div>
-        <p class="footer-brand-desc">The personal finance app built for Australians — budget, track, and automate your finances.</p>
+        <p class="footer-brand-desc">Australian software for personal finance, small business and hospitality. Built in Melbourne by Tayla Financial.</p>
       </div>
       <div>
-        <div class="footer-col-title">App</div>
+        <div class="footer-col-title">Tayla Personal</div>
         <div class="footer-links">
           <a class="footer-link" href="/">Open App</a>
-          <a class="footer-link" href="/#features">Features</a>
+          <a class="footer-link" href="#features">Features</a>
           <a class="footer-link" href="/info/#pricing">Pricing</a>
           <a class="footer-link" href="/changelog/">Changelog</a>
         </div>
       </div>
       <div>
-        <div class="footer-col-title">Free Tools</div>
+        <div class="footer-col-title">More Products</div>
         <div class="footer-links">
+          <a class="footer-link" href="https://workforce.usetayla.com.au">Tayla Workforce</a>
+          <a class="footer-link" href="#products">Tayla Business</a>
           <a class="footer-link" href="/tax/">Tax Calculator</a>
           <a class="footer-link" href="/budget/">Budget Planner</a>
-          <a class="footer-link" href="/blog/">Blog</a>
         </div>
       </div>
       <div>
