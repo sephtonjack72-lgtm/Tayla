@@ -1048,16 +1048,31 @@ function submitInterest() {
   btn.disabled = true;
   btn.textContent = 'Submitting…';
 
-  // Replace this with your actual form endpoint (Formspree, ConvertKit, etc.)
-  // For now it simulates a successful submission after a short delay.
-  setTimeout(() => {
-    document.getElementById('modalForm').style.display = 'none';
-    const success = document.getElementById('modalSuccess');
-    document.getElementById('successProduct').textContent = product;
-    success.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Register My Interest →';
-  }, 900);
+fetch("https://formspree.io/f/xbdpewyg", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: name,
+    email: email,
+    product: product
+  })
+})
+.then(() => {
+  document.getElementById('modalForm').style.display = 'none';
+  const success = document.getElementById('modalSuccess');
+  document.getElementById('successProduct').textContent = product;
+  success.style.display = 'block';
+
+  btn.disabled = false;
+  btn.textContent = 'Register My Interest →';
+})
+.catch(() => {
+  alert("Something went wrong. Try again.");
+  btn.disabled = false;
+  btn.textContent = 'Register My Interest →';
+});
 }
 
 // Close on overlay click
