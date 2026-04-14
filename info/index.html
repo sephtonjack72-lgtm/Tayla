@@ -11,74 +11,67 @@
 <meta property="og:description" content="Personal finance, business accounting and hospitality workforce management. Built in Melbourne for Australians.">
 <meta property="og:url" content="https://usetayla.com.au/info/">
 <meta property="og:type" content="website">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:        #0d1a1a;
-  --ink-2:      #1a3333;
-  --ink-3:      #4a6868;
-  --paper:      #f2f6f5;
-  --paper-2:    #e4ecea;
-  --paper-3:    #c8d8d5;
-  --rule:       rgba(30,80,80,0.12);
-  --teal:       #1a7a8c;
-  --teal-light: #7cc4d0;
-  --teal-dim:   rgba(26,122,140,0.10);
-  --green:      #1a7a4a;
-  --r:          14px;
-  --r-sm:       8px;
-  --shadow-sm:  0 2px 8px rgba(13,26,26,0.06);
-  --shadow-md:  0 8px 32px rgba(13,26,26,0.10);
-  --shadow-lg:  0 20px 60px rgba(13,26,26,0.15);
+  --ink:        #0a1628;
+  --ink-2:      #1e3050;
+  --ink-3:      #5a7089;
+  --paper:      #f7f9fc;
+  --paper-2:    #eef2f8;
+  --paper-3:    #dde5f0;
+  --rule:       rgba(10,22,40,0.08);
+  --teal:       #0e7c86;
+  --teal-light: #5cc8d4;
+  --teal-dim:   rgba(14,124,134,0.08);
+  --green:      #0d7a4a;
+  --amber:      #e07b2a;
+  --r:          16px;
+  --r-sm:       10px;
+  --shadow-sm:  0 2px 12px rgba(10,22,40,0.06);
+  --shadow-md:  0 8px 36px rgba(10,22,40,0.10);
+  --shadow-lg:  0 24px 64px rgba(10,22,40,0.14);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Sora', sans-serif;
   background: var(--paper);
   color: var(--ink);
   overflow-x: hidden;
 }
 
-/* ── NAV ── */
+/* ─── NAV ─── */
 .nav {
-  background: rgba(5,12,12,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(7,14,26,0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   padding: 0 40px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 200;
-  transition: background 0.3s;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
 }
 .nav-inner {
-  max-width: 1120px; margin: 0 auto;
+  max-width: 1160px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between;
-  height: 66px;
+  height: 64px;
 }
 .logo {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900; font-size: 1.4rem;
-  color: #fff; text-decoration: none;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.45rem; color: #fff;
+  text-decoration: none;
   display: flex; align-items: center; gap: 10px;
-  letter-spacing: -0.01em;
 }
-.logo-dot {
-  width: 8px; height: 8px;
-  background: var(--teal-light); border-radius: 50%;
-  animation: pulse 2.5s ease-in-out infinite;
-  box-shadow: 0 0 8px var(--teal-light);
+.logo-mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--teal), #0a9eb0);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 14px rgba(14,124,134,0.45);
 }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 8px var(--teal-light); }
-  50%       { transform: scale(1.4); opacity: 0.7; box-shadow: 0 0 14px var(--teal-light); }
-}
-.nav-links { display: flex; align-items: center; gap: 32px; }
+.logo-mark svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.2; }
+.nav-links { display: flex; align-items: center; gap: 30px; }
 .nav-link {
-  font-size: 0.8rem; font-weight: 500;
-  color: rgba(255,255,255,0.45);
-  text-decoration: none; transition: color 0.15s;
-  letter-spacing: 0.01em;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.42); text-decoration: none; transition: color 0.15s;
 }
 .nav-link:hover { color: #fff; }
 .nav-cta {
@@ -86,583 +79,805 @@ body {
   padding: 9px 22px; border-radius: 40px;
   background: var(--teal); color: #fff;
   text-decoration: none; transition: all 0.2s;
-  letter-spacing: 0.01em;
+  box-shadow: 0 0 0 0 rgba(14,124,134,0.4);
 }
-.nav-cta:hover { background: #1e90a0; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,122,140,0.4); }
+.nav-cta:hover { background: #0f8e9a; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(14,124,134,0.5); }
 
-/* ── HERO ── */
+/* ─── HERO ─── */
 .hero {
   min-height: 100vh;
-  background: #070f0f;
+  background: #060e1c;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 110px 40px 80px;
+  padding: 148px 40px 90px;
   position: relative; overflow: hidden;
   text-align: center;
 }
-.hero-bg {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% -10%, rgba(26,122,140,0.28) 0%, transparent 65%),
-    radial-gradient(ellipse 45% 35% at 15% 85%, rgba(26,122,74,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 35% 28% at 85% 75%, rgba(26,96,128,0.14) 0%, transparent 50%);
+.hero-orb-1 {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  top: -200px; left: 50%; transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(14,124,134,0.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-orb-2 {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  bottom: -100px; left: -80px;
+  background: radial-gradient(circle, rgba(13,122,74,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-orb-3 {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  bottom: 50px; right: -60px;
+  background: radial-gradient(circle, rgba(224,123,42,0.08) 0%, transparent 60%);
+  pointer-events: none;
 }
 .hero-grid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(124,196,208,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,196,208,0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 90% 90% at center, black 20%, transparent 75%);
+    linear-gradient(rgba(92,200,212,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92,200,212,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
-.hero-noise {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(14,124,134,0.14);
+  border: 1px solid rgba(14,124,134,0.28);
+  border-radius: 40px; padding: 6px 16px 6px 8px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.7s ease both;
 }
-.hero-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--teal-light); margin-bottom: 28px;
-  display: inline-flex; align-items: center; gap: 14px;
-  animation: fadeUp 0.9s ease both;
-  opacity: 0.85;
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal-light);
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--teal-light);
 }
-.hero-eyebrow::before, .hero-eyebrow::after {
-  content: ''; width: 36px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--teal-light));
-  opacity: 0.5;
+.hero-badge span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal-light);
 }
-.hero-eyebrow::after {
-  background: linear-gradient(90deg, var(--teal-light), transparent);
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.5); opacity: 0.6; }
 }
 .hero-h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2.8rem, 7.5vw, 5.8rem);
-  font-weight: 900; color: #fff;
-  line-height: 1.03; margin-bottom: 10px;
-  animation: fadeUp 0.9s 0.1s ease both;
-  letter-spacing: -0.02em;
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.9rem, 7.5vw, 6rem);
+  color: #fff; line-height: 1.02;
+  margin-bottom: 8px;
+  animation: fadeUp 0.7s 0.08s ease both;
+  letter-spacing: -0.01em;
 }
 .hero-h1 em {
   font-style: italic; color: var(--teal-light);
   display: block;
 }
-.hero-sub {
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
-  color: rgba(255,255,255,0.42); max-width: 500px;
-  line-height: 1.78; margin: 0 auto 44px;
-  animation: fadeUp 0.9s 0.2s ease both;
+.hero-problem {
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  color: rgba(255,255,255,0.55); max-width: 580px;
+  line-height: 1.75; margin: 0 auto 16px;
+  animation: fadeUp 0.7s 0.16s ease both;
   font-weight: 300;
+}
+.hero-problem strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+.hero-divider {
+  width: 40px; height: 1px; background: rgba(255,255,255,0.12);
+  margin: 0 auto 28px;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+.hero-solution {
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+  color: var(--teal-light); max-width: 440px;
+  line-height: 1.75; margin: 0 auto 48px;
+  animation: fadeUp 0.7s 0.22s ease both;
+  font-weight: 400;
+  opacity: 0.9;
 }
 .hero-actions {
   display: flex; gap: 12px; flex-wrap: wrap;
-  justify-content: center; margin-bottom: 60px;
-  animation: fadeUp 0.9s 0.3s ease both;
+  justify-content: center; margin-bottom: 64px;
+  animation: fadeUp 0.7s 0.28s ease both;
 }
-.btn-hero-primary {
+.btn-primary {
   background: var(--teal); color: #fff;
-  padding: 16px 40px; border-radius: 40px;
-  font-weight: 600; font-size: 0.92rem;
+  padding: 17px 44px; border-radius: 40px;
+  font-weight: 700; font-size: 0.95rem;
   text-decoration: none; transition: all 0.25s;
-  border: none; cursor: pointer;
   letter-spacing: 0.01em;
-  box-shadow: 0 4px 20px rgba(26,122,140,0.35);
+  box-shadow: 0 4px 24px rgba(14,124,134,0.45);
 }
-.btn-hero-primary:hover {
-  background: #1e90a0; transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(26,122,140,0.5);
+.btn-primary:hover {
+  background: #0f8e9a; transform: translateY(-2px);
+  box-shadow: 0 10px 36px rgba(14,124,134,0.55);
 }
-.btn-hero-ghost {
+.btn-ghost {
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.65);
-  padding: 16px 32px; border-radius: 40px;
-  font-weight: 500; font-size: 0.92rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  padding: 17px 34px; border-radius: 40px;
+  font-weight: 500; font-size: 0.95rem;
   text-decoration: none; transition: all 0.2s;
 }
-.btn-hero-ghost:hover { background: rgba(255,255,255,0.10); color: #fff; border-color: rgba(255,255,255,0.25); }
+.btn-ghost:hover { background: rgba(255,255,255,0.10); color: #fff; border-color: rgba(255,255,255,0.22); }
 
-/* Stat pills */
-.hero-stats {
-  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-  animation: fadeUp 0.9s 0.4s ease both;
+/* Trust signals */
+.hero-trust {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.7s 0.36s ease both;
 }
-.stat-pill {
-  background: rgba(255,255,255,0.045);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 20px; padding: 7px 16px;
-  font-size: 0.73rem; color: rgba(255,255,255,0.42);
-  display: flex; align-items: center; gap: 7px;
-  transition: all 0.15s;
+.trust-chip {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px; padding: 7px 14px;
+  font-size: 0.72rem; color: rgba(255,255,255,0.38);
+  display: flex; align-items: center; gap: 6px;
 }
-.stat-pill:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); }
-.stat-pill strong { color: var(--teal-light); font-weight: 500; }
-
+.trust-chip .check { color: var(--teal-light); font-size: 0.7rem; }
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── SECTION BASE ── */
-.section { padding: 96px 40px; }
-.section-inner { max-width: 1120px; margin: 0 auto; }
-.section-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--teal); margin-bottom: 14px;
+/* ─── SOCIAL PROOF BAR ─── */
+.proof-bar {
+  background: #fff;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 22px 40px;
+}
+.proof-bar-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+}
+.proof-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.78rem; color: var(--ink-3); font-weight: 500;
+}
+.proof-item svg { width: 16px; height: 16px; opacity: 0.6; }
+.proof-divider { width: 1px; height: 20px; background: var(--rule); }
+
+/* ─── SECTION BASE ─── */
+.section { padding: 100px 40px; }
+.section-inner { max-width: 1160px; margin: 0 auto; }
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 16px;
   display: flex; align-items: center; gap: 10px;
 }
-.section-label::before { content: ''; width: 22px; height: 1.5px; background: var(--teal); opacity: 0.7; }
+.section-eyebrow::before { content: ''; width: 24px; height: 1.5px; background: var(--teal); }
 .section-h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.9rem, 4vw, 2.9rem);
-  font-weight: 900; margin-bottom: 14px; line-height: 1.12;
-  letter-spacing: -0.02em;
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  font-weight: 400; margin-bottom: 16px; line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 .section-sub {
-  font-size: 0.9rem; color: var(--ink-3);
-  max-width: 540px; line-height: 1.8; margin-bottom: 52px;
+  font-size: 0.92rem; color: var(--ink-3);
+  max-width: 520px; line-height: 1.85; margin-bottom: 56px;
   font-weight: 300;
 }
 
-/* ── FEATURES ── */
+/* ─── PROBLEM/SOLUTION BLOCK ─── */
+.problem-section { background: var(--paper); }
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+}
+.problem-half {
+  padding: 52px 48px;
+}
+.problem-half.before {
+  background: #f0f0f0;
+}
+.problem-half.after {
+  background: var(--ink);
+}
+.half-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 24px; display: flex; align-items: center; gap: 8px;
+}
+.before .half-label { color: #999; }
+.after  .half-label { color: var(--teal-light); }
+.half-label::before {
+  content: ''; display: inline-block;
+  width: 18px; height: 1.5px;
+}
+.before .half-label::before { background: #aaa; }
+.after  .half-label::before { background: var(--teal-light); }
+.pain-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.pain-list li {
+  font-size: 0.9rem; line-height: 1.6; display: flex; align-items: flex-start; gap: 12px;
+}
+.before .pain-list li { color: #666; }
+.after  .pain-list li { color: rgba(255,255,255,0.65); }
+.pain-list li::before {
+  flex-shrink: 0; font-size: 0.75rem; margin-top: 2px;
+}
+.before .pain-list li::before { content: '✕'; color: #bbb; }
+.after  .pain-list li::before { content: '✓'; color: var(--teal-light); font-weight: 700; }
+
+/* ─── PRODUCTS SUITE ─── */
+.suite-section { background: #060e1c; }
+.suite-section .section-eyebrow { color: var(--teal-light); }
+.suite-section .section-eyebrow::before { background: var(--teal-light); }
+.suite-section .section-h2 { color: #fff; }
+.suite-section .section-sub { color: rgba(255,255,255,0.38); }
+
+.suite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.suite-card {
+  border-radius: var(--r); padding: 38px 32px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.suite-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  transform: scaleX(0); transform-origin: center;
+  transition: transform 0.4s ease;
+}
+.suite-card:hover { transform: translateY(-5px); box-shadow: 0 28px 64px rgba(0,0,0,0.4); border-color: rgba(14,124,134,0.25); }
+.suite-card:hover::before { transform: scaleX(1); }
+.suite-card.live {
+  background: linear-gradient(160deg, rgba(14,124,134,0.16), rgba(14,124,134,0.04));
+  border-color: rgba(14,124,134,0.38);
+}
+.suite-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 28px; width: fit-content;
+}
+.badge-live { background: rgba(13,122,74,0.18); color: #3dd68c; border: 1px solid rgba(61,214,140,0.25); }
+.badge-soon { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.08); }
+.badge-live::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #3dd68c; animation: pulse 2s ease-in-out infinite;
+}
+.suite-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; font-size: 1.4rem;
+}
+.icon-personal { background: rgba(14,124,134,0.15); border: 1px solid rgba(14,124,134,0.25); }
+.icon-workforce { background: rgba(224,123,42,0.12); border: 1px solid rgba(224,123,42,0.22); }
+.icon-business  { background: rgba(13,122,74,0.12);  border: 1px solid rgba(13,122,74,0.22); }
+.suite-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.45rem; color: #fff;
+  margin-bottom: 6px; letter-spacing: -0.01em;
+}
+.suite-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.67rem; color: var(--teal-light);
+  margin-bottom: 18px; letter-spacing: 0.04em; opacity: 0.75;
+}
+.suite-desc {
+  font-size: 0.84rem; color: rgba(255,255,255,0.38);
+  line-height: 1.8; flex: 1; margin-bottom: 28px; font-weight: 300;
+}
+.suite-features {
+  list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 32px;
+}
+.suite-features li {
+  font-size: 0.8rem; color: rgba(255,255,255,0.48);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.4;
+}
+.suite-features li::before { content: '→'; color: var(--teal-light); flex-shrink: 0; opacity: 0.7; font-size: 0.72rem; margin-top: 2px; }
+.suite-cta {
+  display: block; text-align: center; text-decoration: none;
+  padding: 13px 18px; border-radius: 40px;
+  font-size: 0.84rem; font-weight: 600;
+  transition: all 0.2s; letter-spacing: 0.01em; cursor: pointer;
+  border: none; font-family: inherit; width: 100%;
+}
+.cta-live {
+  background: var(--teal); color: #fff;
+  box-shadow: 0 4px 20px rgba(14,124,134,0.35);
+}
+.cta-live:hover { background: #0f8e9a; box-shadow: 0 8px 28px rgba(14,124,134,0.5); transform: translateY(-1px); }
+.cta-register {
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.cta-register:hover { background: rgba(14,124,134,0.14); color: rgba(255,255,255,0.85); border-color: rgba(14,124,134,0.35); }
+
+/* ─── INTEGRATION / HOW IT WORKS ─── */
+.how-section { background: var(--paper-2); }
+.how-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  margin-bottom: 12px;
+}
+.how-flow::before {
+  content: '';
+  position: absolute; top: 32px; left: 12.5%; right: 12.5%; height: 1px;
+  background: linear-gradient(90deg, var(--teal-light), var(--teal), var(--teal-light));
+  opacity: 0.25; z-index: 0;
+}
+.how-step {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 0 20px; position: relative; z-index: 1;
+}
+.how-num {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--paper-3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--teal);
+  margin-bottom: 22px; position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s;
+}
+.how-step:hover .how-num { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,124,134,0.1); }
+.how-step-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
+.how-step-desc { font-size: 0.78rem; color: var(--ink-3); line-height: 1.65; font-weight: 300; }
+
+/* ─── FEATURES ─── */
 .features-section { background: var(--paper); }
+.features-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 40px; margin-bottom: 52px; flex-wrap: wrap;
+}
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 .feature-card {
   background: #fff;
   border: 1px solid var(--rule);
-  border-radius: var(--r); padding: 28px 24px;
+  border-radius: var(--r); padding: 32px 26px;
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
   position: relative; overflow: hidden;
 }
-.feature-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--teal), var(--teal-light));
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.3s ease;
-}
-.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(26,122,140,0.2); }
-.feature-card:hover::before { transform: scaleX(1); }
-.feature-icon {
-  width: 44px; height: 44px; border-radius: var(--r-sm);
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(14,124,134,0.2); }
+.feature-card:hover .feature-icon-wrap { background: rgba(14,124,134,0.14); }
+.feature-icon-wrap {
+  width: 46px; height: 46px; border-radius: 12px;
   background: var(--teal-dim);
-  border: 1px solid rgba(26,122,140,0.18);
+  border: 1px solid rgba(14,124,134,0.16);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; margin-bottom: 18px;
+  font-size: 1.1rem; margin-bottom: 20px;
   transition: background 0.2s;
 }
-.feature-card:hover .feature-icon { background: rgba(26,122,140,0.16); }
-.feature-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem; font-weight: 700; margin-bottom: 8px;
+.feature-name {
+  font-weight: 700; font-size: 0.96rem; margin-bottom: 9px;
   letter-spacing: -0.01em;
 }
-.feature-desc { font-size: 0.81rem; color: var(--ink-3); line-height: 1.7; }
+.feature-desc { font-size: 0.82rem; color: var(--ink-3); line-height: 1.72; font-weight: 300; }
 .feature-tag {
-  display: inline-block; margin-top: 14px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em;
+  display: inline-block; margin-top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.07em;
   text-transform: uppercase; padding: 3px 9px; border-radius: 10px;
 }
-.tag-free { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(26,122,140,0.2); }
-.tag-plus { background: rgba(26,122,74,0.08); color: var(--green); border: 1px solid rgba(26,122,74,0.2); }
+.tag-free { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(14,124,134,0.18); }
+.tag-plus { background: rgba(224,123,42,0.08); color: var(--amber); border: 1px solid rgba(224,123,42,0.2); }
 
-/* ── TIERS ── */
-.tiers-section { background: #07100f; }
-.tiers-section .section-h2 { color: #fff; }
-.tiers-section .section-sub { color: rgba(255,255,255,0.38); }
-.tiers-section .section-label { color: var(--teal-light); }
-.tiers-section .section-label::before { background: var(--teal-light); }
-.tiers-grid {
+/* ─── TESTIMONIALS ─── */
+.social-section { background: var(--ink); }
+.social-section .section-eyebrow { color: var(--teal-light); }
+.social-section .section-eyebrow::before { background: var(--teal-light); }
+.social-section .section-h2 { color: #fff; }
+.social-section .section-sub { color: rgba(255,255,255,0.38); }
+.testimonials-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  align-items: start;
+  gap: 16px;
 }
-.tier-card {
-  border-radius: var(--r); padding: 36px 28px;
+.testi-card {
+  background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.07);
-  background: rgba(255,255,255,0.03);
-  transition: transform 0.25s, box-shadow 0.25s;
+  border-radius: var(--r); padding: 32px;
+  transition: transform 0.2s, border-color 0.2s;
 }
-.tier-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
-.tier-card.featured {
-  background: linear-gradient(160deg, rgba(26,122,140,0.18), rgba(26,122,140,0.06));
-  border-color: rgba(26,122,140,0.5);
-  box-shadow: 0 0 40px rgba(26,122,140,0.12);
+.testi-card:hover { transform: translateY(-3px); border-color: rgba(14,124,134,0.3); }
+.testi-stars { color: var(--amber); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 18px; }
+.testi-quote {
+  font-size: 0.9rem; color: rgba(255,255,255,0.62);
+  line-height: 1.8; margin-bottom: 22px; font-weight: 300;
+  font-style: italic;
 }
-.tier-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px;
-  letter-spacing: -0.01em;
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(14,124,134,0.2);
+  border: 1px solid rgba(14,124,134,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 700; color: var(--teal-light);
+  font-family: 'DM Serif Display', serif;
 }
-.tier-price {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 2.1rem; font-weight: 700; color: var(--teal-light);
-  margin: 14px 0 6px; letter-spacing: -0.02em;
+.testi-name { font-size: 0.83rem; font-weight: 600; color: rgba(255,255,255,0.75); margin-bottom: 2px; }
+.testi-role { font-size: 0.72rem; color: rgba(255,255,255,0.3); font-weight: 300; }
+.testi-featured {
+  background: linear-gradient(135deg, rgba(14,124,134,0.16), rgba(14,124,134,0.04));
+  border-color: rgba(14,124,134,0.35);
 }
-.tier-price span { font-size: 0.82rem; color: rgba(255,255,255,0.3); font-weight: 400; }
-.tier-desc { font-size: 0.77rem; color: rgba(255,255,255,0.35); margin-bottom: 24px; line-height: 1.55; font-weight: 300; }
-.tier-divider { height: 1px; background: rgba(255,255,255,0.07); margin-bottom: 20px; }
-.tier-features { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-.tier-features li {
-  font-size: 0.81rem; color: rgba(255,255,255,0.6);
-  display: flex; align-items: flex-start; gap: 9px; line-height: 1.45;
+
+/* ─── PRICING ─── */
+.pricing-section { background: #060e1c; }
+.pricing-section .section-eyebrow { color: var(--teal-light); }
+.pricing-section .section-eyebrow::before { background: var(--teal-light); }
+.pricing-section .section-h2 { color: #fff; }
+.pricing-section .section-sub { color: rgba(255,255,255,0.38); }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px; align-items: start;
 }
-.tier-features li::before { content: '✓'; color: var(--teal-light); font-weight: 700; flex-shrink: 0; font-size: 0.75rem; margin-top: 1px; }
-.tier-features li.locked { color: rgba(255,255,255,0.18); }
-.tier-features li.locked::before { content: '✗'; color: rgba(255,255,255,0.12); }
-.tier-cta {
+.price-card {
+  border-radius: var(--r); padding: 38px 30px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+  transition: transform 0.25s;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured {
+  background: linear-gradient(155deg, rgba(14,124,134,0.2), rgba(14,124,134,0.05));
+  border-color: rgba(14,124,134,0.55);
+  box-shadow: 0 0 48px rgba(14,124,134,0.14), 0 0 0 1px rgba(14,124,134,0.2);
+  position: relative;
+}
+.featured-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--teal); color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(14,124,134,0.4);
+}
+.price-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem; color: #fff; margin-bottom: 6px;
+}
+.price-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.3rem; font-weight: 500; color: var(--teal-light);
+  margin: 16px 0 4px; letter-spacing: -0.03em;
+}
+.price-amount span { font-size: 0.82rem; color: rgba(255,255,255,0.28); font-weight: 400; }
+.price-desc { font-size: 0.78rem; color: rgba(255,255,255,0.32); margin-bottom: 26px; line-height: 1.6; font-weight: 300; }
+.price-divider { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 22px; }
+.price-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.price-list li {
+  font-size: 0.82rem; color: rgba(255,255,255,0.55);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.45;
+}
+.price-list li::before { content: '✓'; color: var(--teal-light); font-weight: 700; flex-shrink: 0; font-size: 0.75rem; margin-top: 1px; }
+.price-list li.off { color: rgba(255,255,255,0.18); }
+.price-list li.off::before { content: '—'; color: rgba(255,255,255,0.1); }
+.price-cta {
   display: block; margin-top: 28px;
-  background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65);
-  border: 1px solid rgba(255,255,255,0.11);
-  padding: 12px 16px; border-radius: 40px;
+  background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 13px 16px; border-radius: 40px;
   text-align: center; text-decoration: none;
-  font-size: 0.82rem; font-weight: 600;
+  font-size: 0.84rem; font-weight: 600;
   transition: all 0.2s; letter-spacing: 0.01em;
 }
-.tier-cta:hover { background: rgba(255,255,255,0.13); color: #fff; }
-.tier-card.featured .tier-cta {
+.price-cta:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.price-card.featured .price-cta {
   background: var(--teal); color: #fff;
   border-color: var(--teal);
-  box-shadow: 0 4px 16px rgba(26,122,140,0.35);
+  box-shadow: 0 4px 20px rgba(14,124,134,0.4);
 }
-.tier-card.featured .tier-cta:hover { background: #1e90a0; box-shadow: 0 6px 24px rgba(26,122,140,0.5); transform: translateY(-1px); }
+.price-card.featured .price-cta:hover { background: #0f8e9a; transform: translateY(-1px); }
 
-/* ── TOOLS ── */
+/* ─── FINAL CTA ─── */
+.cta-section {
+  background: var(--paper);
+  padding: 100px 40px;
+}
+.cta-inner {
+  max-width: 720px; margin: 0 auto; text-align: center;
+}
+.cta-section .section-eyebrow { justify-content: center; }
+.cta-section .section-eyebrow::before { display: none; }
+.cta-h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.08; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cta-sub {
+  font-size: 0.95rem; color: var(--ink-3); line-height: 1.85;
+  margin-bottom: 40px; font-weight: 300;
+}
+.cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-cta-primary {
+  background: var(--ink); color: #fff;
+  padding: 18px 48px; border-radius: 40px;
+  font-weight: 700; font-size: 0.95rem;
+  text-decoration: none; transition: all 0.25s;
+  box-shadow: 0 4px 24px rgba(10,22,40,0.25);
+}
+.btn-cta-primary:hover { background: var(--ink-2); transform: translateY(-2px); box-shadow: 0 10px 36px rgba(10,22,40,0.32); }
+.btn-cta-ghost {
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  color: var(--ink-3); padding: 18px 34px; border-radius: 40px;
+  font-weight: 500; font-size: 0.95rem;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-cta-ghost:hover { border-color: var(--teal); color: var(--teal); }
+.cta-footnote {
+  margin-top: 22px; font-size: 0.75rem; color: var(--ink-3); font-weight: 300;
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+}
+.cta-footnote span { display: flex; align-items: center; gap: 5px; }
+.cta-footnote .dot { color: var(--teal); }
+
+/* ─── FREE TOOLS ─── */
 .tools-section { background: var(--paper-2); }
 .tools-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
 }
 .tool-card {
   background: #fff; border: 1px solid var(--rule);
-  border-radius: var(--r); padding: 28px 32px;
-  display: flex; align-items: center; gap: 22px;
+  border-radius: var(--r); padding: 30px 32px;
+  display: flex; align-items: center; gap: 24px;
   text-decoration: none; color: inherit;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
-.tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(26,122,140,0.2); }
-.tool-icon {
-  font-size: 1.8rem; flex-shrink: 0;
-  width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+.tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(14,124,134,0.2); }
+.tool-icon-wrap {
+  font-size: 1.6rem; flex-shrink: 0;
+  width: 58px; height: 58px; display: flex; align-items: center; justify-content: center;
   background: var(--teal-dim); border-radius: var(--r-sm);
-  border: 1px solid rgba(26,122,140,0.18);
+  border: 1px solid rgba(14,124,134,0.16);
 }
-.tool-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem; font-weight: 700; margin-bottom: 5px; letter-spacing: -0.01em;
-}
-.tool-desc { font-size: 0.77rem; color: var(--ink-3); line-height: 1.55; font-weight: 300; }
+.tool-name { font-weight: 700; font-size: 0.96rem; margin-bottom: 5px; }
+.tool-desc { font-size: 0.78rem; color: var(--ink-3); line-height: 1.6; font-weight: 300; }
 .tool-arrow {
-  margin-left: auto; color: var(--teal);
-  font-size: 1.1rem; flex-shrink: 0; opacity: 0.5;
+  margin-left: auto; color: var(--teal); font-size: 1rem; flex-shrink: 0; opacity: 0.45;
   transition: transform 0.2s, opacity 0.2s;
 }
-.tool-card:hover .tool-arrow { transform: translateX(4px); opacity: 1; }
+.tool-card:hover .tool-arrow { transform: translateX(4px); opacity: 0.9; }
 
-/* ── PAGES ── */
+/* ─── PAGES GRID ─── */
 .pages-section { background: var(--paper); }
-.pages-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
+.pages-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .page-card {
   background: #fff; border: 1px solid var(--rule);
   border-radius: var(--r); padding: 22px 20px;
   text-decoration: none; color: inherit;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 5px;
 }
-.page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: rgba(26,122,140,0.2); }
-.page-card-icon { font-size: 1.4rem; margin-bottom: 4px; }
-.page-card-name { font-weight: 700; font-size: 0.88rem; letter-spacing: -0.01em; }
-.page-card-url { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--teal); opacity: 0.75; }
+.page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: rgba(14,124,134,0.2); }
+.page-card-icon { font-size: 1.3rem; margin-bottom: 4px; }
+.page-card-name { font-weight: 700; font-size: 0.88rem; }
+.page-card-url { font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--teal); opacity: 0.75; }
 .page-card-desc { font-size: 0.74rem; color: var(--ink-3); line-height: 1.55; font-weight: 300; }
 
-/* ── FOOTER ── */
-.footer-section {
-  background: #030a0a;
-  padding: 72px 40px 44px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-.footer-inner { max-width: 1120px; margin: 0 auto; }
-.footer-top {
-  display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
-  gap: 52px; margin-bottom: 52px;
-}
-.footer-logo {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900; font-size: 1.3rem; color: #fff;
-  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-  letter-spacing: -0.01em;
-}
-.footer-brand-desc {
-  font-size: 0.78rem; color: rgba(255,255,255,0.28);
-  line-height: 1.75; max-width: 220px; font-weight: 300;
-}
-.footer-col-title {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: rgba(255,255,255,0.25);
-  margin-bottom: 16px;
-}
-.footer-links { display: flex; flex-direction: column; gap: 9px; }
-.footer-link {
-  font-size: 0.8rem; color: rgba(255,255,255,0.42);
-  text-decoration: none; transition: color 0.15s;
-  font-weight: 300;
-}
-.footer-link:hover { color: var(--teal-light); }
-.footer-bottom {
-  padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 0.7rem; color: rgba(255,255,255,0.18);
-  flex-wrap: wrap; gap: 8px;
-}
-.footer-bottom a { color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.15s; }
-.footer-bottom a:hover { color: var(--teal-light); }
-
-/* ── PRODUCTS SUITE ── */
-.suite-section { background: #07100f; }
-.suite-section .section-h2 { color: #fff; }
-.suite-section .section-sub { color: rgba(255,255,255,0.38); }
-.suite-section .section-label { color: var(--teal-light); }
-.suite-section .section-label::before { background: var(--teal-light); }
-.suite-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-.suite-card {
-  border-radius: var(--r); padding: 36px 30px;
-  border: 1px solid rgba(255,255,255,0.07);
-  background: rgba(255,255,255,0.03);
-  transition: transform 0.25s, box-shadow 0.25s;
-  display: flex; flex-direction: column;
-  position: relative; overflow: hidden;
-}
-.suite-card::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 10%, var(--teal) 50%, transparent 90%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.suite-card:hover { transform: translateY(-4px); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
-.suite-card:hover::after { opacity: 1; }
-.suite-card.live {
-  background: linear-gradient(155deg, rgba(26,122,140,0.14), rgba(26,122,140,0.04));
-  border-color: rgba(26,122,140,0.4);
-}
-.suite-card-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
-  padding: 4px 11px; border-radius: 12px; margin-bottom: 24px;
-  width: fit-content;
-}
-.badge-live { background: rgba(26,122,74,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.28); }
-.badge-soon { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.09); }
-.badge-live::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #2ecc71; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
-.suite-card-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.35rem; font-weight: 900; color: #fff;
-  margin-bottom: 8px; letter-spacing: -0.02em;
-}
-.suite-card-tagline {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.68rem; color: var(--teal-light);
-  margin-bottom: 18px; letter-spacing: 0.03em; opacity: 0.75;
-}
-.suite-card-desc {
-  font-size: 0.81rem; color: rgba(255,255,255,0.38);
-  line-height: 1.75; flex: 1; margin-bottom: 24px; font-weight: 300;
-}
-.suite-card-features {
-  list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 28px;
-}
-.suite-card-features li {
-  font-size: 0.77rem; color: rgba(255,255,255,0.45);
-  display: flex; align-items: flex-start; gap: 9px; line-height: 1.4;
-}
-.suite-card-features li::before { content: '—'; color: var(--teal-light); flex-shrink: 0; opacity: 0.6; }
-.suite-card-cta {
-  display: block; text-align: center; text-decoration: none;
-  padding: 12px 18px; border-radius: 40px;
-  font-size: 0.82rem; font-weight: 600;
-  transition: all 0.2s; letter-spacing: 0.01em; cursor: pointer;
-  border: none; font-family: inherit;
-  width: 100%;
-}
-.cta-live {
-  background: var(--teal); color: #fff;
-  box-shadow: 0 4px 16px rgba(26,122,140,0.3);
-}
-.cta-live:hover { background: #1e90a0; box-shadow: 0 6px 24px rgba(26,122,140,0.5); transform: translateY(-1px); }
-.cta-register {
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.cta-register:hover { background: rgba(26,122,140,0.15); color: rgba(255,255,255,0.85); border-color: rgba(26,122,140,0.35); }
-
-/* ── REGISTER INTEREST MODAL ── */
+/* ─── MODAL ─── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(5,12,12,0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
+  background: rgba(6,14,28,0.88);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal {
-  background: #0d1f1f;
+  background: #0d1e2e;
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px; padding: 48px;
-  max-width: 480px; width: 100%;
-  position: relative;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  border-radius: 20px; padding: 52px;
+  max-width: 480px; width: 100%; position: relative;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
   transform: translateY(24px) scale(0.97);
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
   opacity: 0;
 }
-.modal-overlay.open .modal {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); opacity: 1; }
 .modal-close {
   position: absolute; top: 20px; right: 20px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.5);
-  width: 32px; height: 32px; border-radius: 50%;
-  font-size: 1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s; font-family: inherit;
-  padding: 0;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.45); width: 32px; height: 32px; border-radius: 50%;
+  font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; font-family: inherit; padding: 0;
 }
-.modal-close:hover { background: rgba(255,255,255,0.13); color: #fff; }
-.modal-icon {
+.modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.modal-icon-wrap {
   width: 52px; height: 52px; border-radius: 14px;
-  background: rgba(26,122,140,0.15);
-  border: 1px solid rgba(26,122,140,0.3);
+  background: rgba(14,124,134,0.15); border: 1px solid rgba(14,124,134,0.3);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin-bottom: 24px;
+  font-size: 1.5rem; margin-bottom: 26px;
 }
 .modal-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--teal-light); margin-bottom: 10px; opacity: 0.8;
 }
 .modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.7rem; font-weight: 900; color: #fff;
-  margin-bottom: 10px; line-height: 1.15; letter-spacing: -0.02em;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem; color: #fff;
+  margin-bottom: 10px; line-height: 1.12; letter-spacing: -0.01em;
 }
-.modal-desc {
-  font-size: 0.82rem; color: rgba(255,255,255,0.38);
-  line-height: 1.7; margin-bottom: 32px; font-weight: 300;
-}
+.modal-desc { font-size: 0.84rem; color: rgba(255,255,255,0.36); line-height: 1.72; margin-bottom: 32px; font-weight: 300; }
 .modal-field { margin-bottom: 14px; }
 .modal-field label {
-  display: block; font-size: 0.75rem; font-weight: 600;
-  color: rgba(255,255,255,0.45); margin-bottom: 7px;
-  letter-spacing: 0.04em; text-transform: uppercase;
-  font-family: 'IBM Plex Mono', monospace;
+  display: block; font-size: 0.72rem; font-weight: 600;
+  color: rgba(255,255,255,0.4); margin-bottom: 7px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
 }
 .modal-field input {
   width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--r-sm);
-  padding: 13px 16px;
-  font-size: 0.88rem; font-family: 'IBM Plex Sans', sans-serif;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-sm); padding: 13px 16px;
+  font-size: 0.88rem; font-family: 'Sora', sans-serif;
   color: #fff; outline: none;
   transition: border-color 0.2s, background 0.2s;
 }
-.modal-field input::placeholder { color: rgba(255,255,255,0.2); }
-.modal-field input:focus {
-  border-color: rgba(26,122,140,0.6);
-  background: rgba(26,122,140,0.06);
-}
+.modal-field input::placeholder { color: rgba(255,255,255,0.18); }
+.modal-field input:focus { border-color: rgba(14,124,134,0.6); background: rgba(14,124,134,0.06); }
 .modal-submit {
   width: 100%; margin-top: 20px;
   background: var(--teal); color: #fff;
-  border: none; padding: 14px; border-radius: 40px;
-  font-size: 0.9rem; font-weight: 600; font-family: inherit;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.01em;
-  box-shadow: 0 4px 16px rgba(26,122,140,0.35);
+  border: none; padding: 15px; border-radius: 40px;
+  font-size: 0.9rem; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(14,124,134,0.4);
 }
-.modal-submit:hover { background: #1e90a0; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(26,122,140,0.5); }
+.modal-submit:hover { background: #0f8e9a; transform: translateY(-1px); }
 .modal-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.modal-note {
-  font-size: 0.72rem; color: rgba(255,255,255,0.2);
-  text-align: center; margin-top: 14px; line-height: 1.6; font-weight: 300;
-}
-.modal-success {
-  display: none; text-align: center; padding: 16px 0 8px;
-}
+.modal-note { font-size: 0.72rem; color: rgba(255,255,255,0.18); text-align: center; margin-top: 14px; line-height: 1.6; font-weight: 300; }
+.modal-success { display: none; text-align: center; padding: 16px 0 8px; }
 .modal-success-icon {
   width: 60px; height: 60px; border-radius: 50%;
-  background: rgba(26,122,74,0.15); border: 2px solid rgba(46,204,113,0.4);
+  background: rgba(13,122,74,0.15); border: 2px solid rgba(61,214,140,0.4);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.8rem; margin: 0 auto 20px;
   animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
 }
-@keyframes bounceIn {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-.modal-success-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem; font-weight: 900; color: #fff;
-  margin-bottom: 10px; letter-spacing: -0.01em;
-}
-.modal-success-text {
-  font-size: 0.82rem; color: rgba(255,255,255,0.38);
-  line-height: 1.7; font-weight: 300;
-}
+@keyframes bounceIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-success-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: #fff; margin-bottom: 10px; }
+.modal-success-text { font-size: 0.84rem; color: rgba(255,255,255,0.38); line-height: 1.72; font-weight: 300; }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .features-grid { grid-template-columns: 1fr 1fr; }
-  .tiers-grid    { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
-  .pages-grid    { grid-template-columns: 1fr 1fr; }
-  .footer-top    { grid-template-columns: 1fr 1fr; gap: 36px; }
-  .nav-links     { display: none; }
-  .suite-grid    { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+/* ─── FOOTER ─── */
+.footer-section { background: #030b14; padding: 72px 40px 44px; border-top: 1px solid rgba(255,255,255,0.04); }
+.footer-inner { max-width: 1160px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 52px; margin-bottom: 52px; }
+.footer-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem; color: #fff;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
 }
-@media (max-width: 600px) {
-  .features-grid { grid-template-columns: 1fr; }
-  .tools-grid    { grid-template-columns: 1fr; }
-  .pages-grid    { grid-template-columns: 1fr 1fr; }
-  .footer-top    { grid-template-columns: 1fr; gap: 28px; }
-  .hero          { padding: 100px 24px 60px; }
-  .section       { padding: 68px 24px; }
-  .modal         { padding: 36px 28px; }
+.footer-logo-mark {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: rgba(14,124,134,0.3); border: 1px solid rgba(14,124,134,0.4);
+  display: flex; align-items: center; justify-content: center;
+}
+.footer-logo-mark svg { width: 13px; height: 13px; fill: none; stroke: var(--teal-light); stroke-width: 2.5; }
+.footer-brand-desc { font-size: 0.78rem; color: rgba(255,255,255,0.25); line-height: 1.8; max-width: 220px; font-weight: 300; }
+.footer-col-title { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 16px; }
+.footer-links { display: flex; flex-direction: column; gap: 9px; }
+.footer-link { font-size: 0.8rem; color: rgba(255,255,255,0.38); text-decoration: none; transition: color 0.15s; font-weight: 300; }
+.footer-link:hover { color: var(--teal-light); }
+.footer-bottom {
+  padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.7rem; color: rgba(255,255,255,0.15); flex-wrap: wrap; gap: 8px;
+}
+.footer-bottom a { color: rgba(255,255,255,0.28); text-decoration: none; transition: color 0.15s; }
+.footer-bottom a:hover { color: var(--teal-light); }
+
+.pricing-notice {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(14,124,134,0.1);
+  border: 1px solid rgba(14,124,134,0.25);
+  border-radius: var(--r-sm); padding: 14px 20px;
+  margin-bottom: 40px;
+  font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.65; font-weight: 300;
+}
+.pricing-notice strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+.pricing-notice-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+
+.suite-icon svg, .feature-icon-wrap svg, .tool-icon-wrap svg,
+.page-card-icon svg, .modal-icon-wrap svg, .pricing-notice-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+}
+.suite-icon svg { stroke: currentColor; }
+.icon-personal { color: var(--teal-light); }
+.icon-workforce { color: #f0a060; }
+.icon-business  { color: #5dd48a; }
+.feature-icon-wrap svg { width: 22px; height: 22px; color: var(--teal); }
+.tool-icon-wrap svg { width: 26px; height: 26px; color: var(--teal); }
+.page-card-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+.page-card-icon svg { width: 20px; height: 20px; color: var(--teal); }
+.modal-icon-wrap svg { width: 26px; height: 26px; color: var(--teal-light); }
+.pricing-notice-icon { display: flex; align-items: center; flex-shrink: 0; }
+.pricing-notice-icon svg { width: 18px; height: 18px; color: var(--teal-light); }
+
+/* ─── ANNOUNCEMENT BAR ─── */
+.announce-bar {
+  background: linear-gradient(90deg, #051020, #082030, #051020);
+  border-bottom: 1px solid rgba(14,124,134,0.3);
+  padding: 11px 40px;
+  position: fixed; top: 64px; left: 0; right: 0; z-index: 190;
+  text-align: center;
+}
+.announce-inner {
+  display: inline-flex; align-items: center; gap: 10px;
+  max-width: 1160px; margin: 0 auto;
+  flex-wrap: wrap; justify-content: center;
+}
+.announce-pulse {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: var(--teal-light);
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--teal-light);
+}
+.announce-text {
+  font-size: 0.78rem; color: rgba(255,255,255,0.55); font-weight: 300;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
+}
+.announce-text strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+.announce-cta {
+  background: none; border: none; cursor: pointer;
+  color: var(--teal-light); font-size: 0.78rem; font-weight: 600;
+  font-family: inherit; padding: 0; text-decoration: underline;
+  text-underline-offset: 2px; transition: color 0.15s;
+}
+.announce-cta:hover { color: #fff; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1000px) {
+  .suite-grid      { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  .features-grid   { grid-template-columns: 1fr 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+  .pricing-grid    { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .how-flow        { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .how-flow::before { display: none; }
+  .footer-top      { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .nav-links       { display: none; }
+}
+@media (max-width: 700px) {
+  .features-grid   { grid-template-columns: 1fr; }
+  .tools-grid      { grid-template-columns: 1fr; }
+  .pages-grid      { grid-template-columns: 1fr 1fr; }
+  .footer-top      { grid-template-columns: 1fr; gap: 28px; }
+  .hero            { padding: 106px 24px 64px; }
+  .section         { padding: 72px 24px; }
+  .modal           { padding: 38px 28px; }
+  .problem-grid    { grid-template-columns: 1fr; }
+  .how-flow        { grid-template-columns: 1fr; }
+  .proof-bar-inner { gap: 24px; }
+  .proof-divider   { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- REGISTER INTEREST MODAL -->
+<!-- MODAL -->
 <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
     <div id="modalForm">
-      <div class="modal-icon" id="modalIcon">🚀</div>
+      <div class="modal-icon-wrap" id="modalIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></div>
       <div class="modal-eyebrow">Early Access</div>
       <h2 class="modal-title" id="modalTitle">Register Interest</h2>
-      <p class="modal-desc" id="modalDesc">Be the first to know when this launches. We'll send you early access details and keep you in the loop.</p>
+      <p class="modal-desc" id="modalDesc">Be the first to know when this launches.</p>
       <input type="hidden" id="modalProduct" value="">
       <div class="modal-field">
         <label for="modalName">Your name</label>
@@ -678,7 +893,7 @@ body {
     <div class="modal-success" id="modalSuccess">
       <div class="modal-success-icon">✓</div>
       <div class="modal-success-title">You're on the list!</div>
-      <p class="modal-success-text">We'll reach out when <strong id="successProduct"></strong> is ready for early access. Keep an eye on your inbox.</p>
+      <p class="modal-success-text">We'll reach out when <strong id="successProduct"></strong> is ready for early access.</p>
     </div>
   </div>
 </div>
@@ -686,7 +901,12 @@ body {
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <a class="logo" href="/info/"><div class="logo-dot"></div>Tayla</a>
+    <a class="logo" href="/info/">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16"><polyline points="3,12 7,5 10,9 13,4"/></svg>
+      </div>
+      Tayla Financial
+    </a>
     <div class="nav-links">
       <a class="nav-link" href="#products">Products</a>
       <a class="nav-link" href="#features">Features</a>
@@ -698,178 +918,351 @@ body {
   </div>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-noise"></div>
-  <div class="hero-eyebrow">Tayla Financial — Built in Melbourne</div>
-  <h1 class="hero-h1">
-    Australian software,<br>
-    <em>built for all.</em>
-  </h1>
-  <p class="hero-sub">Tayla Financial builds practical tools for everyday Australians, small business owners, and hospitality operators — by someone who's been on the floor.</p>
-  <div class="hero-actions">
-    <a class="btn-hero-primary" href="#products">See the Suite →</a>
-    <a class="btn-hero-ghost" href="/">Open Tayla Personal</a>
-  </div>
-  <div class="hero-stats">
-    <div class="stat-pill">✓ <strong>Tayla Personal</strong> — live now</div>
-    <div class="stat-pill">⏳ <strong>Tayla Workforce</strong> — coming soon</div>
-    <div class="stat-pill">⏳ <strong>Tayla Business</strong> — coming soon</div>
-    <div class="stat-pill">✓ Built for <strong>Australians</strong></div>
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">
+  <div class="announce-inner">
+    <span class="announce-pulse"></span>
+    <span class="announce-text">
+      <strong>Tayla Workforce</strong> (payroll &amp; rostering) and <strong>Tayla Business</strong> (accounting) are launching soon —
+      <button class="announce-cta" onclick="openModal('Tayla Workforce', 'workforce', 'Be first to access Workforce and Business when they launch.')">register for early access →</button>
+    </span>
   </div>
 </div>
 
-<!-- PRODUCTS SUITE -->
+<!-- ═══ HERO — bold, problem-focused headline ═══ -->
+<div class="hero">
+  <div class="hero-orb-1"></div>
+  <div class="hero-orb-2"></div>
+  <div class="hero-orb-3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    <span>Tayla Personal — live now · Workforce &amp; Business coming soon</span>
+  </div>
+
+  <h1 class="hero-h1">
+    Stop losing money<br>
+    <em>to bad software.</em>
+  </h1>
+
+  <p class="hero-problem">
+    Payroll software that doesn't understand hospitality. Accounting tools built for enterprise. A bank app that still can't tell you <strong>where your money went</strong>.<br>
+    You're running a venue — not a corporate finance department.
+  </p>
+
+  <div class="hero-divider"></div>
+
+  <p class="hero-solution">Tayla is the complete Australian finance suite built by someone who's actually worked the floor — personal finance, payroll and accounting, starting at $0.</p>
+
+  <div class="hero-actions">
+    <a class="btn-primary" href="/">Try Tayla Free →</a>
+    <a class="btn-ghost" href="#products">See all products</a>
+  </div>
+
+  <div class="hero-trust">
+    <div class="trust-chip"><span class="check">✓</span> No credit card required</div>
+    <div class="trust-chip"><span class="check">✓</span> STP Phase 2 compliant</div>
+    <div class="trust-chip"><span class="check">✓</span> Built for Australians 🇦🇺</div>
+    <div class="trust-chip"><span class="check">✓</span> ATO-ready from day one</div>
+  </div>
+</div>
+
+<!-- ═══ PROOF BAR ═══ -->
+<div class="proof-bar">
+  <div class="proof-bar-inner">
+    <div class="proof-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1-3-2.9 4.2-.8z"/></svg>
+      Built by hospitality, for hospitality
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 3V2M11 3V2M2 7h12"/></svg>
+      STP2 · SuperStream · Fair Work compliant
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1v6l3.5 2"/><circle cx="8" cy="8" r="6.5"/></svg>
+      7 years hospitality operations experience
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12l4-4 3 3 5-7"/></svg>
+      Melbourne-built. Australian-first.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROBLEM / SOLUTION ═══ -->
+<div class="section problem-section">
+  <div class="section-inner">
+    <div class="section-eyebrow">The Problem</div>
+    <h2 class="section-h2">Managing a venue shouldn't require<br>three separate subscriptions.</h2>
+    <p class="section-sub">The tools Australian hospitality operators use were built for enterprise, not the floor. Tayla fixes that.</p>
+    <div class="problem-grid">
+      <div class="problem-half before">
+        <div class="half-label">Without Tayla</div>
+        <ul class="pain-list">
+          <li>Xero for invoicing at $85/month, half the features unused</li>
+          <li>Deputy or Tanda for rosters — another $20+ per staff per month</li>
+          <li>Manual STP submissions every pay run</li>
+          <li>Staff track their own pay on spreadsheets or nothing</li>
+          <li>Payslips emailed, lost in inboxes</li>
+          <li>Super payments done manually, easy to miss Payday Super deadlines</li>
+          <li>No visibility across multiple venues in one view</li>
+        </ul>
+      </div>
+      <div class="problem-half after">
+        <div class="half-label">With Tayla</div>
+        <ul class="pain-list">
+          <li>Tayla Business handles invoicing, BAS & P&L — built for SMEs</li>
+          <li>Tayla Workforce handles rosters, payroll & leave from $29/month</li>
+          <li>One-click STP2 export, every pay run</li>
+          <li>Staff get payslips pushed straight to their Tayla Personal app</li>
+          <li>Payslips delivered natively — no email, no chasing</li>
+          <li>SuperStream super payments built in — Payday Super ready</li>
+          <li>Franchise dashboard — see all venues in one combined P&L</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRODUCTS SUITE ═══ -->
 <div class="section suite-section" id="products">
   <div class="section-inner">
-    <div class="section-label">The Tayla Suite</div>
+    <div class="section-eyebrow">The Tayla Suite</div>
     <h2 class="section-h2">Three products. One ecosystem.</h2>
-    <p class="section-sub">Tayla Financial is building a connected suite of Australian software — starting with personal finance, expanding into business accounting and hospitality workforce management.</p>
+    <p class="section-sub">Every product in the Tayla suite connects seamlessly — your employees automatically get Tayla Personal the moment you run their first payroll.</p>
     <div class="suite-grid">
 
       <div class="suite-card live">
-        <div class="suite-card-badge badge-live">Live now</div>
-        <div class="suite-card-name">Tayla Personal</div>
-        <div class="suite-card-tagline">usetayla.com.au</div>
-        <div class="suite-card-desc">A privacy-first personal finance app built for Australians. Track income, manage budgets, automate recurring expenses and monitor your financial health — all in one place.</div>
-        <ul class="suite-card-features">
-          <li>Income & budget tracker</li>
-          <li>Financial Health Score</li>
-          <li>Recurring expenses</li>
-          <li>Australian tax brackets built in</li>
-          <li>Free to start — no credit card</li>
+        <div class="suite-badge badge-live">Live now</div>
+        <div class="suite-icon icon-personal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg></div>
+        <div class="suite-name">Tayla Personal</div>
+        <div class="suite-tagline">usetayla.com.au</div>
+        <div class="suite-desc">Privacy-first personal finance for Australians. Track income, manage budgets, and understand your financial health — without connecting your bank.</div>
+        <ul class="suite-features">
+          <li>Income & budget tracker, Australian tax built in</li>
+          <li>Financial Health Score (savings, debt, emergency fund)</li>
+          <li>Recurring expenses — set once, auto-post forever</li>
+          <li>Portfolio & savings goals tracker</li>
+          <li>Receives payslips directly from Tayla Workforce</li>
         </ul>
-        <a class="suite-card-cta cta-live" href="/">Open App →</a>
+        <a class="suite-cta cta-live" href="/">Open App →</a>
       </div>
 
       <div class="suite-card">
-        <div class="suite-card-badge badge-soon">Coming soon</div>
-        <div class="suite-card-name">Tayla Workforce</div>
-        <div class="suite-card-tagline">Rostering and Payroll</div>
-        <div class="suite-card-desc">Rostering, payroll and workforce management built for Australian hospitality operators. STP Phase 2 compliant, award-aware, and designed by someone who's actually run a venue.</div>
-        <ul class="suite-card-features">
-          <li>Roster & shift management</li>
-          <li>STP Phase 2 payroll export</li>
-          <li>Leave & availability management</li>
-          <li>Award rate calculations</li>
-          <li>Multi-venue & franchise support</li>
+        <div class="suite-badge badge-soon">Coming soon</div>
+        <div class="suite-icon icon-workforce"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="suite-name">Tayla Workforce</div>
+        <div class="suite-tagline">Rostering &amp; Payroll</div>
+        <div class="suite-desc">Rostering and payroll for Australian hospitality. STP2 compliant, award-aware, multi-venue ready. Designed by someone who's actually run a shift.</div>
+        <ul class="suite-features">
+          <li>Roster & shift management, availability tracking</li>
+          <li>STP Phase 2 payroll — one-click export</li>
+          <li>Leave management (annual, sick, personal — NES compliant)</li>
+          <li>SuperStream SAFF & Payday Super audit trail</li>
+          <li>Multi-venue & franchise dashboard</li>
         </ul>
-        <button class="suite-card-cta cta-register" onclick="openModal('Tayla Workforce', '👷', 'Workforce management built for hospitality operators.')">Register Interest →</button>
+        <button class="suite-cta cta-register" onclick="openModal('Tayla Workforce', 'workforce', 'Workforce management built for hospitality operators.')">Register Interest →</button>
       </div>
 
       <div class="suite-card">
-        <div class="suite-card-badge badge-soon">Coming soon</div>
-        <div class="suite-card-name">Tayla Business</div>
-        <div class="suite-card-tagline">Accounting & bookkeeping</div>
-        <div class="suite-card-desc">Small business accounting and bookkeeping built for the Australian market. GST, BAS, invoicing and bank reconciliation — without the complexity of enterprise software.</div>
-        <ul class="suite-card-features">
-          <li>Invoicing & payments</li>
-          <li>GST & BAS reporting</li>
-          <li>Bank reconciliation</li>
-          <li>P&L and cash flow tracking</li>
-          <li>Built for sole traders & SMEs</li>
+        <div class="suite-badge badge-soon">Coming soon</div>
+        <div class="suite-icon icon-business"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h5M7 12h10"/></svg></div>
+        <div class="suite-name">Tayla Business</div>
+        <div class="suite-tagline">Accounting &amp; Bookkeeping</div>
+        <div class="suite-desc">Small business accounting built for the Australian market. GST, BAS, invoicing and bank reconciliation — without the Xero price tag.</div>
+        <ul class="suite-features">
+          <li>Invoicing, bills & bank reconciliation</li>
+          <li>GST & BAS reporting, ATO-ready</li>
+          <li>Stocktake, ordering & COGS tracking</li>
+          <li>P&L and cash flow, franchise combined view</li>
+          <li>Workforce sales sync — one integrated P&L</li>
         </ul>
-        <button class="suite-card-cta cta-register" onclick="openModal('Tayla Business', '📊', 'Small business accounting for the Australian market.')">Register Interest →</button>
+        <button class="suite-cta cta-register" onclick="openModal('Tayla Business', 'business', 'Small business accounting for the Australian market.')">Register Interest →</button>
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- FEATURES -->
+<!-- ═══ HOW IT WORKS ═══ -->
+<div class="section how-section">
+  <div class="section-inner">
+    <div class="section-eyebrow">How It Works</div>
+    <h2 class="section-h2">From rostering to reconciliation,<br>in four steps.</h2>
+    <p class="section-sub">Tayla is the only suite where a payroll run automatically onboards your staff to personal finance — zero extra effort from you.</p>
+    <div class="how-flow">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-step-title">Set up your business</div>
+        <div class="how-step-desc">Create your venue, add employees, and configure award rates and pay schedules in minutes.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-step-title">Roster & track time</div>
+        <div class="how-step-desc">Build rosters, track availability and approve timesheets. Workforce calculates pay automatically.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-step-title">Run payroll</div>
+        <div class="how-step-desc">One click runs payroll, files STP2 with the ATO, queues super, generates ABA files, and pushes payslips to every employee's Tayla app.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-step-title">Reconcile & report</div>
+        <div class="how-step-desc">Sales sync to Tayla Business automatically. Your P&L updates in real time — no manual journal entries.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FEATURES ═══ -->
 <div class="section features-section" id="features">
   <div class="section-inner">
-    <div class="section-label">What's Inside</div>
-    <h2 class="section-h2">Everything your finances need</h2>
-    <p class="section-sub">Built for how Australians actually get paid — weekly, fortnightly, or monthly, with Australian tax brackets baked in.</p>
+    <div class="features-header">
+      <div>
+        <div class="section-eyebrow">Features</div>
+        <h2 class="section-h2">Everything your finances need</h2>
+      </div>
+      <p class="section-sub" style="margin-bottom:0;">Built for how Australians actually get paid — weekly, fortnightly, or monthly, with ATO tax brackets baked in from day one.</p>
+    </div>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">💵</div>
-        <div class="feature-title">Income Tracker</div>
-        <div class="feature-desc">Track weekly, fortnightly or monthly income across two income sources. Australian tax calculations built in — see your real take-home pay.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="feature-name">Income Tracker</div>
+        <div class="feature-desc">Track weekly, fortnightly or monthly income across two income sources. Real take-home pay with Australian tax calculations built in — no manual tax tables.</div>
         <span class="feature-tag tag-free">Free</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">💳</div>
-        <div class="feature-title">Budget Tracker</div>
-        <div class="feature-desc">Log income and expenses by category. Spending pie chart, monthly summaries, and savings rate — all updated in real time.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+        <div class="feature-name">Budget Tracker</div>
+        <div class="feature-desc">Log income and expenses by category. Spending pie chart, monthly summaries and savings rate — all updated in real time as you go.</div>
         <span class="feature-tag tag-free">Free</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <div class="feature-title">Financial Health Score</div>
-        <div class="feature-desc">Automatic score based on your savings rate, emergency fund, debt-to-income ratio, and housing costs. Manual or auto mode.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="feature-name">Financial Health Score</div>
+        <div class="feature-desc">Automatic score based on savings rate, emergency fund, debt-to-income ratio and housing costs. Manual or auto mode — always honest.</div>
         <span class="feature-tag tag-free">Free</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔁</div>
-        <div class="feature-title">Recurring Expenses</div>
-        <div class="feature-desc">Add subscriptions, rent, and bills once. They auto-post to your budget on their due date every month — no manual entry.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+        <div class="feature-name">Recurring Expenses</div>
+        <div class="feature-desc">Add subscriptions, rent and bills once. They auto-post to your budget on their due date — no manual entry, no forgotten subscriptions.</div>
         <span class="feature-tag tag-plus">✦ Plus</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">💳</div>
-        <div class="feature-title">Debt Register</div>
-        <div class="feature-desc">Track all your loans and liabilities. Balances update automatically as you make repayments. Feeds directly into your health score.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 4v6M16 4v6"/></svg></div>
+        <div class="feature-name">Debt Register</div>
+        <div class="feature-desc">Track all loans and liabilities. Balances update as you make repayments and feed directly into your health score so you see the full picture.</div>
         <span class="feature-tag tag-plus">✦ Plus</span>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📈</div>
-        <div class="feature-title">Portfolio & Goals</div>
-        <div class="feature-desc">Set savings targets, track progress, and see an estimated timeline to reach each goal. Emergency fund and investments auto-tracked from your budget.</div>
+        <div class="feature-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="feature-name">Portfolio & Goals</div>
+        <div class="feature-desc">Set savings targets, track progress and get an estimated timeline to each goal. Emergency fund and investments auto-tracked from your budget.</div>
         <span class="feature-tag tag-plus">✦ Plus</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PRICING -->
-<div class="section tiers-section" id="pricing">
+<!-- ═══ TESTIMONIALS / SOCIAL PROOF ═══ -->
+<div class="section social-section" id="social">
   <div class="section-inner">
-    <div class="section-label">Pricing</div>
+    <div class="section-eyebrow">Early Feedback</div>
+    <h2 class="section-h2">What operators are saying.</h2>
+    <p class="section-sub">From hospo veterans previewing Tayla Workforce to everyday Australians already using Tayla Personal.</p>
+    <div class="testimonials-grid">
+      <div class="testi-card testi-featured">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Finally someone built payroll software that understands how hospitality actually works. The fact my staff get payslips in their own finance app automatically is a game changer."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">M</div>
+          <div>
+            <div class="testi-name">Melbourne Venue Manager</div>
+            <div class="testi-role">Workforce early access preview</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Tayla Personal is the first finance app I've actually stuck with. The health score makes it real — I can see exactly what's dragging my number down and fix it."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">S</div>
+          <div>
+            <div class="testi-name">Tayla Personal user</div>
+            <div class="testi-role">Sydney, early adopter</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"I was paying $85/month for Xero and using maybe 20% of it. Tayla Business is what I actually needed — GST, BAS, invoicing, done. Without the enterprise complexity."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">J</div>
+          <div>
+            <div class="testi-name">Sole trader, hospitality</div>
+            <div class="testi-role">Business early access preview</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRICING ═══ -->
+<div class="section pricing-section" id="pricing">
+  <div class="section-inner">
+    <div class="section-eyebrow">Pricing — Tayla Personal</div>
     <h2 class="section-h2">Start free. Upgrade when ready.</h2>
-    <p class="section-sub">No credit card required. Try Tayla without even creating an account.</p>
-    <div class="tiers-grid">
-      <div class="tier-card">
-        <div class="tier-name">Guest</div>
-        <div class="tier-price">Free <span>forever</span></div>
-        <div class="tier-desc">Try Tayla instantly — no signup required. Data stays on your device.</div>
-        <div class="tier-divider"></div>
-        <ul class="tier-features">
+    <p class="section-sub">Tayla Personal is free to try right now — no credit card, no account required. Workforce and Business pricing will be announced at launch.</p>
+    <div class="pricing-notice">
+      <span class="pricing-notice-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+      <span>The plans below are for <strong>Tayla Personal</strong> only. <strong>Tayla Workforce</strong> and <strong>Tayla Business</strong> pricing will be revealed when each product launches — <button class="announce-cta" onclick="openModal('Tayla Workforce', 'workforce', 'Register to be notified of Workforce and Business pricing at launch.')">register your interest to be first to know.</button></span>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Guest</div>
+        <div class="price-amount">Free <span>forever</span></div>
+        <div class="price-desc">Try Tayla instantly — no signup. Your data stays on your device.</div>
+        <div class="price-divider"></div>
+        <ul class="price-list">
           <li>Income tracker</li>
           <li>Budget tracker</li>
-          <li>Data saved to device</li>
-          <li class="locked">Financial Health Score</li>
-          <li class="locked">Cloud sync</li>
-          <li class="locked">Portfolio & Goals</li>
+          <li>Device-only data storage</li>
+          <li class="off">Financial Health Score</li>
+          <li class="off">Cloud sync</li>
+          <li class="off">Portfolio & Goals</li>
         </ul>
-        <a class="tier-cta" href="/">Try as Guest</a>
+        <a class="price-cta" href="/">Try as Guest</a>
       </div>
-      <div class="tier-card">
-        <div class="tier-name">Free Account</div>
-        <div class="tier-price">Free <span>forever</span></div>
-        <div class="tier-desc">Create an account to unlock health scoring and cloud sync across devices.</div>
-        <div class="tier-divider"></div>
-        <ul class="tier-features">
+      <div class="price-card">
+        <div class="price-name">Free Account</div>
+        <div class="price-amount">Free <span>forever</span></div>
+        <div class="price-desc">Create an account for health scoring and sync across all your devices.</div>
+        <div class="price-divider"></div>
+        <ul class="price-list">
           <li>Income tracker</li>
           <li>Budget tracker</li>
           <li>Financial Health Score (manual)</li>
           <li>Cloud sync across devices</li>
-          <li class="locked">Auto Health Score</li>
-          <li class="locked">Portfolio & Goals</li>
-          <li class="locked">Recurring Expenses</li>
-          <li class="locked">Debt Register</li>
+          <li class="off">Auto Health Score</li>
+          <li class="off">Portfolio & Goals</li>
+          <li class="off">Recurring Expenses</li>
         </ul>
-        <a class="tier-cta" href="/">Create Free Account</a>
+        <a class="price-cta" href="/">Create Free Account</a>
       </div>
-      <div class="tier-card featured">
-        <div class="tier-name">✦ Tayla Plus</div>
-        <div class="tier-price">$3.99 <span>/ month AUD</span></div>
-        <div class="tier-desc">The full Tayla experience — everything automated, everything tracked.</div>
-        <div class="tier-divider"></div>
-        <ul class="tier-features">
+      <div class="price-card featured">
+        <div class="featured-badge">Most popular</div>
+        <div class="price-name">✦ Tayla Plus</div>
+        <div class="price-amount">$3.99 <span>/ month AUD</span></div>
+        <div class="price-desc">The full Tayla experience — everything automated, everything tracked.</div>
+        <div class="price-divider"></div>
+        <ul class="price-list">
           <li>Everything in Free</li>
           <li>Auto Financial Health Score</li>
           <li>Portfolio & Goals tracking</li>
@@ -879,21 +1272,40 @@ body {
           <li>Theme customisation</li>
           <li>Priority support</li>
         </ul>
-        <a class="tier-cta" href="/">Upgrade to Plus</a>
+        <a class="price-cta" href="/">Upgrade to Plus</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- FREE TOOLS -->
+<!-- ═══ FINAL CTA ═══ -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <div class="section-eyebrow" style="justify-content:center">Get started today</div>
+    <h2 class="cta-h2">Your finances, sorted.<br><em style="font-family:'DM Serif Display',serif;font-style:italic;color:var(--teal);">From $0.</em></h2>
+    <p class="cta-sub">Tayla Personal is live right now — free to try, no card required. Register your interest for Workforce and Business to get early access pricing when we launch.</p>
+    <div class="cta-actions">
+      <a class="btn-cta-primary" href="/">Open Tayla Personal →</a>
+      <button class="btn-cta-ghost" onclick="openModal('Tayla Workforce', 'workforce', 'Be first to access Workforce when it launches.')">Register for Workforce</button>
+    </div>
+    <div class="cta-footnote">
+      <span><span class="dot">✓</span> No credit card</span>
+      <span><span class="dot">✓</span> Free to start</span>
+      <span><span class="dot">✓</span> Australian-built</span>
+      <span><span class="dot">✓</span> Cancel anytime</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FREE TOOLS ═══ -->
 <div class="section tools-section" id="tools">
   <div class="section-inner">
-    <div class="section-label">Free Tools</div>
+    <div class="section-eyebrow">Free Tools</div>
     <h2 class="section-h2">No login. No catch.</h2>
     <p class="section-sub">Standalone calculators and planners — free forever, no account required.</p>
     <div class="tools-grid">
       <a class="tool-card" href="/tax/">
-        <div class="tool-icon">🧮</div>
+        <div class="tool-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
         <div>
           <div class="tool-name">Australian Tax Calculator</div>
           <div class="tool-desc">Enter your salary and instantly see your take-home pay — weekly, fortnightly, monthly and annual. Includes Medicare levy. ATO 2025–26 brackets.</div>
@@ -901,7 +1313,7 @@ body {
         <div class="tool-arrow">→</div>
       </a>
       <a class="tool-card" href="/budget/">
-        <div class="tool-icon">📋</div>
+        <div class="tool-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 3v18M2 9h6M2 15h6M14 9h6M14 15h6"/></svg></div>
         <div>
           <div class="tool-name">Budget Planner</div>
           <div class="tool-desc">Step-by-step monthly budget wizard. Enter income and expenses to see your surplus or deficit, with a 50/30/20 breakdown.</div>
@@ -912,71 +1324,36 @@ body {
   </div>
 </div>
 
-<!-- ALL PAGES -->
+<!-- ═══ ALL PAGES ═══ -->
 <div class="section pages-section">
   <div class="section-inner">
-    <div class="section-label">Everything on Tayla</div>
+    <div class="section-eyebrow">Everything on Tayla</div>
     <h2 class="section-h2">All pages & resources</h2>
     <p class="section-sub">Everything Tayla has to offer — tools, updates, transparency and more.</p>
     <div class="pages-grid">
-      <a class="page-card" href="/">
-        <div class="page-card-icon">🏠</div>
-        <div class="page-card-name">App</div>
-        <div class="page-card-url">usetayla.com.au</div>
-        <div class="page-card-desc">The main Tayla app — income, budget, health, portfolio.</div>
-      </a>
-      <a class="page-card" href="/tax/">
-        <div class="page-card-icon">🧮</div>
-        <div class="page-card-name">Tax Calculator</div>
-        <div class="page-card-url">usetayla.com.au/tax/</div>
-        <div class="page-card-desc">Free Australian income tax calculator for 2025–26.</div>
-      </a>
-      <a class="page-card" href="/budget/">
-        <div class="page-card-icon">📋</div>
-        <div class="page-card-name">Budget Planner</div>
-        <div class="page-card-url">usetayla.com.au/budget/</div>
-        <div class="page-card-desc">Step-by-step monthly budget wizard.</div>
-      </a>
-      <a class="page-card" href="/blog/">
-        <div class="page-card-icon">✍️</div>
-        <div class="page-card-name">Blog</div>
-        <div class="page-card-url">usetayla.com.au/blog/</div>
-        <div class="page-card-desc">Australian personal finance tips and guides.</div>
-      </a>
-      <a class="page-card" href="/changelog/">
-        <div class="page-card-icon">🚀</div>
-        <div class="page-card-name">Changelog</div>
-        <div class="page-card-url">usetayla.com.au/changelog/</div>
-        <div class="page-card-desc">What's new — every update and improvement.</div>
-      </a>
-      <a class="page-card" href="/business/">
-        <div class="page-card-icon">📊</div>
-        <div class="page-card-name">Business P&L</div>
-        <div class="page-card-url">usetayla.com.au/business/</div>
-        <div class="page-card-desc">Full transparency — Tayla's public P&L and metrics.</div>
-      </a>
-      <a class="page-card" href="/info/">
-        <div class="page-card-icon">ℹ️</div>
-        <div class="page-card-name">About</div>
-        <div class="page-card-url">usetayla.com.au/info/</div>
-        <div class="page-card-desc">You're here — features, pricing and everything Tayla.</div>
-      </a>
-      <a class="page-card" href="mailto:hello@usetayla.com.au">
-        <div class="page-card-icon">✉️</div>
-        <div class="page-card-name">Contact</div>
-        <div class="page-card-url">hello@usetayla.com.au</div>
-        <div class="page-card-desc">Questions, feedback or support — get in touch.</div>
-      </a>
+      <a class="page-card" href="/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="page-card-name">App</div><div class="page-card-url">usetayla.com.au</div><div class="page-card-desc">The main Tayla app — income, budget, health, portfolio.</div></a>
+      <a class="page-card" href="/tax/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div><div class="page-card-name">Tax Calculator</div><div class="page-card-url">usetayla.com.au/tax/</div><div class="page-card-desc">Free Australian income tax calculator for 2025–26.</div></a>
+      <a class="page-card" href="/budget/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 3v18M2 9h6M2 15h6M14 9h6M14 15h6"/></svg></div><div class="page-card-name">Budget Planner</div><div class="page-card-url">usetayla.com.au/budget/</div><div class="page-card-desc">Step-by-step monthly budget wizard.</div></a>
+      <a class="page-card" href="/blog/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div><div class="page-card-name">Blog</div><div class="page-card-url">usetayla.com.au/blog/</div><div class="page-card-desc">Australian personal finance tips and guides.</div></a>
+      <a class="page-card" href="/changelog/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="page-card-name">Changelog</div><div class="page-card-url">usetayla.com.au/changelog/</div><div class="page-card-desc">What's new — every update and improvement.</div></a>
+      <a class="page-card" href="/business/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="page-card-name">Business P&amp;L</div><div class="page-card-url">usetayla.com.au/business/</div><div class="page-card-desc">Full transparency — Tayla's public P&L and metrics.</div></a>
+      <a class="page-card" href="/info/"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><div class="page-card-name">About</div><div class="page-card-url">usetayla.com.au/info/</div><div class="page-card-desc">You're here — features, pricing and everything Tayla.</div></a>
+      <a class="page-card" href="https://workforce.usetayla.com.au"><div class="page-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="page-card-name">Workforce</div><div class="page-card-url">workforce.usetayla.com.au</div><div class="page-card-desc">Rostering and payroll for hospitality operators.</div></a>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <div class="footer-section">
   <div class="footer-inner">
     <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-logo"><div class="logo-dot"></div>Tayla</div>
+      <div>
+        <div class="footer-logo">
+          <div class="footer-logo-mark">
+            <svg viewBox="0 0 16 16"><polyline points="3,12 7,5 10,9 13,4"/></svg>
+          </div>
+          Tayla Financial
+        </div>
         <p class="footer-brand-desc">Australian software for personal finance, small business and hospitality. Built in Melbourne by Tayla Financial.</p>
       </div>
       <div>
@@ -1013,11 +1390,16 @@ body {
   </div>
 </div>
 
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script>
-// ── MODAL ──
 function openModal(productName, icon, desc) {
   const overlay = document.getElementById('registerModal');
-  document.getElementById('modalIcon').textContent = icon;
+  const iconMap = {
+    workforce: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    business:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h.01M12 8h5M7 12h10"/></svg>',
+    default:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>',
+  };
+  document.getElementById('modalIcon').innerHTML = iconMap[icon] || iconMap.default;
   document.getElementById('modalTitle').textContent = 'Register for ' + productName;
   document.getElementById('modalDesc').textContent = desc + ' Drop your email and we\'ll reach out with early access details.';
   document.getElementById('modalProduct').value = productName;
@@ -1029,67 +1411,39 @@ function openModal(productName, icon, desc) {
   document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('modalName').focus(), 350);
 }
-
 function closeModal() {
-  const overlay = document.getElementById('registerModal');
-  overlay.classList.remove('open');
+  document.getElementById('registerModal').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 function submitInterest() {
-  const name = document.getElementById('modalName').value.trim();
+  const name  = document.getElementById('modalName').value.trim();
   const email = document.getElementById('modalEmail').value.trim();
   const product = document.getElementById('modalProduct').value;
   const btn = document.getElementById('modalSubmit');
-
-  if (!name) { document.getElementById('modalName').focus(); return; }
+  if (!name)  { document.getElementById('modalName').focus(); return; }
   if (!email || !email.includes('@')) { document.getElementById('modalEmail').focus(); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-
-fetch("https://formspree.io/f/xbdpewyg", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: name,
-    email: email,
-    product: product
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  fetch("https://formspree.io/f/xbdpewyg", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, product })
   })
-})
-.then(() => {
-  document.getElementById('modalForm').style.display = 'none';
-  const success = document.getElementById('modalSuccess');
-  document.getElementById('successProduct').textContent = product;
-  success.style.display = 'block';
-
-  btn.disabled = false;
-  btn.textContent = 'Register My Interest →';
-})
-.catch(() => {
-  alert("Something went wrong. Try again.");
-  btn.disabled = false;
-  btn.textContent = 'Register My Interest →';
-});
+  .then(() => {
+    document.getElementById('modalForm').style.display = 'none';
+    document.getElementById('successProduct').textContent = product;
+    document.getElementById('modalSuccess').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Register My Interest →';
+  })
+  .catch(() => {
+    alert("Something went wrong. Try again.");
+    btn.disabled = false; btn.textContent = 'Register My Interest →';
+  });
 }
-
-// Close on overlay click
 document.getElementById('registerModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 document.getElementById('modalClose').addEventListener('click', closeModal);
-
-// Close on Escape
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
-
-// Submit on Enter in email field
-document.getElementById('modalEmail').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') submitInterest();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
