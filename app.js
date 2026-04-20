@@ -2524,6 +2524,9 @@ async function renderWorkforceTab() {
   }
 
   openWfSubtab(_wfSubtab);
+
+  // Retry any leave requests stuck in 'syncing' status
+  retrySyncingLeaveRequests();
 }
 
 function openWfSubtab(sub) {
@@ -2753,6 +2756,9 @@ async function renderWfLeave() {
   const el = document.getElementById('wf-leave-list');
   if (!el || !CURRENT_USER) return;
 
+  // Retry any stuck 'syncing' requests in the background
+  retrySyncingLeaveRequests();
+
   const { data } = await sb
     .from('leave_requests')
     .select('*')
@@ -2760,21 +2766,80 @@ async function renderWfLeave() {
     .order('submitted_at', { ascending: false });
 
   if (!data?.length) {
-    el.innerHTML = '<div class="wf-empty">No leave requests yet. Use the button above to submit one.</div>';
+    el.innerHTML = `
+      <div class="wf-empty" style="
+        background: var(--paper-2, #f7f7f5);
+        border: 1px dashed var(--border, #e2e2e0);
+        border-radius: 12px;
+        padding: 32px 20px;
+        text-align: center;
+        color: var(--ink-3, #999);
+        font-size: 13px;
+      ">
+        No leave requests yet.<br>
+        <span style="font-size:12px;">Tap <strong>+ Request Leave</strong> above to submit one.</span>
+      </div>`;
     return;
   }
 
-  const statusColour = { pending:'var(--gold,#d4a017)', approved:'var(--green,#38a169)', declined:'var(--red,#e53e3e)', syncing:'var(--ink-2)', sync_failed:'var(--red,#e53e3e)' };
-  el.innerHTML = data.map(r => `
-    <div class="wf-leave-card">
-      <div>
-        <div style="font-weight:700;font-size:14px;">${r.leave_type.charAt(0).toUpperCase()+r.leave_type.slice(1)} Leave</div>
-        <div style="font-size:12px;color:var(--ink-2);">${fmtDate(r.start_date)} – ${fmtDate(r.end_date)}</div>
-        ${r.notes ? `<div style="font-size:11px;color:var(--ink-2);margin-top:3px;">${r.notes}</div>` : ''}
+  const statusConfig = {
+    pending:     { colour: 'var(--gold, #d4a017)',   bg: 'rgba(212,160,23,0.10)',  label: 'Pending' },
+    approved:    { colour: 'var(--green, #38a169)',  bg: 'rgba(56,161,105,0.10)',  label: 'Approved' },
+    declined:    { colour: 'var(--red, #e53e3e)',    bg: 'rgba(229,62,62,0.10)',   label: 'Declined' },
+    rejected:    { colour: 'var(--red, #e53e3e)',    bg: 'rgba(229,62,62,0.10)',   label: 'Declined' },
+    syncing:     { colour: 'var(--ink-3, #aaa)',     bg: 'rgba(0,0,0,0.05)',       label: 'Sending…' },
+    sync_failed: { colour: 'var(--red, #e53e3e)',    bg: 'rgba(229,62,62,0.10)',   label: 'Failed' },
+  };
+
+  const leaveTypeLabel = {
+    annual: 'Annual Leave', sick: 'Sick Leave', personal: 'Personal Leave',
+    unpaid: 'Unpaid Leave', other: 'Other Leave',
+  };
+
+  el.innerHTML = data.map(r => {
+    const s = statusConfig[r.status] || statusConfig.syncing;
+    const typeLabel = leaveTypeLabel[r.leave_type] || (r.leave_type.charAt(0).toUpperCase() + r.leave_type.slice(1));
+    const syncNote = r.status === 'sync_failed'
+      ? `<div style="font-size:11px;color:var(--red,#e53e3e);margin-top:4px;">⚠ Could not reach employer. Will retry automatically.</div>`
+      : r.status === 'syncing'
+      ? `<div style="font-size:11px;color:var(--ink-3,#aaa);margin-top:4px;">Sending to your employer…</div>`
+      : '';
+
+    return `
+      <div class="wf-leave-card" style="
+        background: var(--surface, #fff);
+        border: 1px solid var(--border, #e8e8e6);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      ">
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:14px;color:var(--ink-1);margin-bottom:3px;">${typeLabel}</div>
+          <div style="font-size:12px;color:var(--ink-2);">
+            ${fmtDate(r.start_date)}${r.start_date !== r.end_date ? ' – ' + fmtDate(r.end_date) : ''}
+          </div>
+          ${r.notes ? `<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic;">${r.notes}</div>` : ''}
+          ${syncNote}
+        </div>
+        <span style="
+          font-size:11px;
+          font-weight:700;
+          color:${s.colour};
+          background:${s.bg};
+          padding: 4px 10px;
+          border-radius: 20px;
+          white-space: nowrap;
+          flex-shrink: 0;
+          align-self: flex-start;
+        ">${s.label}</span>
       </div>
-      <span style="font-size:11px;font-weight:700;color:${statusColour[r.status]||'var(--ink-2)'};">${r.status.toUpperCase()}</span>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 async function submitLeaveRequest() {
@@ -2784,26 +2849,107 @@ async function submitLeaveRequest() {
   const end   = document.getElementById('leave-end').value;
   const notes = document.getElementById('leave-notes').value.trim();
   const errEl = document.getElementById('leave-error');
+  const btn   = document.querySelector('[onclick="submitLeaveRequest()"]');
   errEl.style.display = 'none';
 
   if (!start || !end) { errEl.textContent = 'Please select start and end dates.'; errEl.style.display = 'block'; return; }
   if (end < start)    { errEl.textContent = 'End date must be after start date.'; errEl.style.display = 'block'; return; }
 
-  const { error } = await sb.from('leave_requests').insert({
-    user_id:               CURRENT_USER.id,
-    workforce_employee_id: _wfConnection.workforce_employee_id,
-    leave_type:            type,
-    start_date:            start,
-    end_date:              end,
-    notes,
-    status:                'syncing',
-  });
+  if (btn) { btn.textContent = 'Submitting…'; btn.disabled = true; }
 
-  if (error) { errEl.textContent = 'Failed to submit. Please try again.'; errEl.style.display = 'block'; return; }
+  // Step 1 — Insert into Personal leave_requests with status 'syncing'
+  const { data: inserted, error: insertErr } = await sb
+    .from('leave_requests')
+    .insert({
+      user_id:               CURRENT_USER.id,
+      workforce_employee_id: _wfConnection.workforce_employee_id,
+      leave_type:            type,
+      start_date:            start,
+      end_date:              end,
+      notes:                 notes || null,
+      status:                'syncing',
+      submitted_at:          new Date().toISOString(),
+    })
+    .select('id')
+    .single();
 
+  if (insertErr) {
+    errEl.textContent = 'Failed to submit. Please try again.';
+    errEl.style.display = 'block';
+    if (btn) { btn.textContent = 'Submit Request'; btn.disabled = false; }
+    return;
+  }
+
+  // Step 2 — Call Workforce Edge Function to sync across
+  try {
+    const res = await fetch(
+      'https://whedwekxzjfqwjuoarid.supabase.co/functions/v1/sync-leave-request',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personal_user_id:      CURRENT_USER.id,
+          personal_leave_id:     inserted.id,
+          workforce_employee_id: _wfConnection.workforce_employee_id,
+          workforce_business_id: _wfConnection.workforce_business_id,
+          leave_type:            type,
+          start_date:            start,
+          end_date:              end,
+          notes:                 notes || null,
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      // Sync failed — status stays 'syncing', will show warning in UI
+      console.warn('Leave sync to Workforce failed:', await res.text());
+    }
+  } catch (e) {
+    // Network error — status stays 'syncing', will retry on next app open
+    console.warn('Leave sync network error:', e);
+  }
+
+  if (btn) { btn.textContent = 'Submit Request'; btn.disabled = false; }
   closeModal('leave-request-modal');
+  await renderWfLeave();
   openWfSubtab('leave');
-  // Sync to Workforce — wired in next phase
+}
+
+// Retry any leave requests stuck in 'syncing' status
+async function retrySyncingLeaveRequests() {
+  if (!CURRENT_USER || !_wfConnection) return;
+
+  const { data } = await sb
+    .from('leave_requests')
+    .select('*')
+    .eq('user_id', CURRENT_USER.id)
+    .eq('status', 'syncing');
+
+  if (!data?.length) return;
+
+  for (const req of data) {
+    try {
+      await fetch(
+        'https://whedwekxzjfqwjuoarid.supabase.co/functions/v1/sync-leave-request',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            personal_user_id:      CURRENT_USER.id,
+            personal_leave_id:     req.id,
+            workforce_employee_id: req.workforce_employee_id,
+            workforce_business_id: _wfConnection.workforce_business_id,
+            leave_type:            req.leave_type,
+            start_date:            req.start_date,
+            end_date:              req.end_date,
+            notes:                 req.notes || null,
+          }),
+        }
+      );
+    } catch (e) {
+      console.warn('Retry sync failed for leave request', req.id, e);
+    }
+  }
 }
 
 // ── Helpers ──────────────────────────────────────────
