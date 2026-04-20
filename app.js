@@ -2852,8 +2852,10 @@ async function submitLeaveRequest() {
   const btn   = document.querySelector('[onclick="submitLeaveRequest()"]');
   errEl.style.display = 'none';
 
+  const hoursRaw = parseFloat(document.getElementById('leave-hours')?.value || '0');
   if (!start || !end) { errEl.textContent = 'Please select start and end dates.'; errEl.style.display = 'block'; return; }
   if (end < start)    { errEl.textContent = 'End date must be after start date.'; errEl.style.display = 'block'; return; }
+  if (!hoursRaw || hoursRaw <= 0) { errEl.textContent = 'Please enter the total hours for this leave.'; errEl.style.display = 'block'; return; }
 
   if (btn) { btn.textContent = 'Submitting…'; btn.disabled = true; }
 
@@ -2866,6 +2868,7 @@ async function submitLeaveRequest() {
       leave_type:            type,
       start_date:            start,
       end_date:              end,
+      hours:                 hoursRaw,
       notes:                 notes || null,
       status:                'syncing',
       submitted_at:          new Date().toISOString(),
@@ -2895,6 +2898,7 @@ async function submitLeaveRequest() {
           leave_type:            type,
           start_date:            start,
           end_date:              end,
+          hours:                 hoursRaw,
           notes:                 notes || null,
         }),
       }
@@ -2942,6 +2946,7 @@ async function retrySyncingLeaveRequests() {
             leave_type:            req.leave_type,
             start_date:            req.start_date,
             end_date:              req.end_date,
+            hours:                 req.hours || 0,
             notes:                 req.notes || null,
           }),
         }
