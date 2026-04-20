@@ -1479,8 +1479,13 @@
         <input type="date" id="leave-end" class="form-input">
       </div>
       <div class="form-group">
+        <label class="form-label">Total Hours <span style="color:var(--red,#e53e3e)">*</span></label>
+        <input type="number" id="leave-hours" class="form-input" min="0.5" step="0.5" placeholder="e.g. 38">
+        <div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Total hours you’ll be away — check your roster if unsure.</div>
+      </div>
+      <div class="form-group">
         <label class="form-label">Notes (optional)</label>
-        <textarea id="leave-notes" class="form-input" rows="3" placeholder="Any additional details for your employer…" style="resize:vertical;"></textarea>
+        <textarea id="leave-notes" class="form-input" rows="2" placeholder="Any additional details for your employer…" style="resize:vertical;"></textarea>
       </div>
       <div id="leave-error" style="display:none;color:var(--red,#e53e3e);font-size:12px;"></div>
       <button class="btn btn-primary" onclick="submitLeaveRequest()">Submit Request</button>
