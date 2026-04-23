@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tayla — P&L Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root {
+  --ink:        #111e1e;
+  --ink-3:      #4a6868;
+  --paper:      #f0f4f3;
+  --paper-2:    #e0eae8;
+  --rule:       rgba(30,80,80,0.15);
+  --gold:       #1a7a8c;
+  --gold-light: #7cc4d0;
+  --green:      #1a7a4a;
+  --red:        #a83232;
+  --r:          10px;
+  --r-sm:       6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: #0d1f1f;
+  color: #fff;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.container { max-width: 520px; width: 100%; }
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 1.4rem;
+  color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 32px; justify-content: center;
+}
+.logo-dot { width: 8px; height: 8px; background: var(--gold-light); border-radius: 50%; }
+.card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r); padding: 32px;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; margin-bottom: 6px;
+}
+.card-sub { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
+.form-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+  margin-bottom: 8px; display: block;
+}
+.form-input {
+  width: 100%; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-sm); padding: 11px 14px;
+  color: #fff; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; outline: none; margin-bottom: 16px;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--gold-light); }
+.form-input::placeholder { color: rgba(255,255,255,0.25); }
+.btn {
+  width: 100%; background: var(--gold); color: #fff;
+  border: none; border-radius: var(--r-sm);
+  padding: 12px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s; margin-bottom: 12px;
+}
+.btn:hover { opacity: 0.88; }
+.btn-ghost {
+  width: 100%; background: transparent;
+  border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);
+  border-radius: var(--r-sm); padding: 11px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.85rem; cursor: pointer; transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+.drop-zone {
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: var(--r); padding: 40px 24px;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  margin-bottom: 16px;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--gold-light);
+  background: rgba(124,196,208,0.05);
+}
+.drop-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.drop-text { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.drop-text strong { color: var(--gold-light); }
+.feedback {
+  font-size: 0.8rem; padding: 10px 14px;
+  border-radius: var(--r-sm); margin-bottom: 16px;
+  display: none;
+}
+.feedback.success { background: rgba(26,122,74,0.2); color: #7ec89a; border: 1px solid rgba(26,122,74,0.3); }
+.feedback.error   { background: rgba(168,50,50,0.2); color: #e08080; border: 1px solid rgba(168,50,50,0.3); }
+.format-hint {
+  font-size: 0.72rem; color: rgba(255,255,255,0.3);
+  line-height: 1.7; margin-top: 8px;
+  padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.format-hint strong { color: rgba(255,255,255,0.5); }
+.status-bar {
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--r-sm); padding: 12px 14px;
+  font-size: 0.78rem; color: rgba(255,255,255,0.4);
+  margin-bottom: 20px; display: none;
+}
+.status-bar span { color: var(--gold-light); font-family: 'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a class="logo" href="/business/"><div class="logo-dot"></div>Tayla</a>
+
+  <!-- LOGIN -->
+  <div class="card" id="login-card">
+    <div class="card-title">P&L Upload</div>
+    <div class="card-sub">Owner access only — enter your password to continue</div>
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="pw-input" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')unlock()">
+    <button class="btn" onclick="unlock()">Continue →</button>
+    <div class="feedback error" id="pw-error">Incorrect password. Try again.</div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="card" id="upload-card" style="display:none">
+    <div class="card-title">Upload P&L Spreadsheet</div>
+    <div class="card-sub">Data will be published instantly to usetayla.com.au/business/</div>
+
+    <div class="status-bar" id="status-bar">
+      Current data: <span id="current-data-info">—</span>
+    </div>
+
+    <div class="drop-zone" id="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="handleDrop(event)"
+      onclick="document.getElementById('file-input').click()">
+      <div class="drop-icon">📊</div>
+      <div class="drop-text">
+        <strong>Click to upload</strong> or drag and drop<br>
+        Excel (.xlsx, .xls) or CSV
+      </div>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none"
+      onchange="handleFile(this.files[0])">
+
+    <div class="feedback" id="upload-feedback"></div>
+
+    <button class="btn-ghost" onclick="clearData()">🗑 Clear published data</button>
+
+    <div class="format-hint">
+      <strong>Transactions:</strong> Date · Reference · Description · Type · Category · Amount (AUD) · Method<br>
+      <strong>Bills:</strong> Bill # · Supplier · Bill Date · Due Date · Status · Subtotal · GST · Total<br>
+      <strong>Chart of Accounts:</strong> Account Code · Account Name · Type · Balance DR · Balance CR<br>
+      <strong>Also parsed:</strong> Income Statement · Balance Sheet · GST · Contacts
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const UPLOAD_PASSWORD = 'tayla-business-2026';
+
+function unlock() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === UPLOAD_PASSWORD) {
+    document.getElementById('login-card').style.display  = 'none';
+    document.getElementById('upload-card').style.display = 'block';
+    loadStatus();
+  } else {
+    const err = document.getElementById('pw-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+async function loadStatus() {
+  const bar  = document.getElementById('status-bar');
+  const info = document.getElementById('current-data-info');
+  try {
+    const { data } = await sb.from('tayla_pl_data').select('data, uploaded_at').order('uploaded_at', { ascending: false }).limit(1).maybeSingle();
+    if (data) {
+      const date = new Date(data.uploaded_at).toLocaleDateString('en-AU');
+      const d = data.data;
+      const parts = [];
+      if (d.transactions?.length) parts.push(d.transactions.length + ' transactions');
+      if (d.bills?.length)        parts.push(d.bills.length + ' bills');
+      if (d.chartOfAccounts?.length) parts.push(d.chartOfAccounts.length + ' accounts');
+      if (d.months?.length)       parts.push(d.months.length + ' month(s)');
+      info.textContent = parts.join(' · ') + ' · uploaded ' + date;
+      bar.style.display = 'block';
+    }
+  } catch {}
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragover');
+  handleFile(e.dataTransfer.files[0]);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  showFeedback('loading', '⏳ Processing ' + file.name + '...');
+
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const wb     = XLSX.read(e.target.result, { type: 'array' });
+      const parsed = parseWorkbook(wb);
+      if (!parsed) {
+        showFeedback('error', '✗ Could not parse file. Check the column format below.');
+        return;
+      }
+      // Delete old rows then insert new one
+      await sb.from('tayla_pl_data').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      const { error } = await sb.from('tayla_pl_data').insert({ data: parsed });
+      if (error) throw error;
+      loadStatus();
+      const parts = [];
+      if (parsed.transactions.length) parts.push(parsed.transactions.length + ' transactions');
+      if (parsed.bills.length)        parts.push(parsed.bills.length + ' bills');
+      if (parsed.chartOfAccounts.length) parts.push(parsed.chartOfAccounts.length + ' accounts');
+      if (parsed.contacts.length)     parts.push(parsed.contacts.length + ' contacts');
+      if (parsed.months.length)       parts.push(parsed.months.length + ' month(s)');
+      showFeedback('success', '✓ Published — ' + parts.join(' · '));
+    } catch(err) {
+      showFeedback('error', '✗ Error: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function showFeedback(type, msg) {
+  const el = document.getElementById('upload-feedback');
+  el.className = 'feedback ' + (type === 'loading' ? '' : type);
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+async function clearData() {
+  if (!confirm('Clear all published P&L data? This will show the empty state on the public page.')) return;
+  await sb.from('tayla_pl_data').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  loadStatus();
+  showFeedback('success', '✓ Data cleared.');
+}
+
+function parseWorkbook(wb) {
+  const result = {
+    transactions: [], bills: [], chartOfAccounts: [],
+    incomeStatement: {}, balanceSheet: {}, gst: {}, contacts: [],
+    months: [], pl: [], users: [],
+  };
+
+  // ── TRANSACTIONS ──────────────────────────────────────────────
+  const txSheet = wb.SheetNames.find(n => /transaction/i.test(n));
+  if (txSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[txSheet], { defval: null });
+    let currentTx = null;
+    rows.forEach(r => {
+      const date = r['Date'] || r['date'];
+      const ref  = r['Reference'] || r['reference'];
+      const desc = String(r['Description'] || r['description'] || '').trim();
+      const amt  = parseFloat(r['Amount (AUD)'] || r['Amount'] || r['amount'] || 0);
+      const type = String(r['Type'] || r['type'] || '').trim();
+      const cat  = String(r['Category'] || r['category'] || '').trim();
+      const method = String(r['Method'] || r['method'] || '').trim();
+
+      if (date && ref) {
+        // Parse Excel serial date if needed
+        let dateStr = date;
+        if (typeof date === 'number') {
+          const d = new Date(Math.round((date - 25569) * 86400 * 1000));
+          dateStr = d.toISOString().split('T')[0];
+        } else {
+          dateStr = String(date).trim();
+        }
+        currentTx = { date: dateStr, reference: String(ref).trim(), description: desc, type, category: cat, amount: amt, method, lines: [] };
+        result.transactions.push(currentTx);
+      } else if (currentTx && desc) {
+        const isDebit  = /^DR:/i.test(desc);
+        const isCredit = /^CR:/i.test(desc);
+        currentTx.lines.push({
+          account: desc.replace(/^(DR|CR):\s*/i, '').trim(),
+          debit:   isDebit  ? amt : 0,
+          credit:  isCredit ? amt : 0,
+        });
+      }
+    });
+    const monthSet = new Set();
+    result.transactions.forEach(tx => {
+      if (tx.date) {
+        const d = new Date(tx.date);
+        if (!isNaN(d)) monthSet.add(d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }));
+      }
+    });
+    result.months = [...monthSet].sort();
+  }
+
+  // ── BILLS ─────────────────────────────────────────────────────
+  const billSheet = wb.SheetNames.find(n => /bill/i.test(n));
+  if (billSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[billSheet], { defval: null });
+    let currentBill = null;
+    rows.forEach(r => {
+      const billNum = r['Bill #'] || r['Bill#'] || r['bill'];
+      if (billNum) {
+        currentBill = {
+          billNumber: String(billNum).trim(),
+          supplier:   String(r['Supplier'] || '').trim(),
+          billDate:   r['Bill Date'] ? String(r['Bill Date']).trim() : null,
+          dueDate:    r['Due Date']  ? String(r['Due Date']).trim()  : null,
+          status:     String(r['Status'] || '').trim(),
+          subtotal:   parseFloat(r['Subtotal'] || 0),
+          gst:        parseFloat(r['GST'] || 0),
+          total:      parseFloat(r['Total'] || 0),
+          lines: [],
+        };
+        result.bills.push(currentBill);
+      } else if (currentBill && r['Supplier']) {
+        currentBill.lines.push({
+          description: String(r['Supplier']).trim(),
+          subtotal: parseFloat(r['Subtotal'] || 0),
+          gst:      parseFloat(r['GST'] || 0),
+          total:    parseFloat(r['Total'] || 0),
+        });
+      }
+    });
+  }
+
+  // ── CHART OF ACCOUNTS ─────────────────────────────────────────
+  const coaSheet = wb.SheetNames.find(n => /chart|account/i.test(n));
+  if (coaSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[coaSheet], { defval: null });
+    result.chartOfAccounts = rows
+      .filter(r => r['Account Code'] || r['Account Name'])
+      .map(r => ({
+        code:      r['Account Code'] ? String(r['Account Code']).trim() : '',
+        name:      String(r['Account Name'] || '').trim(),
+        type:      String(r['Type'] || '').trim(),
+        balanceDR: parseFloat(r['Balance DR'] || 0) || 0,
+        balanceCR: parseFloat(r['Balance CR'] || 0) || 0,
+      }));
+  }
+
+  // ── INCOME STATEMENT ──────────────────────────────────────────
+  const isSheet = wb.SheetNames.find(n => /income|p&l|profit/i.test(n));
+  if (isSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[isSheet], { defval: null, header: 1 });
+    result.incomeStatement = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim().toUpperCase();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (label === 'TOTAL REVENUE')  result.incomeStatement.totalRevenue  = val;
+      if (label === 'TOTAL EXPENSES') result.incomeStatement.totalExpenses = val;
+      if (/NET PROFIT/.test(label))   result.incomeStatement.netProfit     = val;
+      if (/PERIOD ENDING/.test(label)) result.incomeStatement.period       = String(r[0]).replace(/Period ending\s*/i,'').trim();
+    });
+  }
+
+  // ── BALANCE SHEET ─────────────────────────────────────────────
+  const bsSheet = wb.SheetNames.find(n => /balance/i.test(n));
+  if (bsSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[bsSheet], { defval: null, header: 1 });
+    result.balanceSheet = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim().toUpperCase();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (/NET EQUITY/.test(label))            result.balanceSheet.netEquity = val;
+      if (/BANK.*CASH|CASH.*BANK/.test(label)) result.balanceSheet.cash      = val;
+      if (/AS AT/.test(label))                 result.balanceSheet.asAt      = String(r[0]).replace(/As at\s*/i,'').trim();
+    });
+  }
+
+  // ── GST ───────────────────────────────────────────────────────
+  const gstSheet = wb.SheetNames.find(n => /^gst$/i.test(n));
+  if (gstSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[gstSheet], { defval: null, header: 1 });
+    result.gst = { raw: rows.filter(r => r.some(c => c !== null)) };
+    rows.forEach(r => {
+      const label = String(r[0] || '').trim();
+      const val   = parseFloat(r[r.length - 1]) || 0;
+      if (/collected|output/i.test(label)) result.gst.collected = val;
+      if (/paid|input/i.test(label))       result.gst.paid      = val;
+      if (/net gst/i.test(label))          result.gst.net       = val;
+    });
+  }
+
+  // ── CONTACTS ──────────────────────────────────────────────────
+  const contactSheet = wb.SheetNames.find(n => /contact/i.test(n));
+  if (contactSheet) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[contactSheet], { defval: null });
+    result.contacts = rows
+      .filter(r => r['Name'])
+      .map(r => ({
+        name:  String(r['Name']).trim(),
+        type:  String(r['Type'] || '').trim(),
+        abn:   r['ABN']   ? String(r['ABN']).trim()   : null,
+        email: r['Email'] ? String(r['Email']).trim()  : null,
+        phone: r['Phone'] ? String(r['Phone']).trim()  : null,
+      }));
+  }
+
+  // ── LEGACY pl[] for backwards compat ──────────────────────────
+  result.pl = result.transactions.map(tx => ({
+    month:    tx.date ? new Date(tx.date).toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }) : '',
+    category: tx.category || tx.type || 'Uncategorised',
+    item:     tx.description,
+    amount:   tx.amount,
+  })).filter(r => r.month && r.item);
+
+  return (result.transactions.length > 0 || result.bills.length > 0) ? result : null;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Tayla — Marketing Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #0D1117;
+    --paper:   #131920;
+    --paper-2: #1a2330;
+    --border:  rgba(201,168,76,0.2);
+    --gold:    #C9A84C;
+    --gold-l:  #E8C96A;
+    --cream:   #F5F0E8;
+    --muted:   rgba(245,240,232,0.5);
+    --dim:     rgba(245,240,232,0.25);
+    --r:       10px;
+  }
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* AUTH GATE */
+  #auth-gate {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px;
+  }
+  .auth-card {
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 40px; width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .auth-logo { font-size: 0.85rem; font-weight: 700; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
+  .auth-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 8px; }
+  .auth-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; }
+  .auth-redirect { font-size: 0.78rem; color: var(--dim); margin-top: 12px; }
+  .auth-redirect a { color: var(--gold); text-decoration: none; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px; border-bottom: 1px solid var(--border);
+    background: var(--paper);
+  }
+  .nav-left { display: flex; align-items: center; gap: 20px; }
+  .nav-logo { font-size: 0.85rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; text-decoration: none; }
+  .nav-breadcrumb { font-size: 0.8rem; color: var(--dim); }
+  .nav-breadcrumb a { color: var(--muted); text-decoration: none; }
+  .nav-breadcrumb a:hover { color: var(--cream); }
+  .nav-right { display: flex; align-items: center; gap: 14px; }
+  .nav-user { font-size: 0.78rem; color: var(--dim); }
+  .btn-signout {
+    padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px;
+    background: transparent; color: var(--dim); cursor: pointer; font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .btn-signout:hover { border-color: var(--muted); color: var(--cream); }
+
+  /* HERO */
+  .hero {
+    padding: 48px 32px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-label {
+    font-size: 0.72rem; font-weight: 600; color: var(--gold);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem; font-weight: 900; margin-bottom: 8px; line-height: 1.2;
+  }
+  .hero-sub { font-size: 0.9rem; color: var(--muted); max-width: 500px; }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 32px;
+  }
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 28px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, transform 0.15s;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--gold); opacity: 0; transition: opacity 0.2s;
+  }
+  .card:hover { border-color: var(--gold); transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+  .card-icon { font-size: 1.6rem; margin-bottom: 16px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+  .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--dim);
+  }
+  .card-arrow { color: var(--gold); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">* Tayla</div>
+    <div class="auth-title">Checking access...</div>
+    <div class="auth-sub">Verifying your team credentials.</div>
+    <div class="auth-redirect">Not a team member? <a href="/info/">Back to site</a></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main-content" style="display:none">
+  <nav>
+    <div class="nav-left">
+      <a class="nav-logo" href="/info/portal/">* Tayla</a>
+      <span class="nav-breadcrumb">
+        <a href="/info/portal/">Portal</a> / Marketing Hub
+      </span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user" id="user-email"></span>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-label">Marketing Hub</div>
+    <div class="hero-title">Grow Tayla.</div>
+    <div class="hero-sub">Strategy, research, and team resources for marketing Tayla to Australian users.</div>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="./employee/">
+      <div class="card-icon">👥</div>
+      <div class="card-title">Employee Hub</div>
+      <div class="card-desc">Internal team resources, onboarding guides, brand voice, and campaign coordination.</div>
+      <div class="card-footer">
+        <span>Internal</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="./research/">
+      <div class="card-icon">🔬</div>
+      <div class="card-title">Market Research</div>
+      <div class="card-desc">Australian personal finance market data, competitor analysis, and user insights.</div>
+      <div class="card-footer">
+        <span>Research</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="./strategy/">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Product Strategy</div>
+      <div class="card-desc">Roadmap, positioning, growth strategy, and go-to-market planning for Tayla.</div>
+      <div class="card-footer">
+        <span>Strategy</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL  = 'https://anspwetxfykbmydrnkwh.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuc3B3ZXR4ZnlrYm15ZHJua3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTY0NjUsImV4cCI6MjA4ODUzMjQ2NX0.7yPIZFWRGaHNyXm-ZXzNXl6epi_C37HfXwVVagpBQJU';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  async function isStaff(userId) {
+    const { data } = await sb.from('profiles').select('is_staff').eq('id', userId).single();
+    return data?.is_staff === true;
+  }
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && await isStaff(session.user.id)) {
+      document.getElementById('user-email').textContent = session.user.email;
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    } else {
+      window.location.href = '/info/portal/';
+    }
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    window.location.href = '/info/portal/';
+  }
+
+  init();
+</script>
+</body>
+</html>
