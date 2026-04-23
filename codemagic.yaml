@@ -1,0 +1,110 @@
+workflows:
+
+  tayla-personal-android:
+    name: Tayla Personal - Android
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      android_signing:
+        - tayla_personal_keystore
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "au.com.usetayla.personal"
+        GOOGLE_PLAY_TRACK: internal
+      node: 24.15.0
+
+    scripts:
+      - name: Install dependencies
+        script: npm install
+
+      - name: Capacitor sync
+        script: npx cap sync android
+
+      - name: Set build number
+        script: |
+          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number \
+            --package-name "$PACKAGE_NAME" \
+            --tracks="$GOOGLE_PLAY_TRACK") + 1))
+          echo "NEW_BUILD_NUMBER=$NEW_BUILD_NUMBER" >> $CM_ENV
+
+      - name: Build Android AAB
+        script: |
+          cd android
+          ./gradlew bundleRelease \
+            -PversionCode=$NEW_BUILD_NUMBER \
+            -PversionName="1.0.$NEW_BUILD_NUMBER"
+
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
+
+    publishing:
+      email:
+        recipients:
+          - jack@taylafinancial.com.au
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
+        submit_as_draft: true
+
+  tayla-personal-ios:
+    name: Tayla Personal - iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: au.com.usetayla.personal
+      vars:
+        XCODE_PROJECT: "App.xcodeproj"
+        XCODE_SCHEME: "App"
+        BUNDLE_ID: "au.com.usetayla.personal"
+        APP_STORE_APPLE_ID: 1234567890
+      node: 24.15.0
+
+    scripts:
+      - name: Install dependencies
+        script: npm install
+
+      - name: Capacitor sync
+        script: npx cap sync ios
+
+      - name: Set up code signing
+        script: xcode-project use-profiles
+
+      - name: Set build number
+        script: |
+          BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          BUILD_NUMBER=$((BUILD_NUMBER + 1))
+          cd ios/App
+          agvtool new-version -all $BUILD_NUMBER
+
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --project "ios/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      email:
+        recipients:
+          - jack@taylafinancial.com.au
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false 
